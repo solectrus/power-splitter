@@ -13,22 +13,26 @@ describe InfluxPush do
   end
 
   it 'can push records to InfluxDB', vcr: 'influx_success' do
-    time = Time.now
-    records = [{ fields: { key: 'value' } }]
+    fake_flux = instance_double(Flux::Writer)
+    allow(fake_flux).to receive(:push)
+    allow(Flux::Writer).to receive(:new).and_return(fake_flux)
 
-    influx_push.call(records, time:)
+    time = Time.now
+    records = [{ time:, key: 'value' }]
+
+    influx_push.call(records)
   end
 
   it 'can handle error' do
-    fake_flux = instance_double(FluxWriter)
+    fake_flux = instance_double(Flux::Writer)
     allow(fake_flux).to receive(:push).and_raise(StandardError)
-    allow(FluxWriter).to receive(:new).and_return(fake_flux)
+    allow(Flux::Writer).to receive(:new).and_return(fake_flux)
 
     time = Time.now
-    records = [{ fields: { key: 'value' } }]
+    records = [{ time:, key: 'value' }]
 
     expect do
-      influx_push.call(records, time:, retries: 1, retry_delay: 0.1)
+      influx_push.call(records, retries: 1, retry_delay: 0.1)
     end.to raise_error(StandardError)
 
     expect(config.logger.error_messages).to include(

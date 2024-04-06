@@ -1,4 +1,4 @@
-require 'flux_writer'
+require 'flux/writer'
 require 'forwardable'
 
 class InfluxPush
@@ -7,15 +7,16 @@ class InfluxPush
 
   def initialize(config:)
     @config = config
-    @flux_writer = FluxWriter.new(config)
+    @flux_writer = Flux::Writer.new(config:)
   end
 
   attr_reader :config, :flux_writer
 
-  def call(records, time:, retries: nil, retry_delay: 5)
+  def call(records, retries: nil, retry_delay: 5)
     retry_count = 0
     begin
-      flux_writer.push(records, time:)
+      config.logger.debug "Pushing #{records.size} records to InfluxDB"
+      flux_writer.push(records)
     rescue StandardError => e
       logger.error "Error while pushing to InfluxDB: #{e.message}"
       retry_count += 1

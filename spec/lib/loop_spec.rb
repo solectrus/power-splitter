@@ -11,4 +11,8 @@ describe Loop do
     )
   end
   let(:logger) { MemoryLogger.new }
+
+  it 'can be initialized' do
+    expect(loop).to be_a(described_class)
+  end
 end

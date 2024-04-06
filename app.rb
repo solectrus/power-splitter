@@ -6,6 +6,7 @@ Bundler.require
 $LOAD_PATH.unshift(File.expand_path('./lib', __dir__))
 
 require 'dotenv/load'
+require 'active_support'
 require 'loop'
 require 'config'
 require 'stdout_logger'
@@ -19,10 +20,9 @@ logger.info 'https://github.com/solectrus/power-splitter'
 logger.info 'Copyright (c) 2024 Georg Ledermann'
 logger.info "\n"
 
-config = Config.new(ENV, logger:)
-
 logger.info "Using Ruby #{RUBY_VERSION} on platform #{RUBY_PLATFORM}"
-logger.info "Pushing to InfluxDB at #{config.influx_url}, " \
+config = Config.new(ENV, logger:)
+logger.info "Accessing InfluxDB at #{config.influx_url}, " \
        "bucket #{config.influx_bucket}"
 logger.info "\n"
 

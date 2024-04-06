@@ -11,18 +11,14 @@ describe Config do
       'INFLUX_TOKEN' => 'this.is.just.an.example',
       'INFLUX_ORG' => 'solectrus',
       'INFLUX_BUCKET' => 'my-bucket',
-    }
-  end
+      'INFLUX_MEASUREMENT' => 'my-measurement',
 
-  let(:deprecated_env) do
-    {
-      'INFLUX_HOST' => 'influx.example.com',
-      'INFLUX_SCHEMA' => 'https',
-      'INFLUX_PORT' => '443',
-      'INFLUX_TOKEN' => 'this.is.just.an.example',
-      'INFLUX_ORG' => 'solectrus',
-      'INFLUX_BUCKET' => 'my-bucket',
-      'INFLUX_MEASUREMENT' => 'PV',
+      'INSTALLATION_DATE' => '2021-01-01',
+      'INFLUX_SENSOR_GRID_IMPORT_POWER' => 'SENEC:grid_power_plus',
+      'INFLUX_SENSOR_HOUSE_POWER' => 'SENEC:house_power',
+      'INFLUX_SENSOR_WALLBOX_POWER' => 'SENEC:wallbox_charge_power',
+      'INFLUX_SENSOR_HEATPUMP_POWER' => 'Consumer:power',
+      'INFLUX_EXCLUDE_FROM_HOUSE_POWER' => 'HEATPUMP_POWER,WALLBOX_POWER',
     }
   end
 
