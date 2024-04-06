@@ -1,0 +1,15 @@
+.dockerignore
+.env
+.env.*
+.git
+.github
+.gitignore
+.rspec
+.rubocop.yml
+.vscode
+coverage
+docker-compose.yml
+Dockerfile
+Guardfile
+Rakefile
+spec

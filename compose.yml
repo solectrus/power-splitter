@@ -1,0 +1,8 @@
+services:
+  power-splitter:
+    image: ghcr.io/solectrus/power-splitter:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    restart: unless-stopped
