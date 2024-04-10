@@ -10,9 +10,9 @@ class Loop
   attr_reader :config
 
   def start
-    config.logger.info "--- Deleting all records from InfluxDB measurement '#{config.influx_measurement}"
-    influx_push.delete_all
-    config.logger.info "  Ok, deleted sucessfully\n\n"
+    # config.logger.info "--- Deleting all records from InfluxDB measurement '#{config.influx_measurement}'"
+    # influx_push.delete_all
+    # config.logger.info "  Ok, deleted sucessfully\n\n"
 
     process_historical_data
     process_current_data
