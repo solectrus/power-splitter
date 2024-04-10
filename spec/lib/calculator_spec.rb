@@ -10,14 +10,14 @@ describe Calculator do
       {
         'time' => Time.new('2022-01-01 12:00:00 +01:00'),
         'grid_power_plus' => 100,
-        'house_power' => 50,
+        'house_power' => 70,
         'wallbox_charge_power' => 30,
         'power' => 20,
       },
       {
         'time' => Time.new('2022-01-01 12:30:00 +01:00'),
         'grid_power_plus' => 0,
-        'house_power' => 100,
+        'house_power' => 140,
         'wallbox_charge_power' => 60,
         'power' => 40,
       },

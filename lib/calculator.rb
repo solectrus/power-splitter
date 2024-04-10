@@ -82,15 +82,16 @@ class Calculator
     (record[config.field(sensor_name)] || 0).round
   end
 
-  def total_power(record)
-    house_power(record) + wallbox_power(record) + heatpump_power(record)
-  end
-
-  def split_power(record) # rubocop:disable Metrics/AbcSize
+  def split_power(record) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     house_power = house_power(record)
     wallbox_power = wallbox_power(record)
     heatpump_power = heatpump_power(record)
-    total_power = total_power(record)
+
+    house_power -= heatpump_power if config.exclude_from_house_power.include?(:heatpump_power)
+    house_power -= wallbox_power if config.exclude_from_house_power.include?(:wallbox_power)
+    house_power = [house_power, 0].max
+
+    total_power = house_power + wallbox_power + heatpump_power
 
     grid_import_power = grid_import_power(record)
 
