@@ -13,11 +13,26 @@ describe InfluxPush do
   end
 
   it 'can push records to InfluxDB', vcr: 'influx_success' do
-    time = Time.now
-    records = [{ time:,
-                 house_power_from_grid: 100, house_power_from_pv: 200,
-                 wallbox_power_from_grid: 300, wallbox_power_from_pv: 600,
-                 heatpump_power_from_grid: 500, heatpump_power_from_pv: 1000, }]
+    time = Time.now.to_i
+    records = [
+      { time:,
+        name: config.influx_measurement,
+        tags: { 'origin' => 'grid' },
+        fields: {
+          'heatpump_power' => 42,
+          'house_power' => 42,
+          'wallbox_power' => 42,
+        }, },
+
+      { time:,
+        name: config.influx_measurement,
+        tags: { 'origin' => 'pv' },
+        fields: {
+          'heatpump_power' => 43,
+          'house_power' => 43,
+          'wallbox_power' => 43,
+        }, },
+    ]
 
     influx_push.push(records)
   end

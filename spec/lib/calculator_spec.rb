@@ -32,8 +32,8 @@ describe Calculator do
 
       expect(lines).to eq(
         [
-          'my-power-splitter,origin=grid heatpump_power=10i,house_power=25i,wallbox_power=15i 1641034800',
-          'my-power-splitter,origin=pv heatpump_power=20i,house_power=50i,wallbox_power=30i 1641034800',
+          'my_power_splitter,origin=grid heatpump_power=10i,house_power=25i,wallbox_power=15i 1641034800',
+          'my_power_splitter,origin=pv heatpump_power=20i,house_power=50i,wallbox_power=30i 1641034800',
         ],
       )
     end
