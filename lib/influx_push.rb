@@ -13,11 +13,11 @@ class InfluxPush
   def push(records, retries: nil, retry_delay: 5)
     retry_count = 0
     begin
-      config.logger.info "Pushing #{records.size} records to InfluxDB"
+      config.logger.info "  Pushing #{records.size} records to InfluxDB"
 
       flux_writer.push(records)
     rescue StandardError => e
-      config.logger.error "Error while pushing to InfluxDB: #{e.message}"
+      config.logger.error "  Error while pushing to InfluxDB: #{e.message}"
       retry_count += 1
 
       raise e if retries && retry_count > retries

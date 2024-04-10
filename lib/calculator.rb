@@ -9,7 +9,7 @@ class Calculator
   attr_reader :day_records, :config
 
   def call
-    group_by_hour(
+    tagged group_by_hour(
       day_records.reduce([]) do |acc, record|
         acc << split_power(record)
       end,
@@ -17,6 +17,30 @@ class Calculator
   end
 
   private
+
+  def tagged(records)
+    records.map do |entry|
+      [
+        point(entry, tag: 'grid'),
+        point(entry, tag: 'pv'),
+
+      ]
+    end.flatten
+  end
+
+  def point(record, tag:)
+    result = InfluxDB2::Point.new(
+      name: config.influx_measurement,
+      time: record[:time].to_i,
+    )
+
+    result.add_tag('origin', tag)
+    result.add_field('house_power', record[:"house_power_from_#{tag}"])
+    result.add_field('wallbox_power', record[:"wallbox_power_from_#{tag}"])
+    result.add_field('heatpump_power', record[:"heatpump_power_from_#{tag}"])
+
+    result
+  end
 
   def group_by_hour(splitted)
     splitted.group_by { |item| item[:time].hour }.map do |_hour, items|

@@ -1,7 +1,7 @@
 require_relative 'reader'
 
 module Flux
-  class Day < Flux::Reader
+  class Extractor < Flux::Reader
     def records(day)
       query_string = <<~FLUX
         #{from_bucket}
@@ -10,6 +10,7 @@ module Flux
         |> aggregateWindow(every: 5m, fn: mean)
       FLUX
       result = query(query_string)
+
       extract_and_transform_data(result)
     end
 
@@ -31,7 +32,7 @@ module Flux
         end
       end
 
-      results_by_time.values # .sort_by { |h| h['time'] }
+      results_by_time.values
     end
   end
 end

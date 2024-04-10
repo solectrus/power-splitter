@@ -13,12 +13,11 @@ describe InfluxPush do
   end
 
   it 'can push records to InfluxDB', vcr: 'influx_success' do
-    fake_flux = instance_double(Flux::Writer)
-    allow(fake_flux).to receive(:push)
-    allow(Flux::Writer).to receive(:new).and_return(fake_flux)
-
     time = Time.now
-    records = [{ time:, key: 'value' }]
+    records = [{ time:,
+                 house_power_from_grid: 100, house_power_from_pv: 200,
+                 wallbox_power_from_grid: 300, wallbox_power_from_pv: 600,
+                 heatpump_power_from_grid: 500, heatpump_power_from_pv: 1000, }]
 
     influx_push.push(records)
   end
@@ -36,8 +35,7 @@ describe InfluxPush do
     end.to raise_error(StandardError)
 
     expect(config.logger.error_messages).to include(
-      'Error while pushing to InfluxDB: StandardError',
+      /Error while pushing to InfluxDB: StandardError/,
     )
-    sleep(1)
   end
 end

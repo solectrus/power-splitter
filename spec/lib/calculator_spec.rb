@@ -8,15 +8,15 @@ describe Calculator do
   let(:day_records) do
     [
       {
-        'time' => Time.new(2022, 1, 1, 12, 0, 0),
+        'time' => Time.new('2022-01-01 12:00:00 +01:00'),
         'grid_power_plus' => 100,
         'house_power' => 50,
         'wallbox_charge_power' => 30,
         'power' => 20,
       },
       {
-        'time' => Time.new(2022, 1, 1, 12, 30, 0),
-        'grid_power_plus' => 200,
+        'time' => Time.new('2022-01-01 12:30:00 +01:00'),
+        'grid_power_plus' => 0,
         'house_power' => 100,
         'wallbox_charge_power' => 60,
         'power' => 40,
@@ -28,15 +28,13 @@ describe Calculator do
     subject(:call) { calculator.call }
 
     it 'returns the correct result' do
-      expect(call).to be_a(Array)
-      expect(call.first).to include(
-        time: a_kind_of(Time),
-        house_power_from_grid: 75,
-        house_power_from_pv: 0,
-        wallbox_power_from_grid: 45,
-        wallbox_power_from_pv: 0,
-        heatpump_power_from_grid: 30,
-        heatpump_power_from_pv: 0,
+      lines = call.map(&:to_line_protocol)
+
+      expect(lines).to eq(
+        [
+          'my-power-splitter,origin=grid heatpump_power=10i,house_power=25i,wallbox_power=15i 1641034800',
+          'my-power-splitter,origin=pv heatpump_power=20i,house_power=50i,wallbox_power=30i 1641034800',
+        ],
       )
     end
   end

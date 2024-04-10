@@ -11,7 +11,6 @@ class Config
                 :influx_org,
                 :influx_bucket,
                 :influx_measurement,
-                :installation_date,
                 :time_zone
 
   def initialize(env, logger: NullLogger.new)
@@ -27,7 +26,6 @@ class Config
     @influx_measurement = env.fetch('INFLUX_MEASUREMENT')
     validate_url!(influx_url)
 
-    @installation_date = env.fetch('INSTALLATION_DATE').to_date
     @time_zone = env.fetch('TZ', 'Europe/Berlin')
 
     init_sensors(env)
