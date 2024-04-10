@@ -9,10 +9,12 @@ class Calculator
   attr_reader :day_records, :config
 
   def call
-    tagged group_by_hour(
-      day_records.reduce([]) do |acc, record|
-        acc << split_power(record)
-      end,
+    tagged(
+      group_by_hour(
+        day_records.reduce([]) do |acc, record|
+          acc << split_power(record)
+        end,
+      ),
     )
   end
 
@@ -79,7 +81,7 @@ class Calculator
   end
 
   def power_value(record, sensor_name)
-    (record[config.field(sensor_name)] || 0).round
+    record[config.field(sensor_name)] || 0.0
   end
 
   def split_power(record) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
