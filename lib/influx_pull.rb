@@ -1,11 +1,7 @@
 require 'flux/first'
 require 'flux/day'
-require 'forwardable'
 
 class InfluxPull
-  extend Forwardable
-  def_delegators :config, :logger
-
   def initialize(config:)
     @config = config
     @flux_reader = Flux::Reader.new(config:)

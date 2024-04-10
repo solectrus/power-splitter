@@ -28,5 +28,9 @@ module Flux
     def read_api
       @read_api ||= influx_client.create_query_api
     end
+
+    def delete_api
+      @delete_api ||= influx_client.create_delete_api
+    end
   end
 end

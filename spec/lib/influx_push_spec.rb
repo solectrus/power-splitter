@@ -20,7 +20,7 @@ describe InfluxPush do
     time = Time.now
     records = [{ time:, key: 'value' }]
 
-    influx_push.call(records)
+    influx_push.push(records)
   end
 
   it 'can handle error' do
@@ -32,7 +32,7 @@ describe InfluxPush do
     records = [{ time:, key: 'value' }]
 
     expect do
-      influx_push.call(records, retries: 1, retry_delay: 0.1)
+      influx_push.push(records, retries: 1, retry_delay: 0.1)
     end.to raise_error(StandardError)
 
     expect(config.logger.error_messages).to include(

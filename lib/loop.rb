@@ -4,30 +4,31 @@ require 'influx_pull'
 require 'calculator'
 
 class Loop
-  extend Forwardable
-  def_delegators :config, :logger
-
   def initialize(config:)
     @config = config
   end
 
   attr_reader :config
 
-  def start
+  def start # rubocop:disable Metrics/AbcSize
+    config.logger.info "Deleting all records from InfluxDB measurement '#{config.influx_measurement}'"
+    influx_push.delete_all
+
+    config.logger.info 'Starting loop'
     day = config.installation_date
 
     while day <= Time.now
-      logger.info "\nProcessing day #{day}"
+      config.logger.info "\nProcessing day #{day}"
 
       day_records = influx_pull.day_records(day.beginning_of_day)
       splitted_powers = Calculator.new(day_records:, config:).call
 
-      influx_push.call(splitted_powers)
+      influx_push.push(splitted_powers)
 
       day += 1.day
     end
   rescue SystemExit, Interrupt
-    logger.warn 'Exiting...'
+    config.logger.warn 'Exiting...'
   end
 
   def influx_push
