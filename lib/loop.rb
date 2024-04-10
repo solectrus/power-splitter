@@ -1,7 +1,6 @@
 require 'influxdb-client'
 require 'influx_push'
 require 'influx_pull'
-require 'amazing_print'
 require 'calculator'
 
 class Loop
