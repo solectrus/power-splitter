@@ -9,7 +9,8 @@ RUN bundle config --local frozen 1 && \
     bundle clean --force
 
 FROM ruby:3.3.0-alpine
-LABEL maintainer="georg@ledermann.dev"
+LABEL org.opencontainers.image.authors="georg@ledermann.dev"
+LABEL org.opencontainers.image.description="Analyzes and allocates power usage from InfluxDB to specific devices"
 
 # Add tzdata to get correct timezone
 RUN apk add --no-cache tzdata
