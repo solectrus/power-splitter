@@ -47,14 +47,6 @@ class Config
     @field[sensor_name] ||= splitted_sensor_name(sensor_name)&.last
   end
 
-  def find_by(measurement, field)
-    @sensor ||= {}
-    @sensor[[measurement, field]] ||= SENSOR_NAMES.find do |sensor_name|
-      self.measurement(sensor_name) == measurement &&
-        self.field(sensor_name) == field
-    end
-  end
-
   private
 
   def validate_url!(url)
