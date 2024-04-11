@@ -25,7 +25,13 @@ class Loop
   def process_current_data
     config.logger.info "\nStarting endless loop for processing current data..."
 
+    last_time = nil
     loop do
+      # Ensure that the last minutes of yesterday are processed
+      process_day(Date.yesterday) if last_time && last_time.to_date < Date.current
+
+      # Process the current day
+      last_time = Time.current
       process_day(Date.current)
 
       config.logger.info "  Sleeping for 5 minutes...\n\n"
