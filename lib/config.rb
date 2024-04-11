@@ -23,7 +23,7 @@ class Config
     @influx_token = env.fetch('INFLUX_TOKEN')
     @influx_org = env.fetch('INFLUX_ORG')
     @influx_bucket = env.fetch('INFLUX_BUCKET')
-    @influx_measurement = env.fetch('INFLUX_MEASUREMENT')
+    @influx_measurement = env.fetch('INFLUX_MEASUREMENT', 'power_splitter')
     validate_url!(influx_url)
     logger.info "Accessing InfluxDB at #{influx_url}, bucket #{influx_bucket}"
 
