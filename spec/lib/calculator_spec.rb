@@ -32,8 +32,7 @@ describe Calculator do
 
       expect(lines).to eq(
         [
-          'my_power_splitter,origin=grid heatpump_power=10i,house_power=25i,wallbox_power=15i 1641034800',
-          'my_power_splitter,origin=pv heatpump_power=20i,house_power=50i,wallbox_power=30i 1641034800',
+          'my_power_splitter heatpump_power_grid=10i,house_power_grid=25i,wallbox_power_grid=15i 1641034800',
         ],
       )
     end
@@ -45,12 +44,9 @@ describe Calculator do
     it 'returns the correct result' do
       expect(split_power).to include(
         time: a_kind_of(Time),
-        house_power_from_grid: 50,
-        house_power_from_pv: 0,
-        wallbox_power_from_grid: 30,
-        wallbox_power_from_pv: 0,
-        heatpump_power_from_grid: 20,
-        heatpump_power_from_pv: 0,
+        house_power_grid: 50,
+        wallbox_power_grid: 30,
+        heatpump_power_grid: 20,
       )
     end
   end

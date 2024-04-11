@@ -33,11 +33,11 @@ http_interactions:
       X-Influxdb-Version:
       - v2.7.5
       Date:
-      - Thu, 11 Apr 2024 07:47:48 GMT
+      - Thu, 11 Apr 2024 18:04:08 GMT
       Transfer-Encoding:
       - chunked
     body:
       encoding: UTF-8
       string: "\r\n"
-  recorded_at: Thu, 11 Apr 2024 07:47:48 GMT
+  recorded_at: Thu, 11 Apr 2024 18:04:08 GMT
 recorded_with: VCR 6.2.0

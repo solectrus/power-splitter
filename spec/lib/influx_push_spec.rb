@@ -17,20 +17,18 @@ describe InfluxPush do
     records = [
       { time:,
         name: config.influx_measurement,
-        tags: { 'origin' => 'grid' },
         fields: {
-          'heatpump_power' => 42,
-          'house_power' => 42,
-          'wallbox_power' => 42,
+          'heatpump_power_grid' => 42,
+          'house_power_grid' => 42,
+          'wallbox_power_grid' => 42,
         }, },
 
       { time:,
         name: config.influx_measurement,
-        tags: { 'origin' => 'pv' },
         fields: {
-          'heatpump_power' => 43,
-          'house_power' => 43,
-          'wallbox_power' => 43,
+          'heatpump_power_grid' => 43,
+          'house_power_grid' => 43,
+          'wallbox_power_grid' => 43,
         }, },
     ]
 

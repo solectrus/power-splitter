@@ -9,37 +9,26 @@ class Calculator
   attr_reader :day_records, :config
 
   def call
-    tagged(
-      group_by_hour(
-        day_records.reduce([]) do |acc, record|
-          acc << split_power(record)
-        end,
-      ),
-    )
+    group_by_hour(
+      day_records.reduce([]) do |acc, record|
+        acc << split_power(record)
+      end,
+    ).map do |record|
+      point(record)
+    end
   end
 
   private
 
-  def tagged(records)
-    records.map do |entry|
-      [
-        point(entry, tag: 'grid'),
-        point(entry, tag: 'pv'),
-
-      ]
-    end.flatten
-  end
-
-  def point(record, tag:)
+  def point(record)
     result = InfluxDB2::Point.new(
       name: config.influx_measurement,
       time: record[:time].to_i,
     )
 
-    result.add_tag('origin', tag)
-    result.add_field('house_power', record[:"house_power_from_#{tag}"])
-    result.add_field('wallbox_power', record[:"wallbox_power_from_#{tag}"])
-    result.add_field('heatpump_power', record[:"heatpump_power_from_#{tag}"])
+    result.add_field('house_power_grid', record[:house_power_grid])
+    result.add_field('wallbox_power_grid', record[:wallbox_power_grid])
+    result.add_field('heatpump_power_grid', record[:heatpump_power_grid])
 
     result
   end
@@ -48,12 +37,9 @@ class Calculator
     splitted.group_by { |item| item[:time].hour }.map do |_hour, items|
       {
         time: items.first[:time].beginning_of_hour,
-        house_power_from_grid: sum(items, :house_power_from_grid),
-        house_power_from_pv: sum(items, :house_power_from_pv),
-        wallbox_power_from_grid: sum(items, :wallbox_power_from_grid),
-        wallbox_power_from_pv: sum(items, :wallbox_power_from_pv),
-        heatpump_power_from_grid: sum(items, :heatpump_power_from_grid),
-        heatpump_power_from_pv: sum(items, :heatpump_power_from_pv),
+        house_power_grid: sum(items, :house_power_grid),
+        wallbox_power_grid: sum(items, :wallbox_power_grid),
+        heatpump_power_grid: sum(items, :heatpump_power_grid),
       }
     end
   end
@@ -84,7 +70,7 @@ class Calculator
     record[config.field(sensor_name)] || 0.0
   end
 
-  def split_power(record) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+  def split_power(record) # rubocop:disable Metrics/AbcSize
     house_power = house_power(record)
     wallbox_power = wallbox_power(record)
     heatpump_power = heatpump_power(record)
@@ -97,34 +83,26 @@ class Calculator
 
     grid_import_power = grid_import_power(record)
 
-    house_power_from_grid = 0
-    wallbox_power_from_grid = 0
-    heatpump_power_from_grid = 0
+    house_power_grid = 0
+    wallbox_power_grid = 0
+    heatpump_power_grid = 0
 
     unless grid_import_power.zero? || total_power.zero?
       house_power_ratio = house_power.fdiv(total_power)
       wallbox_power_ratio = wallbox_power.fdiv(total_power)
       heatpump_power_ratio = heatpump_power.fdiv(total_power)
 
-      house_power_from_grid = grid_import_power * house_power_ratio
-      wallbox_power_from_grid = grid_import_power * wallbox_power_ratio
-      heatpump_power_from_grid = grid_import_power * heatpump_power_ratio
+      house_power_grid = grid_import_power * house_power_ratio
+      wallbox_power_grid = grid_import_power * wallbox_power_ratio
+      heatpump_power_grid = grid_import_power * heatpump_power_ratio
     end
-
-    house_power_from_pv = house_power - house_power_from_grid
-    wallbox_power_from_pv = wallbox_power - wallbox_power_from_grid
-    heatpump_power_from_pv = heatpump_power - heatpump_power_from_grid
 
     {
       time: record['time'],
 
-      house_power_from_grid:,
-      wallbox_power_from_grid:,
-      heatpump_power_from_grid:,
-
-      house_power_from_pv:,
-      wallbox_power_from_pv:,
-      heatpump_power_from_pv:,
+      house_power_grid:,
+      wallbox_power_grid:,
+      heatpump_power_grid:,
     }
   end
 end
