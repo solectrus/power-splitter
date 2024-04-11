@@ -30,4 +30,8 @@ class InfluxPush
   def delete_all
     flux_deleter.delete_all
   end
+
+  def delete_measurement(measurement)
+    flux_deleter.delete_measurement(measurement)
+  end
 end

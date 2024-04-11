@@ -35,24 +35,11 @@ describe Flux::Extractor do
         )
       end
 
-      write_api.write(data: points)
+      flux_write(points)
     end
 
-    def write_api
-      influx_client.create_write_api
-    end
-
-    def influx_client
-      @influx_client ||=
-        InfluxDB2::Client.new(
-          config.influx_url,
-          config.influx_token,
-          use_ssl: config.influx_schema == 'https',
-          precision: InfluxDB2::WritePrecision::SECOND,
-          bucket: config.influx_bucket,
-          org: config.influx_org,
-          read_timeout: 30,
-        )
+    after do
+      flux_delete_all
     end
 
     it 'returns transformed data' do

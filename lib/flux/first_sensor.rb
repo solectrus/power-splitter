@@ -15,7 +15,7 @@ module Flux
       result = query(query_string)
       return unless result.first
 
-      result.first.records.first.values['_time']
+      Time.new result.first.records.first.values['_time']
     end
   end
 end

@@ -11,7 +11,7 @@ class Loop
 
   def start
     # config.logger.info "--- Deleting all records from InfluxDB measurement '#{config.influx_measurement}'"
-    # influx_push.delete_all
+    # influx_push.delete_measurement(config.influx_measurement)
     # config.logger.info "  Ok, deleted sucessfully\n\n"
 
     process_historical_data

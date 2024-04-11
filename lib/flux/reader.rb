@@ -42,9 +42,5 @@ module Flux
 
       stop ? "range(start: #{start}, stop: #{stop})" : "range(start: #{start})"
     end
-
-    def location
-      "timezone.location(name: \"#{config.time_zone}\")"
-    end
   end
 end
