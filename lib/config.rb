@@ -25,6 +25,7 @@ class Config
     @influx_bucket = env.fetch('INFLUX_BUCKET')
     @influx_measurement = env.fetch('INFLUX_MEASUREMENT')
     validate_url!(influx_url)
+    logger.info "Accessing InfluxDB at #{influx_url}, bucket #{influx_bucket}"
 
     @time_zone = env.fetch('TZ', 'Europe/Berlin')
 

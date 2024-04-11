@@ -16,14 +16,11 @@ logger = StdoutLogger.new
 logger.info 'Power Splitter for SOLECTRUS, ' \
        "Version #{ENV.fetch('VERSION', '<unknown>')}, " \
        "built at #{ENV.fetch('BUILDTIME', '<unknown>')}"
+logger.info "Using Ruby #{RUBY_VERSION} on platform #{RUBY_PLATFORM}"
+logger.info 'Copyright (c) 2024 Georg Ledermann <georg@ledermann.dev>'
 logger.info 'https://github.com/solectrus/power-splitter'
-logger.info 'Copyright (c) 2024 Georg Ledermann'
 logger.info "\n"
 
-logger.info "Using Ruby #{RUBY_VERSION} on platform #{RUBY_PLATFORM}"
 config = Config.new(ENV, logger:)
-logger.info "Accessing InfluxDB at #{config.influx_url}, " \
-       "bucket #{config.influx_bucket}"
-logger.info "\n"
 
 Loop.new(config:).start
