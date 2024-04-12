@@ -64,7 +64,9 @@ class Config
       define_sensor(sensor_name, value)
     end
 
-    define_exclude_from_house_power(env['INFLUX_EXCLUDE_FROM_HOUSE_POWER'])
+    define_exclude_from_house_power(
+      env.fetch('INFLUX_EXCLUDE_FROM_HOUSE_POWER', nil).presence,
+    )
     logger.info 'Sensor initialization completed'
   end
 
@@ -80,21 +82,27 @@ class Config
   public_constant :SENSOR_NAMES
 
   def define_sensor(sensor_name, value)
-    logger.info "  Setting #{sensor_name} to #{value}"
+    logger.info "  - Sensor '#{sensor_name}' #{value ? "mapped to '#{value}'" : 'ignored'}"
+
     define(sensor_name, value)
   end
 
   def define_exclude_from_house_power(value)
-    value ||= heatpump_power ? 'HEATPUMP_POWER' : ''
+    unless value
+      logger.info "  - Sensor 'house_power' remains unchanged"
+      define(:exclude_from_house_power, [])
+      return
+    end
+
     sensors_to_exclude =
       value.split(',').map { |sensor| sensor.strip.downcase.to_sym }
 
-    if sensors_to_exclude.any? { |sensor| !SENSOR_NAMES.include?(sensor) }
+    if sensors_to_exclude.any? { |sensor| SENSOR_NAMES.exclude?(sensor) }
       raise Error,
             "Invalid sensor name in INFLUX_EXCLUDE_FROM_HOUSE_POWER: #{value}"
     end
 
-    logger.info "  Excluding from house_power: #{sensors_to_exclude.join(',')}"
+    logger.info "  - Sensor 'house_power' excluded #{sensors_to_exclude.join(', ')}"
     define(:exclude_from_house_power, sensors_to_exclude)
   end
 
