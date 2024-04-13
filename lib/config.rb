@@ -11,6 +11,7 @@ class Config
                 :influx_org,
                 :influx_bucket,
                 :influx_measurement,
+                :influx_interval,
                 :time_zone
 
   def initialize(env, logger: NullLogger.new)
@@ -23,6 +24,7 @@ class Config
     @influx_token = env.fetch('INFLUX_TOKEN')
     @influx_org = env.fetch('INFLUX_ORG')
     @influx_bucket = env.fetch('INFLUX_BUCKET')
+    @influx_interval = [env.fetch('INFLUX_INTERVAL', '3600').to_i, 300].max
     @influx_measurement = env.fetch('INFLUX_MEASUREMENT', 'power_splitter')
     validate_url!(influx_url)
     logger.info "Accessing InfluxDB at #{influx_url}, bucket #{influx_bucket}"

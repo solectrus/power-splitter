@@ -34,8 +34,8 @@ class Loop
       last_time = Time.current
       process_day(Date.current)
 
-      config.logger.info "  Sleeping for 5 minutes...\n\n"
-      sleep(5.minutes)
+      config.logger.info "  Sleeping for #{config.influx_interval} seconds...\n\n"
+      sleep(config.influx_interval)
     end
   end
 
