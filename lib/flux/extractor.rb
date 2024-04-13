@@ -3,6 +3,8 @@ require_relative 'reader'
 module Flux
   class Extractor < Flux::Reader
     def records(day)
+      return [] if day.today? && Time.current.hour.zero?
+
       query_string = <<~FLUX
         #{from_bucket}
         |> #{day_range(day)}

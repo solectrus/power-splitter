@@ -58,8 +58,9 @@ class Loop
     config.logger.info "\n#{Time.current} - Processing day #{day}"
 
     day_records = influx_pull.day_records(day.beginning_of_day)
-    splitted_powers = Calculator.new(day_records:, config:).call
+    return if day_records.empty?
 
+    splitted_powers = Calculator.new(day_records:, config:).call
     influx_push.push(splitted_powers)
   end
 
