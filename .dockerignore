@@ -1,5 +1,4 @@
 .dockerignore
-.DS_Store
 .env
 .env.*
 .git
@@ -10,6 +9,7 @@
 .rubocop.yml
 .ruby-lsp
 .vscode
+**/.DS_Store
 compose.yml
 coverage
 Dockerfile
