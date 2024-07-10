@@ -1,4 +1,4 @@
-FROM ruby:3.3.3-alpine AS Builder
+FROM ruby:3.3.4-alpine AS Builder
 RUN apk add --no-cache build-base
 
 WORKDIR /power-splitter
@@ -8,7 +8,7 @@ RUN bundle config --local frozen 1 && \
     bundle install -j4 --retry 3 && \
     bundle clean --force
 
-FROM ruby:3.3.3-alpine
+FROM ruby:3.3.4-alpine
 LABEL org.opencontainers.image.authors="georg@ledermann.dev"
 LABEL org.opencontainers.image.description="Analyzes and allocates power usage from InfluxDB to specific devices"
 
