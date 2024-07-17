@@ -50,7 +50,7 @@ describe Flux::Extractor do
         .and all(include('time',
                          'grid_power_plus', 'house_power', 'wallbox_charge_power', 'power',))
 
-      expect(records.length).to eq(288) # 24 hours * 12 records per hour (5m intervals)
+      expect(records.length).to eq(1440) # 24 hours * 60 records per hour (1m intervals)
     end
   end
 end
