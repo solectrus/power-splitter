@@ -32,6 +32,13 @@ This enables SOLECTRUS to accurately calculate the electricity usage and costs f
 
 The Docker image supports multiple platforms: `linux/amd64`, `linux/arm64`
 
+
+To force a data rebuild, you can delete the measurement from the InfluxDB database:
+
+```bash
+influx delete --bucket ${INFLUX_BUCKET} --start '1970-01-01T00:00:00Z' --stop $(date -u +"%Y-%m-%dT%H:%M:%SZ") --predicate '_measurement="power_splitter"' --org ${INFLUX_ORG} --token ${INFLUX_TOKEN}
+```
+
 ## Development
 
 For development you need a recent Ruby setup. On a Mac, I recommend [rbenv](https://github.com/rbenv/rbenv).
