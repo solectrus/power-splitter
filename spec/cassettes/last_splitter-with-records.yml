@@ -27,13 +27,13 @@ http_interactions:
       X-Influxdb-Build:
       - OSS
       X-Influxdb-Version:
-      - v2.7.6
+      - v2.7.7
       Date:
-      - Sat, 13 Apr 2024 03:29:52 GMT
+      - Wed, 17 Jul 2024 07:04:38 GMT
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Sat, 13 Apr 2024 03:29:52 GMT
+  recorded_at: Wed, 17 Jul 2024 07:04:38 GMT
 - request:
     method: post
     uri: http://<INFLUX_HOST>:8086/api/v2/query?org=<INFLUX_ORG>
@@ -65,21 +65,21 @@ http_interactions:
       X-Influxdb-Build:
       - OSS
       X-Influxdb-Version:
-      - v2.7.6
+      - v2.7.7
       Date:
-      - Sat, 13 Apr 2024 03:29:52 GMT
+      - Wed, 17 Jul 2024 07:04:38 GMT
       Transfer-Encoding:
       - chunked
     body:
       encoding: UTF-8
       string: "#datatype,string,long,dateTime:RFC3339\r\n#group,false,false,false\r\n#default,_result,,\r\n,result,table,_time\r\n,,0,2022-05-17T11:00:00Z\r\n\r\n"
-  recorded_at: Sat, 13 Apr 2024 03:29:52 GMT
+  recorded_at: Wed, 17 Jul 2024 07:04:38 GMT
 - request:
     method: post
     uri: http://<INFLUX_HOST>:8086/api/v2/delete?bucket=<INFLUX_BUCKET>&org=<INFLUX_ORG>
     body:
       encoding: UTF-8
-      string: '{"start":"1970-01-01T01:00:00+01:00","stop":"2024-04-13T05:29:52+02:00"}'
+      string: '{"start":"1970-01-01T01:00:00+01:00","stop":"2024-07-17T09:04:38+02:00"}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -99,11 +99,11 @@ http_interactions:
       X-Influxdb-Build:
       - OSS
       X-Influxdb-Version:
-      - v2.7.6
+      - v2.7.7
       Date:
-      - Sat, 13 Apr 2024 03:29:52 GMT
+      - Wed, 17 Jul 2024 07:04:38 GMT
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Sat, 13 Apr 2024 03:29:52 GMT
+  recorded_at: Wed, 17 Jul 2024 07:04:38 GMT
 recorded_with: VCR 6.2.0
