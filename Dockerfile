@@ -1,4 +1,4 @@
-FROM ruby:3.3.4-alpine AS Builder
+FROM ruby:3.3.4-alpine AS builder
 RUN apk add --no-cache build-base
 
 WORKDIR /power-splitter
@@ -10,27 +10,27 @@ RUN bundle config --local frozen 1 && \
 
 FROM ruby:3.3.4-alpine
 LABEL org.opencontainers.image.authors="georg@ledermann.dev"
-LABEL org.opencontainers.image.description="Analyzes and allocates power usage from InfluxDB to specific devices"
+LABEL org.opencontainers.image.description="Distributes imported grid power among individual consumers"
 
 # Add tzdata to get correct timezone
 RUN apk add --no-cache tzdata
 
 # Decrease memory usage
-ENV MALLOC_ARENA_MAX 2
+ENV MALLOC_ARENA_MAX=2
 
 # Move build arguments to environment variables
 ARG BUILDTIME
-ENV BUILDTIME ${BUILDTIME}
+ENV BUILDTIME=${BUILDTIME}
 
 ARG VERSION
-ENV VERSION ${VERSION}
+ENV VERSION=${VERSION}
 
 ARG REVISION
-ENV REVISION ${REVISION}
+ENV REVISION=${REVISION}
 
 WORKDIR /power-splitter
 
-COPY --from=Builder /usr/local/bundle/ /usr/local/bundle/
+COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
 COPY . /power-splitter/
 
-ENTRYPOINT bundle exec app.rb
+ENTRYPOINT ["bundle", "exec", "app.rb"]
