@@ -104,7 +104,7 @@ class Config
             "Invalid sensor name in INFLUX_EXCLUDE_FROM_HOUSE_POWER: #{value}"
     end
 
-    logger.info "  - Sensor 'house_power' excluded #{sensors_to_exclude.join(', ')}"
+    logger.info "  - Sensor 'house_power' excluded '#{sensors_to_exclude.join(', ')}'"
     define(:exclude_from_house_power, sensors_to_exclude)
   end
 
