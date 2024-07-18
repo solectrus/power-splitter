@@ -5,6 +5,7 @@ Bundler.require
 
 $LOAD_PATH.unshift(File.expand_path('./lib', __dir__))
 
+require 'time'
 require 'dotenv/load'
 require 'active_support'
 require 'loop'
@@ -13,9 +14,12 @@ require 'stdout_logger'
 
 logger = StdoutLogger.new
 
+buildtime = ENV.fetch('BUILDTIME', nil)
+buildtime = buildtime ? Time.parse(buildtime).localtime : '<unknown>'
+
 logger.info 'Power Splitter for SOLECTRUS, ' \
        "Version #{ENV.fetch('VERSION', '<unknown>')}, " \
-       "built at #{ENV.fetch('BUILDTIME', '<unknown>')}"
+       "built at #{buildtime}"
 logger.info "Using Ruby #{RUBY_VERSION} on platform #{RUBY_PLATFORM}"
 logger.info 'Copyright (c) 2024 Georg Ledermann <georg@ledermann.dev>'
 logger.info 'https://github.com/solectrus/power-splitter'
