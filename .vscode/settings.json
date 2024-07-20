@@ -1,7 +1,13 @@
 {
-  "ruby.lint": {
-    "rubocop": {
-      "forceExclusion": true
-    }
-  }
+  "editor.tabSize": 2,
+
+  "files.trimTrailingWhitespace": true,
+
+    "[ruby]": {
+    "editor.defaultFormatter": "ruby-syntax-tree.vscode-syntax-tree",
+    "editor.formatOnSave": true
+  },
+
+  "syntaxTree.singleQuotes": true,
+  "syntaxTree.trailingComma": true
 }

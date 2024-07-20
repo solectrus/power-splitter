@@ -28,7 +28,9 @@ class Loop
     last_time = nil
     loop do
       # Ensure that the last minutes of yesterday are processed
-      process_day(Date.yesterday) if last_time && last_time.to_date < Date.current
+      if last_time && last_time.to_date < Date.current
+        process_day(Date.yesterday)
+      end
 
       # Process the current day
       last_time = Time.current

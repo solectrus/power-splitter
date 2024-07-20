@@ -16,35 +16,31 @@ describe Flux::FirstSensor do
 
       before do
         records = [
-          { time: first_time,
+          {
+            time: first_time,
             name: 'SENEC',
             fields: {
               'grid_power_plus' => 42,
               'house_power' => 42,
               'wallbox_charge_power' => 42,
-            }, },
-
-          { time: second_time,
-            name: 'Consumer',
-            fields: {
-              'power' => 42,
-            }, },
+            },
+          },
+          { time: second_time, name: 'Consumer', fields: { 'power' => 42 } },
         ]
 
-        points = records.map do |record|
-          InfluxDB2::Point.new(
-            name: record[:name],
-            time: record[:time].to_i,
-            fields: record[:fields],
-          )
-        end
+        points =
+          records.map do |record|
+            InfluxDB2::Point.new(
+              name: record[:name],
+              time: record[:time].to_i,
+              fields: record[:fields],
+            )
+          end
 
         flux_write(points)
       end
 
-      after do
-        flux_delete_all
-      end
+      after { flux_delete_all }
 
       it 'returns time' do
         expect(first_sensor.time).to eq(first_time)

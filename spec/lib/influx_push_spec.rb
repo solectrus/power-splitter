@@ -4,9 +4,7 @@ require 'config'
 describe InfluxPush do
   subject(:influx_push) { described_class.new(config:) }
 
-  let(:config) do
-    Config.new(ENV, logger: MemoryLogger.new)
-  end
+  let(:config) { Config.new(ENV, logger: MemoryLogger.new) }
 
   it 'initializes with a config' do
     expect(influx_push.config).to eq(config)
@@ -15,24 +13,28 @@ describe InfluxPush do
   it 'can push records to InfluxDB', vcr: 'influx_success' do
     time = Time.now.to_i
     records = [
-      { time:,
+      {
+        time:,
         name: config.influx_measurement,
         fields: {
           'heatpump_power_grid' => 42,
           'house_power_grid' => 42,
           'wallbox_power_grid' => 42,
-        }, },
-
-      { time:,
+        },
+      },
+      {
+        time:,
         name: config.influx_measurement,
         fields: {
           'heatpump_power_grid' => 43,
           'house_power_grid' => 43,
           'wallbox_power_grid' => 43,
-        }, },
+        },
+      },
     ]
 
-    influx_push.push(records)
+    result = influx_push.push(records)
+    expect(result).to be_truthy
   end
 
   it 'can handle error' do

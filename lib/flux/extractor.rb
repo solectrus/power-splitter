@@ -20,20 +20,27 @@ module Flux
     private
 
     def day_range(day)
-      range(start: day.beginning_of_day, stop: [day.beginning_of_day + 1.day, Time.current.beginning_of_hour].min)
+      range(
+        start: day.beginning_of_day,
+        stop: [
+          day.beginning_of_day + 1.day,
+          Time.current.beginning_of_hour,
+        ].min,
+      )
     end
 
     def extract_and_transform_data(flux_tables)
-      results_by_time = flux_tables.each_with_object({}) do |table, results|
-        table.records.each do |record|
-          time = record.values['_time'].to_time
-          field = record.values['_field']
-          value = record.values['_value']
+      results_by_time =
+        flux_tables.each_with_object({}) do |table, results|
+          table.records.each do |record|
+            time = record.values['_time'].to_time
+            field = record.values['_field']
+            value = record.values['_value']
 
-          results[time] ||= { 'time' => time }
-          results[time][field] = value
+            results[time] ||= { 'time' => time }
+            results[time][field] = value
+          end
         end
-      end
 
       results_by_time.values
     end

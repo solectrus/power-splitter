@@ -13,7 +13,7 @@ describe Config do
       'INFLUX_BUCKET' => 'my-bucket',
       'INFLUX_MEASUREMENT' => 'my-measurement',
       'INFLUX_INTERVAL' => '5',
-
+      ###
       'INFLUX_SENSOR_GRID_IMPORT_POWER' => 'SENEC:grid_power_plus',
       'INFLUX_SENSOR_HOUSE_POWER' => 'SENEC:house_power',
       'INFLUX_SENSOR_WALLBOX_POWER' => 'SENEC:wallbox_charge_power',

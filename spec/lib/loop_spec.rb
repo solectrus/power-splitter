@@ -4,12 +4,7 @@ require 'config'
 describe Loop do
   subject(:loop) { described_class.new(config:) }
 
-  let(:config) do
-    Config.new(
-      ENV.to_h,
-      logger:,
-    )
-  end
+  let(:config) { Config.new(ENV.to_h, logger:) }
   let(:logger) { MemoryLogger.new }
 
   it 'can be initialized' do

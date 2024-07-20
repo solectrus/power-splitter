@@ -15,10 +15,7 @@ module Flux
     def filter(selected_sensors: sensors)
       raw =
         selected_sensors.filter_map do |sensor|
-          [
-            config.measurement(sensor),
-            config.field(sensor),
-          ].compact
+          [config.measurement(sensor), config.field(sensor)].compact
         end
 
       # Build hash: Key is measurement, value is array of fields

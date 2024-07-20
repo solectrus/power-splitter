@@ -39,6 +39,9 @@ group :development, :test do
   # Automatic performance checking tool for Ruby code. (https://github.com/rubocop/rubocop-performance)
   gem 'rubocop-performance'
 
+  # Thread-safety checks via static analysis (https://github.com/rubocop/rubocop-thread_safety)
+  gem 'rubocop-thread_safety'
+
   # Code style checking for RSpec files (https://github.com/rubocop/rubocop-rspec)
   gem 'rubocop-rspec'
 

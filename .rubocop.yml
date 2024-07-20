@@ -1,58 +1,133 @@
 require:
   - rubocop-rspec
+  - rubocop-thread_safety
   - rubocop-rake
   - rubocop-performance
 
 AllCops:
   TargetRubyVersion: 3.3
   Exclude:
-    - Gemfile
-    - 'vendor/**/*'
-  NewCops: enable
+    - coverage/**/*
+    - vendor/**/*
+  EnabledByDefault: true
 
-# Layout
+### Bundler
 
-Layout/LineLength:
-  Max: 130
-
-Layout/LineEndStringConcatenationIndentation:
+Bundler/OrderedGems:
   Enabled: false
 
-# Metrics
+Bundler/GemVersion:
+  Enabled: false
 
-Metrics/MethodLength:
-  Max: 30
+### Layout
+
+Layout:
+  Enabled: false
+
+### Metrics
 
 Metrics/AbcSize:
-  Max: 20
+  Max: 35
 
-# Style
+Metrics/MethodLength:
+  Max: 50
 
-Style/Documentation:
-  Enabled: false
+### Style
+
+Style/BlockComments:
+  Exclude:
+    - 'spec/spec_helper.rb'
 
 Style/FrozenStringLiteralComment:
   Enabled: false
 
-Style/TrailingCommaInArguments:
-  EnforcedStyleForMultiline: consistent_comma
+Style/Documentation:
+  Enabled: false
+
+Style/MethodCallWithArgsParentheses:
+  Enabled: false
+
+Style/MissingElse:
+  Enabled: false
+
+Style/Copyright:
+  Enabled: false
+
+Style/InlineComment:
+  Enabled: false
+
+Style/StringHashKeys:
+  Enabled: false
+
+Style/DocumentationMethod:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/DisableCopsWithinSourceCodeDirective:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/MethodCalledOnDoEndBlock:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: single_quotes
+
+Style/QuotedSymbols:
+  EnforcedStyle: single_quotes
+
+Style/RequireOrder:
+  Enabled: false
+
+Style/MultilineMethodSignature:
+  Enabled: false
+
+Style/ReturnNilInPredicateMethodDefinition:
+  Enabled: false
 
 Style/TrailingCommaInArrayLiteral:
-  EnforcedStyleForMultiline: consistent_comma
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
 
 Style/TrailingCommaInHashLiteral:
-  EnforcedStyleForMultiline: consistent_comma
+  EnforcedStyleForMultiline: comma
+
+Style/Lambda:
+  EnforcedStyle: line_count_dependent
+
+Style/EmptyMethod:
+  Enabled: false
+
+Style/TopLevelMethodDefinition:
+  Enabled: false
+
+# Lint
+
+Lint/ConstantResolution:
+  Enabled: false
+
+Lint/NumberConversion:
+  Enabled: false
 
 # RSpec
+
+RSpec/MultipleExpectations:
+  Enabled: false
 
 RSpec/ExampleLength:
   Enabled: false
 
-RSpec/NestedGroups:
-  Max: 4
-
-RSpec/NoExpectationExample:
+RSpec/AlignLeftLetBrace:
   Enabled: false
 
-RSpec/MultipleExpectations:
+RSpec/AlignRightLetBrace:
   Enabled: false

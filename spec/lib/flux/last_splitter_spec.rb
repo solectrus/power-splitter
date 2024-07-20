@@ -16,37 +16,39 @@ describe Flux::LastSplitter do
 
       before do
         records = [
-          { time: first_time,
+          {
+            time: first_time,
             name: config.influx_measurement,
             fields: {
               'heatpump_power_grid' => 42,
               'house_power_grid' => 42,
               'wallbox_power_grid' => 42,
-            }, },
-
-          { time: second_time,
+            },
+          },
+          {
+            time: second_time,
             name: config.influx_measurement,
             fields: {
               'heatpump_power_grid' => 43,
               'house_power_grid' => 43,
               'wallbox_power_grid' => 43,
-            }, },
+            },
+          },
         ]
 
-        points = records.map do |record|
-          InfluxDB2::Point.new(
-            name: record[:name],
-            time: record[:time].to_i,
-            fields: record[:fields],
-          )
-        end
+        points =
+          records.map do |record|
+            InfluxDB2::Point.new(
+              name: record[:name],
+              time: record[:time].to_i,
+              fields: record[:fields],
+            )
+          end
 
         flux_write(points)
       end
 
-      after do
-        flux_delete_all
-      end
+      after { flux_delete_all }
 
       it 'returns time' do
         expect(last_splitter.time).to eq(second_time)

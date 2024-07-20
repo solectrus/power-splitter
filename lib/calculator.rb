@@ -10,21 +10,18 @@ class Calculator
 
   def call
     group_by_hour(
-      day_records.reduce([]) do |acc, record|
-        acc << split_power(record)
-      end,
-    ).map do |record|
-      point(record)
-    end
+      day_records.reduce([]) { |acc, elem| acc << split_power(elem) },
+    ).map { |elem| point(elem) }
   end
 
   private
 
   def point(record)
-    result = InfluxDB2::Point.new(
-      name: config.influx_measurement,
-      time: record[:time].to_i,
-    )
+    result =
+      InfluxDB2::Point.new(
+        name: config.influx_measurement,
+        time: record[:time].to_i,
+      )
 
     result.add_field('house_power_grid', record[:house_power_grid])
     result.add_field('wallbox_power_grid', record[:wallbox_power_grid])
@@ -34,14 +31,16 @@ class Calculator
   end
 
   def group_by_hour(splitted)
-    splitted.group_by { |item| item[:time].hour }.map do |_hour, items|
-      {
-        time: items.first[:time].beginning_of_hour,
-        house_power_grid: sum(items, :house_power_grid),
-        wallbox_power_grid: sum(items, :wallbox_power_grid),
-        heatpump_power_grid: sum(items, :heatpump_power_grid),
-      }
-    end
+    splitted
+      .group_by { |item| item[:time].hour }
+      .map do |_hour, items|
+        {
+          time: items.first[:time].beginning_of_hour,
+          house_power_grid: sum(items, :house_power_grid),
+          wallbox_power_grid: sum(items, :wallbox_power_grid),
+          heatpump_power_grid: sum(items, :heatpump_power_grid),
+        }
+      end
   end
 
   def sum(items, key)
@@ -75,8 +74,12 @@ class Calculator
     wallbox_power = wallbox_power(record)
     heatpump_power = heatpump_power(record)
 
-    house_power -= heatpump_power if config.exclude_from_house_power.include?(:heatpump_power)
-    house_power -= wallbox_power if config.exclude_from_house_power.include?(:wallbox_power)
+    house_power -= heatpump_power if config.exclude_from_house_power.include?(
+      :heatpump_power,
+    )
+    house_power -= wallbox_power if config.exclude_from_house_power.include?(
+      :wallbox_power,
+    )
     house_power = [house_power, 0].max
 
     total_power = house_power + wallbox_power + heatpump_power
