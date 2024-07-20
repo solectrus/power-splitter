@@ -1,6 +1,6 @@
 require 'influx_push'
 require 'influx_pull'
-require 'calculator'
+require 'processor'
 
 class Loop
   def initialize(config:)
@@ -62,7 +62,7 @@ class Loop
     day_records = influx_pull.day_records(day.beginning_of_day)
     return if day_records.empty?
 
-    splitted_powers = Calculator.new(day_records:, config:).call
+    splitted_powers = Processor.new(day_records:, config:).call
     influx_push.push(splitted_powers)
   end
 

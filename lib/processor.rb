@@ -1,6 +1,7 @@
 require 'config'
+require 'splitter/mixed'
 
-class Calculator
+class Processor
   def initialize(day_records:, config:)
     @day_records = day_records
     @config = config
@@ -69,7 +70,7 @@ class Calculator
     record[config.field(sensor_name)] || 0.0
   end
 
-  def split_power(record) # rubocop:disable Metrics/AbcSize
+  def split_power(record)
     house_power = house_power(record)
     wallbox_power = wallbox_power(record)
     heatpump_power = heatpump_power(record)
@@ -82,30 +83,11 @@ class Calculator
     )
     house_power = [house_power, 0].max
 
-    total_power = house_power + wallbox_power + heatpump_power
-
     grid_import_power = grid_import_power(record)
 
-    house_power_grid = 0
-    wallbox_power_grid = 0
-    heatpump_power_grid = 0
-
-    unless grid_import_power.zero? || total_power.zero?
-      house_power_ratio = house_power.fdiv(total_power)
-      wallbox_power_ratio = wallbox_power.fdiv(total_power)
-      heatpump_power_ratio = heatpump_power.fdiv(total_power)
-
-      house_power_grid = grid_import_power * house_power_ratio
-      wallbox_power_grid = grid_import_power * wallbox_power_ratio
-      heatpump_power_grid = grid_import_power * heatpump_power_ratio
-    end
-
-    {
-      time: record['time'],
-
-      house_power_grid:,
-      wallbox_power_grid:,
-      heatpump_power_grid:,
-    }
+    Splitter::Mixed
+      .new(grid_import_power:, house_power:, wallbox_power:, heatpump_power:)
+      .call
+      .merge(time: record['time'])
   end
 end

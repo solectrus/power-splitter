@@ -1,7 +1,7 @@
-require 'calculator'
+require 'processor'
 
-describe Calculator do
-  subject(:calculator) { described_class.new(day_records:, config:) }
+describe Processor do
+  subject(:processor) { described_class.new(day_records:, config:) }
 
   let(:config) { Config.new(ENV) }
 
@@ -25,7 +25,7 @@ describe Calculator do
   end
 
   describe '#call' do
-    subject(:call) { calculator.call }
+    subject(:call) { processor.call }
 
     it 'returns the correct result' do
       lines = call.map(&:to_line_protocol)
@@ -34,19 +34,6 @@ describe Calculator do
         [
           'my_power_splitter heatpump_power_grid=10i,house_power_grid=25i,wallbox_power_grid=15i 1641034800',
         ],
-      )
-    end
-  end
-
-  describe '#split_power' do
-    subject(:split_power) { calculator.send(:split_power, day_records.first) }
-
-    it 'returns the correct result' do
-      expect(split_power).to include(
-        time: a_kind_of(Time),
-        house_power_grid: 50,
-        wallbox_power_grid: 30,
-        heatpump_power_grid: 20,
       )
     end
   end
