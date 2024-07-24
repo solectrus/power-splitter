@@ -6,7 +6,7 @@ module Flux
       query_string = <<~FLUX
         #{from_bucket}
         |> #{range(start: Time.at(0))}
-        |> #{filter(selected_sensors: Config::SENSOR_NAMES)}
+        |> #{filter(selected_sensors: config.sensor_names)}
         |> first()
         |> keep(columns: ["_time"])
         |> min(column: "_time")

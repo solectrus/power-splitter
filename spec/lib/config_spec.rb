@@ -30,6 +30,22 @@ describe Config do
     end
   end
 
+  describe 'valid options (no wallbox)' do
+    let(:env) { valid_env.except('INFLUX_SENSOR_WALLBOX_POWER') }
+
+    it 'initializes successfully' do
+      expect(config).to be_a(described_class)
+    end
+  end
+
+  describe 'valid options (no heatpump)' do
+    let(:env) { valid_env.except('INFLUX_SENSOR_HEATPUMP_POWER') }
+
+    it 'initializes successfully' do
+      expect(config).to be_a(described_class)
+    end
+  end
+
   describe 'Influx methods' do
     let(:env) { valid_env }
 
@@ -50,7 +66,45 @@ describe Config do
       let(:env) { {} }
 
       it 'raises an exception' do
-        expect { described_class.new(env) }.to raise_error(Exception)
+        expect { described_class.new(env) }.to raise_error(KeyError)
+      end
+    end
+
+    context 'when no house_power' do
+      let(:env) { valid_env.except('INFLUX_SENSOR_HOUSE_POWER') }
+
+      it 'raises an exception' do
+        expect { described_class.new(env) }.to raise_error(
+          Config::Error,
+          /must be set/,
+        )
+      end
+    end
+
+    context 'when no grid_import_power' do
+      let(:env) { valid_env.except('INFLUX_SENSOR_GRID_IMPORT_POWER') }
+
+      it 'raises an exception' do
+        expect { described_class.new(env) }.to raise_error(
+          Config::Error,
+          /must be set/,
+        )
+      end
+    end
+
+    context 'when no heatpump AND no wallbox' do
+      let(:env) do
+        valid_env.except(
+          'INFLUX_SENSOR_HEATPUMP_POWER',
+          'INFLUX_SENSOR_WALLBOX_POWER',
+        )
+      end
+
+      it 'raises an exception' do
+        expect { described_class.new(env) }.to raise_error(
+          Config::Error,
+          /At least one of/,
+        )
       end
     end
   end

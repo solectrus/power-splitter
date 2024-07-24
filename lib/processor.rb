@@ -5,9 +5,12 @@ class Processor
   def initialize(day_records:, config:)
     @day_records = day_records
     @config = config
+
+    @wallbox_present = config.exists?(:wallbox_power)
+    @heatpump_present = config.exists?(:heatpump_power)
   end
 
-  attr_reader :day_records, :config
+  attr_reader :day_records, :config, :wallbox_present, :heatpump_present
 
   def call
     group_by_hour(
@@ -25,8 +28,14 @@ class Processor
       )
 
     result.add_field('house_power_grid', record[:house_power_grid])
-    result.add_field('wallbox_power_grid', record[:wallbox_power_grid])
-    result.add_field('heatpump_power_grid', record[:heatpump_power_grid])
+
+    if wallbox_present
+      result.add_field('wallbox_power_grid', record[:wallbox_power_grid])
+    end
+
+    if heatpump_present
+      result.add_field('heatpump_power_grid', record[:heatpump_power_grid])
+    end
 
     result
   end
@@ -38,9 +47,11 @@ class Processor
         {
           time: items.first[:time].beginning_of_hour,
           house_power_grid: sum(items, :house_power_grid),
-          wallbox_power_grid: sum(items, :wallbox_power_grid),
-          heatpump_power_grid: sum(items, :heatpump_power_grid),
-        }
+          wallbox_power_grid:
+            wallbox_present ? sum(items, :wallbox_power_grid) : nil,
+          heatpump_power_grid:
+            heatpump_present ? sum(items, :heatpump_power_grid) : nil,
+        }.compact
       end
   end
 
@@ -59,10 +70,14 @@ class Processor
   end
 
   def wallbox_power(record)
+    return 0 unless config.exists?(:wallbox_power)
+
     power_value(record, :wallbox_power)
   end
 
   def heatpump_power(record)
+    return 0 unless config.exists?(:heatpump_power)
+
     power_value(record, :heatpump_power)
   end
 

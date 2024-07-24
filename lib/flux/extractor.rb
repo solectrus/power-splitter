@@ -8,7 +8,7 @@ module Flux
       query_string = <<~FLUX
         #{from_bucket}
         |> #{day_range(day)}
-        |> #{filter(selected_sensors: Config::SENSOR_NAMES)}
+        |> #{filter(selected_sensors: config.sensor_names)}
         |> aggregateWindow(every: 1m, fn: mean)
         |> fill(usePrevious: true)
       FLUX

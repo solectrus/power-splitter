@@ -3,7 +3,7 @@ require 'active_support'
 require 'active_support/core_ext'
 require 'null_logger'
 
-class Config
+class Config # rubocop:disable Metrics/ClassLength
   attr_accessor :influx_schema,
                 :influx_host,
                 :influx_port,
@@ -32,6 +32,7 @@ class Config
     @time_zone = env.fetch('TZ', 'Europe/Berlin')
 
     init_sensors(env)
+    validate_sensors!
   end
 
   def influx_url
@@ -50,6 +51,20 @@ class Config
     @field[sensor_name] ||= splitted_sensor_name(sensor_name)&.last
   end
 
+  def exists?(sensor_name)
+    case sensor_name
+    when *SENSOR_NAMES
+      measurement(sensor_name).present? && field(sensor_name).present?
+    else
+      raise ArgumentError,
+            "Unknown or invalid sensor name: #{sensor_name.inspect}"
+    end
+  end
+
+  def sensor_names
+    @sensor_names ||= SENSOR_NAMES.filter { |sensor_name| exists?(sensor_name) }
+  end
+
   private
 
   def validate_url!(url)
@@ -60,7 +75,8 @@ class Config
     logger.info 'Sensor initialization started'
     SENSOR_NAMES.each do |sensor_name|
       var_sensor = var_for(sensor_name)
-      value = env.fetch(var_sensor)
+      value = env.fetch(var_sensor, nil)
+      next unless value
 
       validate!(sensor_name, value)
       define_sensor(sensor_name, value)
@@ -70,6 +86,23 @@ class Config
       env.fetch('INFLUX_EXCLUDE_FROM_HOUSE_POWER', nil).presence,
     )
     logger.info 'Sensor initialization completed'
+  end
+
+  def validate_sensors!
+    unless exists?(:wallbox_power) || exists?(:heatpump_power)
+      raise Error,
+            'At least one of INFLUX_SENSOR_WALLBOX_POWER or INFLUX_SENSOR_HEATPUMP_POWER must be set.'
+    end
+
+    unless exists?(:grid_import_power)
+      raise Error, 'INFLUX_SENSOR_GRID_IMPORT_POWER must be set.'
+    end
+
+    unless exists?(:house_power)
+      raise Error, 'INFLUX_SENSOR_HOUSE_POWER must be set.'
+    end
+
+    true
   end
 
   class Error < RuntimeError
@@ -130,6 +163,8 @@ class Config
   end
 
   def splitted_sensor_name(sensor_name)
+    return unless respond_to?(sensor_name.downcase)
+
     public_send(sensor_name.downcase)&.split(':')
   end
 end
