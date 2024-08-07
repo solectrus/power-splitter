@@ -46,6 +46,14 @@ describe Config do
     end
   end
 
+  describe 'valid options (empty heatpump)' do
+    let(:env) { valid_env.merge('INFLUX_SENSOR_HEATPUMP_POWER' => '') }
+
+    it 'initializes successfully' do
+      expect(config).to be_a(described_class)
+    end
+  end
+
   describe 'Influx methods' do
     let(:env) { valid_env }
 
