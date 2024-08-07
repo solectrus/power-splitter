@@ -6,8 +6,8 @@ http_interactions:
     body:
       encoding: UTF-8
       string: |-
-        my_power_splitter heatpump_power_grid=42i,house_power_grid=42i,wallbox_power_grid=42i 1641034800
-        my_power_splitter heatpump_power_grid=43i,house_power_grid=43i,wallbox_power_grid=43i 1652785200
+        power_splitter heatpump_power_grid=42i,house_power_grid=42i,wallbox_power_grid=42i 1641034800
+        power_splitter heatpump_power_grid=43i,house_power_grid=43i,wallbox_power_grid=43i 1652785200
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -40,7 +40,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"query":"from(bucket: \"<INFLUX_BUCKET>\")\n|\u003e range(start: 1970-01-01T01:00:00+01:00)\n|\u003e
-        filter(fn: (r) =\u003e r[\"_measurement\"] == \"my_power_splitter\")\n|\u003e
+        filter(fn: (r) =\u003e r[\"_measurement\"] == \"power_splitter\")\n|\u003e
         last()\n|\u003e keep(columns: [\"_time\"])\n|\u003e max(column: \"_time\")\n","dialect":{"header":true,"delimiter":",","annotations":["datatype","group","default"],"commentPrefix":"#","dateTimeFormat":"RFC3339"}}'
     headers:
       Accept-Encoding:

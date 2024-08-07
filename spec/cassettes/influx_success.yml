@@ -6,8 +6,8 @@ http_interactions:
     body:
       encoding: UTF-8
       string: |-
-        my_power_splitter heatpump_power_grid=42i,house_power_grid=42i,wallbox_power_grid=42i 1721199878
-        my_power_splitter heatpump_power_grid=43i,house_power_grid=43i,wallbox_power_grid=43i 1721199878
+        power_splitter heatpump_power_grid=42i,house_power_grid=42i,wallbox_power_grid=42i 1721199878
+        power_splitter heatpump_power_grid=43i,house_power_grid=43i,wallbox_power_grid=43i 1721199878
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
