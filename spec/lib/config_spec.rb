@@ -11,7 +11,6 @@ describe Config do
       'INFLUX_TOKEN' => 'this.is.just.an.example',
       'INFLUX_ORG' => 'solectrus',
       'INFLUX_BUCKET' => 'my-bucket',
-      'INFLUX_MEASUREMENT' => 'my-measurement',
       'INFLUX_INTERVAL' => '5',
       ###
       'INFLUX_SENSOR_GRID_IMPORT_POWER' => 'SENEC:grid_power_plus',

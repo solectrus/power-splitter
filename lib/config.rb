@@ -10,7 +10,6 @@ class Config # rubocop:disable Metrics/ClassLength
                 :influx_token,
                 :influx_org,
                 :influx_bucket,
-                :influx_measurement,
                 :influx_interval,
                 :redis_url,
                 :time_zone
@@ -26,7 +25,6 @@ class Config # rubocop:disable Metrics/ClassLength
     @influx_org = env.fetch('INFLUX_ORG')
     @influx_bucket = env.fetch('INFLUX_BUCKET')
     @influx_interval = [env.fetch('INFLUX_INTERVAL', '3600').to_i, 300].max
-    @influx_measurement = env.fetch('INFLUX_MEASUREMENT', 'power_splitter')
     validate_url!(influx_url)
     logger.info "Accessing InfluxDB at #{influx_url}, bucket #{influx_bucket}"
 
@@ -42,6 +40,10 @@ class Config # rubocop:disable Metrics/ClassLength
   end
 
   attr_reader :logger
+
+  def influx_measurement
+    'power_splitter'
+  end
 
   def measurement(sensor_name)
     @measurement ||= {}
