@@ -12,6 +12,7 @@ class Config # rubocop:disable Metrics/ClassLength
                 :influx_bucket,
                 :influx_measurement,
                 :influx_interval,
+                :redis_url,
                 :time_zone
 
   def initialize(env, logger: NullLogger.new)
@@ -30,6 +31,7 @@ class Config # rubocop:disable Metrics/ClassLength
     logger.info "Accessing InfluxDB at #{influx_url}, bucket #{influx_bucket}"
 
     @time_zone = env.fetch('TZ', 'Europe/Berlin')
+    @redis_url = env.fetch('REDIS_URL', nil)
 
     init_sensors(env)
     validate_sensors!

@@ -1,6 +1,7 @@
 require 'influx_push'
 require 'influx_pull'
 require 'processor'
+require 'redis_cache'
 
 class Loop
   def initialize(config:)
@@ -52,6 +53,8 @@ class Loop
       process_day(day)
       day += 1.day
     end
+
+    RedisCache.new(config:).flush
 
     config.logger.info '--- Processing historical data successfully finished'
   end

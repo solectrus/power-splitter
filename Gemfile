@@ -15,6 +15,9 @@ gem 'base64'
 # A toolkit of support libraries and Ruby core extensions extracted from the Rails framework. (https://rubyonrails.org)
 gem 'activesupport'
 
+# A Ruby client library for Redis (https://github.com/redis/redis-rb)
+gem 'redis'
+
 group :development do
   # Guard gem for RSpec (https://github.com/guard/guard-rspec)
   gem 'guard-rspec', require: false
