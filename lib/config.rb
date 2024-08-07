@@ -77,7 +77,7 @@ class Config # rubocop:disable Metrics/ClassLength
     logger.info 'Sensor initialization started'
     SENSOR_NAMES.each do |sensor_name|
       var_sensor = var_for(sensor_name)
-      value = env.fetch(var_sensor, nil)
+      value = env.fetch(var_sensor, nil).presence
       next unless value
 
       validate!(sensor_name, value)
