@@ -1,5 +1,7 @@
 require_relative 'reader'
 
+ActiveSupport.to_time_preserves_timezone = true
+
 module Flux
   class Extractor < Flux::Reader
     def records(day)
