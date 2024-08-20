@@ -18,7 +18,9 @@ module Splitter
                 :heatpump_power
 
     def call
+      #:nocov:
       raise NotImplementedError
+      #:nocov:
     end
 
     private
