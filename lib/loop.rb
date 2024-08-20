@@ -8,17 +8,51 @@ class Loop
     @config = config
   end
 
-  attr_reader :config
+  attr_reader :config, :restarting
 
   def start
-    # config.logger.info "--- Deleting all records from InfluxDB measurement '#{config.influx_measurement}'"
-    # influx_push.delete_measurement(config.influx_measurement)
-    # config.logger.info "  Ok, deleted sucessfully\n\n"
+    config.logger.info "PID: #{Process.pid}"
+    Signal.trap('USR1') { restart }
 
-    process_historical_data
-    process_current_data
+    loop do
+      @thread =
+        Thread.new do # rubocop:disable ThreadSafety/NewThread
+          process_historical_data
+          process_current_data
+        end
+      @thread.join
+
+      # There are two reasons we get here:
+      # 1. The thread finished accidentally, so we should stop by breaking the loop.
+      # 2. We received a USR1 signal and should restart.
+      break unless restarting
+
+      # USR1 signal was received, so we delete all data and restart
+      delete_all
+      @restarting = false
+    end
   rescue SystemExit, Interrupt
     config.logger.warn 'Exiting...'
+  end
+
+  def restart
+    config.logger.info "\n--- Restarting..."
+    @restarting = true
+
+    # Terminate the thread
+    @thread.exit
+
+    # Wait for the thread to finish
+    timeout = Time.current + 5
+    sleep(1) while @thread.alive? && Time.current < timeout
+
+    if @thread.alive?
+      config.logger.warn 'Thread did not finish in time.'
+      @thread.kill
+      config.logger.warn 'Thread killed.'
+    else
+      config.logger.info 'Thread exited cleanly.'
+    end
   end
 
   private
@@ -67,6 +101,12 @@ class Loop
 
     splitted_powers = Processor.new(day_records:, config:).call
     influx_push.push(splitted_powers)
+  end
+
+  def delete_all
+    config.logger.info "\n--- Deleting all records from InfluxDB measurement '#{config.influx_measurement}'"
+    influx_push.delete_measurement(config.influx_measurement)
+    config.logger.info "  Ok, deleted sucessfully\n\n"
   end
 
   def influx_push
