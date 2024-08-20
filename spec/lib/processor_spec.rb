@@ -32,7 +32,8 @@ describe Processor do
 
       expect(lines).to eq(
         [
-          'power_splitter heatpump_power_grid=10i,house_power_grid=25i,wallbox_power_grid=15i 1641034800',
+          'power_splitter heatpump_power_grid=20i,house_power_grid=50i,wallbox_power_grid=30i 1641034800',
+          'power_splitter heatpump_power_grid=0i,house_power_grid=0i,wallbox_power_grid=0i 1641036600',
         ],
       )
     end
