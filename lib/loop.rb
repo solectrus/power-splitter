@@ -11,7 +11,6 @@ class Loop
   attr_reader :config, :restarting
 
   def start
-    config.logger.info "PID: #{Process.pid}"
     Signal.trap('USR1') { restart }
 
     loop do
