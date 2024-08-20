@@ -42,7 +42,7 @@ class Processor
 
   def group_by_5min(splitted)
     splitted
-      .group_by { |item| item[:time].to_i / 300 } # 300 seconds = 5 minutes
+      .group_by { |item| (item[:time].to_i - 1.minute) / 5.minutes }
       .map do |_interval, items|
         {
           time: items.first[:time].beginning_of_minute,
