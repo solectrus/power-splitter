@@ -4,29 +4,25 @@ require 'processor'
 require 'redis_cache'
 
 class Loop
-  def initialize(config:)
+  def initialize(config:, max_count: nil)
     @config = config
+    @max_count = max_count
   end
 
-  attr_reader :config, :restarting
+  attr_reader :config, :thread, :restarting, :max_count
 
   def start
     Signal.trap('USR1') { restart }
 
     loop do
-      @thread =
-        Thread.new do # rubocop:disable ThreadSafety/NewThread
-          process_historical_data
-          process_current_data
-        end
-      @thread.join
+      start_thread
 
       # There are two reasons we get here:
       # 1. The thread finished accidentally, so we should stop by breaking the loop.
       # 2. We received a USR1 signal and should restart.
       break unless restarting
 
-      # USR1 signal was received, so we delete all data and restart
+      # Restart requsted, so delete all data and loop again.
       delete_all
       @restarting = false
     end
@@ -35,19 +31,24 @@ class Loop
   end
 
   def restart
+    unless thread
+      config.logger.warn "\n--- No thread to restart..."
+      return
+    end
+
     config.logger.info "\n--- Restarting..."
     @restarting = true
 
     # Terminate the thread
-    @thread.exit
+    thread.exit
 
     # Wait for the thread to finish
     timeout = Time.current + 5
-    sleep(1) while @thread.alive? && Time.current < timeout
+    sleep(1) while thread.alive? && Time.current < timeout
 
-    if @thread.alive?
+    if thread.alive?
       config.logger.warn 'Thread did not finish in time.'
-      @thread.kill
+      thread.kill
       config.logger.warn 'Thread killed.'
     else
       config.logger.info 'Thread exited cleanly.'
@@ -56,9 +57,19 @@ class Loop
 
   private
 
+  def start_thread
+    @thread =
+      Thread.new do # rubocop:disable ThreadSafety/NewThread
+        process_historical_data
+        process_current_data
+      end
+    thread.join
+  end
+
   def process_current_data
     config.logger.info "\nStarting endless loop for processing current data..."
 
+    count = 0
     last_time = nil
     loop do
       # Ensure that the last minutes of yesterday are processed
@@ -69,6 +80,9 @@ class Loop
       # Process the current day
       last_time = Time.current
       process_day(Date.current)
+
+      count += 1
+      break if max_count && count >= max_count
 
       config.logger.info "  Sleeping for #{config.influx_interval} seconds...\n\n"
       sleep(config.influx_interval)
