@@ -13,7 +13,7 @@ gem 'csv'
 gem 'base64'
 
 # A toolkit of support libraries and Ruby core extensions extracted from the Rails framework. (https://rubyonrails.org)
-gem 'activesupport'
+gem 'activesupport', '~> 7.1', '< 7.2'
 
 # A Ruby client library for Redis (https://github.com/redis/redis-rb)
 gem 'redis'

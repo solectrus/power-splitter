@@ -31,10 +31,10 @@ This enables SOLECTRUS to accurately calculate the electricity usage and costs f
 
 The Docker image supports multiple platforms: `linux/amd64`, `linux/arm64`
 
-To force a data rebuild, you can delete the measurement from the InfluxDB database:
+To force a data rebuild, you can send USR1 signal to the container:
 
 ```bash
-influx delete --bucket ${INFLUX_BUCKET} --start '1970-01-01T00:00:00Z' --stop $(date -u +"%Y-%m-%dT%H:%M:%SZ") --predicate '_measurement="power_splitter"' --org ${INFLUX_ORG} --token ${INFLUX_TOKEN}
+docker compose kill --signal USR1 power-splitter
 ```
 
 ## Development

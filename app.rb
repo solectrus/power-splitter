@@ -14,7 +14,7 @@ require 'stdout_logger'
 
 logger = StdoutLogger.new
 
-buildtime = ENV.fetch('BUILDTIME', nil)
+buildtime = ENV.fetch('BUILDTIME', nil).presence
 buildtime = buildtime ? Time.parse(buildtime).localtime : '<unknown>'
 
 logger.info 'Power Splitter for SOLECTRUS, ' \
