@@ -6,8 +6,8 @@ http_interactions:
     body:
       encoding: UTF-8
       string: |-
-        power_splitter heatpump_power_grid=42i,house_power_grid=42i,wallbox_power_grid=42i 1721199878
-        power_splitter heatpump_power_grid=43i,house_power_grid=43i,wallbox_power_grid=43i 1721199878
+        power_splitter heatpump_power_grid=42i,house_power_grid=42i,wallbox_power_grid=42i 1724831645
+        power_splitter heatpump_power_grid=43i,house_power_grid=43i,wallbox_power_grid=43i 1724831645
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -27,11 +27,11 @@ http_interactions:
       X-Influxdb-Build:
       - OSS
       X-Influxdb-Version:
-      - v2.7.7
+      - v2.7.10
       Date:
-      - Wed, 17 Jul 2024 07:04:38 GMT
+      - Wed, 28 Aug 2024 07:54:05 GMT
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Wed, 17 Jul 2024 07:04:38 GMT
-recorded_with: VCR 6.2.0
+  recorded_at: Wed, 28 Aug 2024 07:54:05 GMT
+recorded_with: VCR 6.3.1
