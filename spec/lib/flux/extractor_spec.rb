@@ -5,10 +5,11 @@ describe Flux::Extractor do
   subject(:extractor) { described_class.new(config:) }
 
   let(:config) { Config.new(ENV) }
-  let(:day) { Date.yesterday }
 
   describe '#records', vcr: 'extractor' do
-    let(:time) { day.to_time.change(hour: 9, minute: 42).to_i }
+    subject(:day_records) { extractor.records(day) }
+
+    let(:time) { day.to_time.change(hour: 9, min: 42) }
 
     before do
       records = [
@@ -38,20 +39,42 @@ describe Flux::Extractor do
 
     after { flux_delete_all }
 
-    it 'returns transformed data' do
-      records = extractor.records(day)
+    context 'when day is in the past' do
+      let(:day) { Date.yesterday }
 
-      expect(records).to be_an(Array).and all(be_a(Hash)).and all(
-                    include(
-                      'time',
-                      'grid_power_plus',
-                      'house_power',
-                      'wallbox_charge_power',
-                      'power',
-                    ),
-                  )
+      it 'returns transformed data' do
+        expect(day_records).to be_an(Array).and all(be_a(Hash)).and all(
+                      include(
+                        'time',
+                        'grid_power_plus',
+                        'house_power',
+                        'wallbox_charge_power',
+                        'power',
+                      ),
+                    )
 
-      expect(records.length).to eq(1440) # 24 hours * 60 records per hour (1m intervals)
+        expect(day_records.length).to eq(1440) # 24 hours * 60 records per hour (1m intervals)
+      end
+    end
+
+    context 'when day is today' do
+      let(:day) { Date.new(2024, 8, 28) }
+
+      before { travel_to(time) }
+
+      it 'returns transformed data' do
+        expect(day_records).to be_an(Array).and all(be_a(Hash)).and all(
+                      include(
+                        'time',
+                        'grid_power_plus',
+                        'house_power',
+                        'wallbox_charge_power',
+                        'power',
+                      ),
+                    )
+
+        expect(day_records.length).to eq(1440) # 24 hours * 60 records per hour (1m intervals)
+      end
     end
   end
 end
