@@ -84,8 +84,8 @@ class Loop
       count += 1
       break if max_count && count >= max_count
 
-      config.logger.info "  Sleeping for #{config.influx_interval} seconds...\n\n"
-      sleep(config.influx_interval)
+      config.logger.info "  Sleeping for #{config.interval} seconds...\n\n"
+      sleep(config.interval)
     end
   end
 

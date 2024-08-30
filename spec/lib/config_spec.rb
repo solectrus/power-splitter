@@ -11,7 +11,8 @@ describe Config do
       'INFLUX_TOKEN' => 'this.is.just.an.example',
       'INFLUX_ORG' => 'solectrus',
       'INFLUX_BUCKET' => 'my-bucket',
-      'INFLUX_INTERVAL' => '5',
+      ###
+      'POWER_SPLITTER_INTERVAL' => '600',
       ###
       'INFLUX_SENSOR_GRID_IMPORT_POWER' => 'SENEC:grid_power_plus',
       'INFLUX_SENSOR_HOUSE_POWER' => 'SENEC:house_power',
@@ -64,7 +65,7 @@ describe Config do
       expect(config.influx_org).to eq(valid_env['INFLUX_ORG'])
       expect(config.influx_bucket).to eq(valid_env['INFLUX_BUCKET'])
       expect(config.influx_url).to eq('https://influx.example.com:443')
-      expect(config.influx_interval).to eq(300)
+      expect(config.interval).to eq(600)
     end
   end
 

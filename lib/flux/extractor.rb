@@ -3,8 +3,6 @@ require_relative 'reader'
 module Flux
   class Extractor < Flux::Reader
     def records(day)
-      return [] if day.today? && Time.current.hour.zero?
-
       query_string = <<~FLUX
         #{from_bucket}
         |> #{day_range(day)}
@@ -20,13 +18,17 @@ module Flux
     private
 
     def day_range(day)
-      range(
-        start: day.beginning_of_day,
-        stop: [
-          day.beginning_of_day + 1.day,
-          Time.current.beginning_of_hour,
-        ].min,
-      )
+      start = day.beginning_of_day
+
+      stop =
+        if day.today?
+          current_time = Time.current
+          current_time.beginning_of_minute - (current_time.min % 5).minutes
+        else
+          start + 1.day
+        end
+
+      range(start:, stop:)
     end
 
     def extract_and_transform_data(flux_tables)

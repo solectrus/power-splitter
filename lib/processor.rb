@@ -45,7 +45,7 @@ class Processor
       .group_by { |item| (item[:time].to_i - 1.minute) / 5.minutes }
       .map do |_interval, items|
         {
-          time: items.first[:time].beginning_of_minute,
+          time: items.last[:time],
           house_power_grid: sum(items, :house_power_grid),
           wallbox_power_grid:
             wallbox_present ? sum(items, :wallbox_power_grid) : nil,
