@@ -19,7 +19,7 @@ gem 'logger'
 gem 'ostruct'
 
 # A toolkit of support libraries and Ruby core extensions extracted from the Rails framework. (https://rubyonrails.org)
-gem 'activesupport', '~> 7.1', '< 7.2'
+gem 'activesupport'
 
 # A Ruby client library for Redis (https://github.com/redis/redis-rb)
 gem 'redis'
