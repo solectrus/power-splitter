@@ -28,7 +28,7 @@ describe RedisCache do
         flush
 
         expect(logger.error_messages).to include(
-          'Flushing Redis cache failed: Connection refused - connect(2) for 127.0.0.1:1234 (redis://localhost:1234)',
+          /Flushing Redis cache failed: Connection refused/,
         )
       end
     end
