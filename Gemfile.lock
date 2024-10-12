@@ -143,12 +143,10 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   amazing_print
-  base64
   csv
   dotenv
   guard-rspec
   influxdb-client
-  logger
   ostruct
   rake
   redis
