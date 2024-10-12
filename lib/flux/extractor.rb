@@ -42,10 +42,11 @@ module Flux
           table.records.each do |record|
             time = record.values['_time'].to_time
             field = record.values['_field']
+            measurement = record.values['_measurement']
             value = record.values['_value']
 
             results[time] ||= { 'time' => time }
-            results[time][field] = value
+            results[time]["#{measurement}:#{field}"] = value
           end
         end
 

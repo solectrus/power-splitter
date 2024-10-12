@@ -82,7 +82,9 @@ class Processor
   end
 
   def power_value(record, sensor_name)
-    record[config.field(sensor_name)] || 0.0
+    identifier = config.identifier(sensor_name)
+
+    record[identifier] || 0.0
   end
 
   def split_power(record)

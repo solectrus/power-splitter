@@ -9,17 +9,17 @@ describe Processor do
     [
       {
         'time' => Time.new('2022-01-01 12:00:00 +01:00'),
-        'grid_power_plus' => 100,
-        'house_power' => 70,
-        'wallbox_charge_power' => 30,
-        'power' => 20,
+        'SENEC:grid_power_plus' => 100,
+        'SENEC:house_power' => 70,
+        'SENEC:wallbox_charge_power' => 30,
+        'Consumer:power' => 20,
       },
       {
         'time' => Time.new('2022-01-01 12:30:00 +01:00'),
-        'grid_power_plus' => 0,
-        'house_power' => 140,
-        'wallbox_charge_power' => 60,
-        'power' => 40,
+        'SENEC:grid_power_plus' => 0,
+        'SENEC:house_power' => 140,
+        'SENEC:wallbox_charge_power' => 60,
+        'Consumer:power' => 40,
       },
     ]
   end
