@@ -55,6 +55,13 @@ class Config # rubocop:disable Metrics/ClassLength
     @field[sensor_name] ||= splitted_sensor_name(sensor_name)&.last
   end
 
+  def identifier(sensor_name)
+    sensor_method = sensor_name.downcase
+    return unless respond_to?(sensor_method)
+
+    public_send(sensor_method)
+  end
+
   def exists?(sensor_name)
     case sensor_name
     when *SENSOR_NAMES
@@ -167,8 +174,6 @@ class Config # rubocop:disable Metrics/ClassLength
   end
 
   def splitted_sensor_name(sensor_name)
-    return unless respond_to?(sensor_name.downcase)
-
-    public_send(sensor_name.downcase)&.split(':')
+    identifier(sensor_name)&.split(':')
   end
 end

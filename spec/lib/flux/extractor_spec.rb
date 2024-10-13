@@ -46,10 +46,10 @@ describe Flux::Extractor do
         expect(day_records).to be_an(Array).and all(be_a(Hash)).and all(
                       include(
                         'time',
-                        'grid_power_plus',
-                        'house_power',
-                        'wallbox_charge_power',
-                        'power',
+                        'SENEC:grid_power_plus',
+                        'SENEC:house_power',
+                        'SENEC:wallbox_charge_power',
+                        'Consumer:power',
                       ),
                     )
 
@@ -66,10 +66,10 @@ describe Flux::Extractor do
         expect(day_records).to be_an(Array).and all(be_a(Hash)).and all(
                       include(
                         'time',
-                        'grid_power_plus',
-                        'house_power',
-                        'wallbox_charge_power',
-                        'power',
+                        'SENEC:grid_power_plus',
+                        'SENEC:house_power',
+                        'SENEC:wallbox_charge_power',
+                        'Consumer:power',
                       ),
                     )
 

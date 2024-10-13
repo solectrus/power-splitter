@@ -1,11 +1,16 @@
 require_relative 'reader'
 
+ActiveSupport.to_time_preserves_timezone = true
+
 module Flux
   class Extractor < Flux::Reader
     def records(day)
+      range = day_range(day)
+      return [] unless range
+
       query_string = <<~FLUX
         #{from_bucket}
-        |> #{day_range(day)}
+        |> #{range}
         |> #{filter(selected_sensors: config.sensor_names)}
         |> aggregateWindow(every: 1m, fn: mean)
         |> fill(usePrevious: true)
@@ -28,7 +33,7 @@ module Flux
           start + 1.day
         end
 
-      range(start:, stop:)
+      range(start:, stop:) if stop > start
     end
 
     def extract_and_transform_data(flux_tables)
@@ -37,10 +42,11 @@ module Flux
           table.records.each do |record|
             time = record.values['_time'].to_time
             field = record.values['_field']
+            measurement = record.values['_measurement']
             value = record.values['_value']
 
             results[time] ||= { 'time' => time }
-            results[time][field] = value
+            results[time]["#{measurement}:#{field}"] = value
           end
         end
 
