@@ -22,10 +22,6 @@ class MemoryLogger
     synchronize { @warn_messages << message }
   end
 
-  def debug(message)
-    synchronize { @debug_messages << message }
-  end
-
   private
 
   def synchronize(&)
