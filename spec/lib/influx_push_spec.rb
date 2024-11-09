@@ -11,7 +11,7 @@ describe InfluxPush do
   end
 
   it 'can push records to InfluxDB', vcr: 'influx_success' do
-    time = Time.now.to_i
+    time = Time.current.to_i
     records = [
       {
         time:,
@@ -42,7 +42,7 @@ describe InfluxPush do
     allow(fake_flux).to receive(:push).and_raise(StandardError)
     allow(Flux::Writer).to receive(:new).and_return(fake_flux)
 
-    time = Time.now
+    time = Time.current
     records = [{ time:, key: 'value' }]
 
     expect do

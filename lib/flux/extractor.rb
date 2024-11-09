@@ -1,6 +1,8 @@
+require 'active_support/time'
 require_relative 'reader'
 
-ActiveSupport.to_time_preserves_timezone = true
+Time.zone = ENV['TZ'] || 'Europe/Berlin'
+ActiveSupport.to_time_preserves_timezone = :zone
 
 module Flux
   class Extractor < Flux::Reader
