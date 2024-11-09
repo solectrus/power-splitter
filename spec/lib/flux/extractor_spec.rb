@@ -29,7 +29,7 @@ describe Flux::Extractor do
         records.map do |record|
           InfluxDB2::Point.new(
             name: record[:name],
-            time:,
+            time: record[:time].to_i,
             fields: record[:fields],
           )
         end

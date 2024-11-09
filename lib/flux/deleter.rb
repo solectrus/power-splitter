@@ -15,7 +15,7 @@ module Flux
     def delete(measurement: nil)
       delete_api.delete(
         Time.at(0),
-        Time.now,
+        Time.current,
         predicate: measurement ? "_measurement=\"#{measurement}\"" : nil,
       )
     end
