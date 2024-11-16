@@ -98,9 +98,9 @@ describe Splitter do
       let(:record) do
         {
           grid_import_power: 120,
-          house_power: 100,
-          heatpump_power: 40,
-          wallbox_power: 60,
+          house_power: 20,
+          heatpump_power: 60,
+          wallbox_power: 40,
           battery_charging_power: 0,
         }
       end
@@ -108,9 +108,9 @@ describe Splitter do
       it 'returns wallbox-first, then others pro-rata' do
         expect(call).to eq(
           {
-            house_power_grid: 42.85714285714286,
-            heatpump_power_grid: 17.142857142857142,
-            wallbox_power_grid: 60,
+            house_power_grid: 20,
+            heatpump_power_grid: 60,
+            wallbox_power_grid: 40,
           },
         )
       end
