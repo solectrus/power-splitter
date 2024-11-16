@@ -124,6 +124,7 @@ class Config # rubocop:disable Metrics/ClassLength
     house_power
     heatpump_power
     wallbox_power
+    battery_charging_power
   ].freeze
   public_constant :SENSOR_NAMES
 

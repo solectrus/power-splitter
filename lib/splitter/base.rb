@@ -2,17 +2,20 @@ module Splitter
   class Base
     def initialize(
       grid_import_power:,
+      battery_charging_power:,
       house_power:,
       wallbox_power:,
       heatpump_power:
     )
       @grid_import_power = grid_import_power
+      @battery_charging_power = battery_charging_power
       @house_power = house_power
       @wallbox_power = wallbox_power
       @heatpump_power = heatpump_power
     end
 
     attr_reader :grid_import_power,
+                :battery_charging_power,
                 :house_power,
                 :wallbox_power,
                 :heatpump_power

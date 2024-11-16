@@ -33,7 +33,7 @@ http_interactions:
       X-Influxdb-Version:
       - v2.7.10
       Date:
-      - Sat, 09 Nov 2024 10:11:06 GMT
+      - Sat, 16 Nov 2024 12:41:15 GMT
       Transfer-Encoding:
       - chunked
     body:
@@ -48,9 +48,10 @@ http_interactions:
       string: '{"query":"from(bucket: \"<INFLUX_BUCKET>\")\n|\u003e range(start: 2024-08-28T00:00:00+02:00,
         stop: 2024-08-28T09:40:00+02:00)\n|\u003e filter(fn: (r) =\u003e r[\"_measurement\"]
         == \"SENEC\" and (r[\"_field\"] == \"grid_power_plus\" or r[\"_field\"] ==
-        \"house_power\" or r[\"_field\"] == \"wallbox_charge_power\") or r[\"_measurement\"]
-        == \"Consumer\" and (r[\"_field\"] == \"power\"))\n|\u003e aggregateWindow(every:
-        1m, fn: mean)\n|\u003e fill(usePrevious: true)\n","dialect":{"header":true,"delimiter":",","annotations":["datatype","group","default"],"commentPrefix":"#","dateTimeFormat":"RFC3339"}}'
+        \"house_power\" or r[\"_field\"] == \"wallbox_charge_power\" or r[\"_field\"]
+        == \"bat_power_plus\") or r[\"_measurement\"] == \"Consumer\" and (r[\"_field\"]
+        == \"power\"))\n|\u003e aggregateWindow(every: 1m, fn: mean)\n|\u003e fill(usePrevious:
+        true)\n","dialect":{"header":true,"delimiter":",","annotations":["datatype","group","default"],"commentPrefix":"#","dateTimeFormat":"RFC3339"}}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -76,7 +77,7 @@ http_interactions:
       X-Influxdb-Version:
       - v2.7.10
       Date:
-      - Sat, 09 Nov 2024 10:11:06 GMT
+      - Sat, 16 Nov 2024 12:41:15 GMT
       Transfer-Encoding:
       - chunked
     body:

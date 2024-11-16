@@ -18,6 +18,7 @@ describe Config do
       'INFLUX_SENSOR_HOUSE_POWER' => 'SENEC:house_power',
       'INFLUX_SENSOR_WALLBOX_POWER' => 'SENEC:wallbox_charge_power',
       'INFLUX_SENSOR_HEATPUMP_POWER' => 'Consumer:power',
+      'INFLUX_SENSOR_BATTERY_CHARGING_POWER' => 'SENEC:bat_power_plus',
       'INFLUX_EXCLUDE_FROM_HOUSE_POWER' => 'HEATPUMP_POWER,WALLBOX_POWER',
     }
   end

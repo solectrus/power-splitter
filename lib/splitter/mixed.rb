@@ -9,6 +9,10 @@ module Splitter
 
       remaining = grid_import_power
 
+      # When the battery is charging while importing from the grid,
+      # this power should not be attributed to consumer usage
+      remaining -= battery_charging_power
+
       # Wallbox power is prioritized over other consumers
       if remaining.positive? && wallbox_power.positive?
         wallbox_power_grid = [wallbox_power, remaining].min

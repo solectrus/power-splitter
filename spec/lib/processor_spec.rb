@@ -12,6 +12,7 @@ describe Processor do
         'SENEC:grid_power_plus' => 100,
         'SENEC:house_power' => 70,
         'SENEC:wallbox_charge_power' => 30,
+        'SENEC:battery_charging_power' => 0,
         'Consumer:power' => 20,
       },
       {
@@ -19,6 +20,7 @@ describe Processor do
         'SENEC:grid_power_plus' => 0,
         'SENEC:house_power' => 140,
         'SENEC:wallbox_charge_power' => 60,
+        'SENEC:battery_charging_power' => 0,
         'Consumer:power' => 40,
       },
     ]

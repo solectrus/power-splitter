@@ -81,6 +81,12 @@ class Processor
     power_value(record, :heatpump_power)
   end
 
+  def battery_charging_power(record)
+    return 0 unless config.exists?(:battery_charging_power)
+
+    power_value(record, :battery_charging_power)
+  end
+
   def power_value(record, sensor_name)
     identifier = config.identifier(sensor_name)
 
@@ -101,9 +107,16 @@ class Processor
     house_power = [house_power, 0].max
 
     grid_import_power = grid_import_power(record)
+    battery_charging_power = battery_charging_power(record)
 
     Splitter::Mixed
-      .new(grid_import_power:, house_power:, wallbox_power:, heatpump_power:)
+      .new(
+        grid_import_power:,
+        battery_charging_power:,
+        house_power:,
+        wallbox_power:,
+        heatpump_power:,
+      )
       .call
       .merge(time: record['time'])
   end
