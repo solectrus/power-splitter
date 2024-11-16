@@ -1,5 +1,5 @@
 require 'config'
-require 'splitter/mixed'
+require 'splitter'
 
 class Processor
   def initialize(day_records:, config:)
@@ -109,7 +109,7 @@ class Processor
     grid_import_power = grid_import_power(record)
     battery_charging_power = battery_charging_power(record)
 
-    Splitter::Mixed
+    Splitter
       .new(
         grid_import_power:,
         battery_charging_power:,

@@ -1,6 +1,6 @@
-require 'splitter/proportional'
+require 'splitter'
 
-describe Splitter::Proportional do
+describe Splitter do
   subject(:splitter) { described_class.new(**record) }
 
   describe '#call' do
@@ -13,6 +13,7 @@ describe Splitter::Proportional do
           house_power: 50,
           heatpump_power: 20,
           wallbox_power: 30,
+          battery_charging_power: 0,
         }
       end
 
@@ -34,6 +35,7 @@ describe Splitter::Proportional do
           house_power: 50,
           heatpump_power: 20,
           wallbox_power: 30,
+          battery_charging_power: 0,
         }
       end
 
@@ -55,6 +57,7 @@ describe Splitter::Proportional do
           house_power: 100,
           heatpump_power: 40,
           wallbox_power: 60,
+          battery_charging_power: 0,
         }
       end
 
@@ -76,15 +79,16 @@ describe Splitter::Proportional do
           house_power: 100,
           heatpump_power: 40,
           wallbox_power: 60,
+          battery_charging_power: 0,
         }
       end
 
-      it 'returns pro-rata distribution' do
+      it 'returns wallbox-first distribution' do
         expect(call).to eq(
           {
-            house_power_grid: 30,
-            heatpump_power_grid: 12,
-            wallbox_power_grid: 18,
+            house_power_grid: 0,
+            heatpump_power_grid: 0,
+            wallbox_power_grid: 60,
           },
         )
       end
@@ -97,15 +101,40 @@ describe Splitter::Proportional do
           house_power: 100,
           heatpump_power: 40,
           wallbox_power: 60,
+          battery_charging_power: 0,
         }
       end
 
-      it 'returns pro-rata distribution' do
+      it 'returns wallbox-first, then others pro-rata' do
         expect(call).to eq(
           {
-            house_power_grid: 60,
-            heatpump_power_grid: 24,
-            wallbox_power_grid: 36,
+            house_power_grid: 42.85714285714286,
+            heatpump_power_grid: 17.142857142857142,
+            wallbox_power_grid: 60,
+          },
+        )
+      end
+    end
+
+    context 'when battery is charging' do
+      let(:record) do
+        {
+          # inverter_power: 100,
+          grid_import_power: 100,
+          house_power: 10,
+          heatpump_power: 30,
+          wallbox_power: 60,
+          battery_charging_power: 100,
+          # battery_discharging_power: 0,
+        }
+      end
+
+      it 'returns battery-first' do
+        expect(call).to eq(
+          {
+            house_power_grid: 0,
+            heatpump_power_grid: 0,
+            wallbox_power_grid: 0,
           },
         )
       end
