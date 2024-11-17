@@ -46,19 +46,19 @@ class Processor
       .map do |_interval, items|
         {
           time: items.last[:time],
-          house_power_grid: sum(items, :house_power_grid),
+          house_power_grid: avg(items, :house_power_grid),
           wallbox_power_grid:
-            wallbox_present ? sum(items, :wallbox_power_grid) : nil,
+            wallbox_present ? avg(items, :wallbox_power_grid) : nil,
           heatpump_power_grid:
-            heatpump_present ? sum(items, :heatpump_power_grid) : nil,
+            heatpump_present ? avg(items, :heatpump_power_grid) : nil,
         }.compact
       end
   end
 
-  def sum(items, key)
+  def avg(items, key)
     return 0 if items.empty?
 
-    (items.sum { |item| item[key] } / items.size.to_f).round
+    items.sum { |item| item[key] }.fdiv(items.size).round
   end
 
   def grid_import_power(record)
