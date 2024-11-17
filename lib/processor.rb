@@ -13,12 +13,15 @@ class Processor
   attr_reader :day_records, :config, :wallbox_present, :heatpump_present
 
   def call
-    group_by_5min(
+    group_by_period(
       day_records.reduce([]) { |acc, elem| acc << split_power(elem) },
     ).map { |elem| point(elem) }
   end
 
   private
+
+  PERIOD = 5.minutes
+  private_constant :PERIOD
 
   def point(record)
     result =
@@ -40,9 +43,9 @@ class Processor
     result
   end
 
-  def group_by_5min(splitted)
+  def group_by_period(splitted)
     splitted
-      .group_by { |item| (item[:time].to_i - 1.minute) / 5.minutes }
+      .group_by { |item| (item[:time].to_i - 1.minute) / PERIOD }
       .map do |_interval, items|
         {
           time: items.last[:time],
