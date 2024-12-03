@@ -122,7 +122,7 @@ GEM
     rubocop-thread_safety (0.6.0)
       rubocop (>= 1.48.1)
     ruby-progressbar (1.13.0)
-    securerandom (0.3.2)
+    securerandom (0.4.0)
     shellany (0.0.1)
     simplecov (0.22.0)
       docile (~> 1.1)
