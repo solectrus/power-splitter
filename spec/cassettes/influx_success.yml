@@ -14,7 +14,7 @@ http_interactions:
       Accept:
       - "*/*"
       User-Agent:
-      - influxdb-client-ruby/3.1.0
+      - influxdb-client-ruby/3.2.0
       Authorization:
       - Token <INFLUX_TOKEN>
       Content-Type:
@@ -27,9 +27,9 @@ http_interactions:
       X-Influxdb-Build:
       - OSS
       X-Influxdb-Version:
-      - v2.7.10
+      - v2.7.11
       Date:
-      - Sat, 09 Nov 2024 10:11:06 GMT
+      - Wed, 11 Dec 2024 11:02:18 GMT
     body:
       encoding: UTF-8
       string: ''
