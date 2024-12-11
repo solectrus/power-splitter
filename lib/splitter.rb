@@ -18,7 +18,7 @@ class Splitter
               :heatpump_power,
               :custom_power
 
-  def call
+  def call # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     remaining = grid_import_power
 
     # When the battery is charging while importing from the grid,
@@ -26,7 +26,7 @@ class Splitter
     remaining -= battery_charging_power if battery_charging_power
 
     # Wallbox power is prioritized over other consumers
-    if remaining.positive? && wallbox_power.positive?
+    if remaining&.positive? && wallbox_power&.positive?
       wallbox_power_grid = [wallbox_power, remaining].min
       remaining -= wallbox_power_grid
     else
@@ -43,7 +43,6 @@ class Splitter
     # Add custom power fields dynamically
     custom_power.each_with_index do |cp, index|
       cp_grid = grid_power(remaining, cp, other_total)
-      next unless cp_grid
 
       result[format('custom_power_%02d_grid', index + 1).to_sym] = cp_grid
     end

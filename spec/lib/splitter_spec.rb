@@ -217,6 +217,7 @@ describe Splitter do
             heatpump_power_grid: 0,
             wallbox_power_grid: 0,
             custom_power_01_grid: 6,
+            custom_power_02_grid: nil,
           },
         )
       end
@@ -241,7 +242,34 @@ describe Splitter do
             heatpump_power_grid: 0,
             wallbox_power_grid: 0,
             custom_power_01_grid: 3,
+            custom_power_02_grid: nil,
             custom_power_03_grid: 5,
+          },
+        )
+      end
+    end
+
+    context 'when all is nil' do
+      let(:record) do
+        {
+          grid_import_power: nil,
+          house_power: nil,
+          heatpump_power: nil,
+          wallbox_power: nil,
+          battery_charging_power: nil,
+          custom_power: [nil, nil, nil],
+        }
+      end
+
+      it 'returns nil for all fields' do
+        expect(call).to eq(
+          {
+            heatpump_power_grid: nil,
+            house_power_grid: nil,
+            wallbox_power_grid: nil,
+            custom_power_01_grid: nil,
+            custom_power_02_grid: nil,
+            custom_power_03_grid: nil,
           },
         )
       end
