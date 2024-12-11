@@ -79,6 +79,17 @@ describe Config do
       end
     end
 
+    context 'when invalid formatting' do
+      let(:env) { valid_env.merge('INFLUX_SENSOR_GRID_IMPORT_POWER' => 'foo') }
+
+      it 'raises an exception' do
+        expect { described_class.new(env) }.to raise_error(
+          Config::Error,
+          /must be in format/,
+        )
+      end
+    end
+
     context 'when no house_power' do
       let(:env) { valid_env.except('INFLUX_SENSOR_HOUSE_POWER') }
 

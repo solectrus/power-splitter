@@ -67,8 +67,10 @@ class Config # rubocop:disable Metrics/ClassLength
     when *SENSOR_NAMES
       measurement(sensor_name).present? && field(sensor_name).present?
     else
+      # :nocov:
       raise ArgumentError,
             "Unknown or invalid sensor name: #{sensor_name.inspect}"
+      # :nocov:
     end
   end
 
