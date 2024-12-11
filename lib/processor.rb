@@ -82,7 +82,7 @@ class Processor
   end
 
   def adjusted_house_power(record)
-    result = power_value(record, :house_power)
+    result = power_value(record, :house_power, 0)
 
     if config.exclude_from_house_power.include?(:heatpump_power)
       result -= power_value(record, :heatpump_power, 0)
