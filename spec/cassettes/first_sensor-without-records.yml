@@ -9,8 +9,11 @@ http_interactions:
         filter(fn: (r) =\u003e r[\"_measurement\"] == \"SENEC\" and (r[\"_field\"]
         == \"grid_power_plus\" or r[\"_field\"] == \"house_power\" or r[\"_field\"]
         == \"wallbox_charge_power\" or r[\"_field\"] == \"bat_power_plus\") or r[\"_measurement\"]
-        == \"Consumer\" and (r[\"_field\"] == \"power\"))\n|\u003e first()\n|\u003e
-        keep(columns: [\"_time\"])\n|\u003e min(column: \"_time\")\n","dialect":{"header":true,"delimiter":",","annotations":["datatype","group","default"],"commentPrefix":"#","dateTimeFormat":"RFC3339"}}'
+        == \"Consumer\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"TV\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] == \"Fridge\"
+        and (r[\"_field\"] == \"power\") or r[\"_measurement\"] == \"Pool\" and (r[\"_field\"]
+        == \"power\"))\n|\u003e first()\n|\u003e keep(columns: [\"_time\"])\n|\u003e
+        min(column: \"_time\")\n","dialect":{"header":true,"delimiter":",","annotations":["datatype","group","default"],"commentPrefix":"#","dateTimeFormat":"RFC3339"}}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -36,7 +39,7 @@ http_interactions:
       X-Influxdb-Version:
       - v2.7.11
       Date:
-      - Wed, 11 Dec 2024 11:02:18 GMT
+      - Wed, 11 Dec 2024 13:49:09 GMT
       Transfer-Encoding:
       - chunked
     body:

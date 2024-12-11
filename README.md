@@ -14,7 +14,7 @@ This enables SOLECTRUS to accurately calculate the electricity usage and costs f
 - InfluxDB 2 database with a bucket filled with values for:
   - Grid import power
   - House power
-  - Heatpump power and/or Wallbox power
+  - Heatpump/Wallbox/Custom power
 - Linux machine with Docker installed
 
 ## Getting started

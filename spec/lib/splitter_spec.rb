@@ -1,7 +1,9 @@
 require 'splitter'
 
 describe Splitter do
-  subject(:splitter) { described_class.new(**record) }
+  subject(:splitter) { described_class.new(config, **record) }
+
+  let(:config) { Config.new(ENV) }
 
   describe '#call' do
     subject(:call) { splitter.call }
@@ -14,6 +16,7 @@ describe Splitter do
           heatpump_power: 20,
           wallbox_power: 30,
           battery_charging_power: 0,
+          custom_power: [],
         }
       end
 
@@ -36,6 +39,7 @@ describe Splitter do
           heatpump_power: 20,
           wallbox_power: 30,
           battery_charging_power: 0,
+          custom_power: [],
         }
       end
 
@@ -58,6 +62,7 @@ describe Splitter do
           heatpump_power: 40,
           wallbox_power: 60,
           battery_charging_power: 0,
+          custom_power: [],
         }
       end
 
@@ -80,6 +85,7 @@ describe Splitter do
           heatpump_power: 40,
           wallbox_power: 60,
           battery_charging_power: 0,
+          custom_power: [],
         }
       end
 
@@ -102,6 +108,7 @@ describe Splitter do
           heatpump_power: 60,
           wallbox_power: 40,
           battery_charging_power: 0,
+          custom_power: [],
         }
       end
 
@@ -126,6 +133,7 @@ describe Splitter do
           wallbox_power: 60,
           battery_charging_power: 100,
           # battery_discharging_power: 0,
+          custom_power: [],
         }
       end
 
@@ -135,6 +143,105 @@ describe Splitter do
             house_power_grid: 0,
             heatpump_power_grid: 0,
             wallbox_power_grid: 0,
+          },
+        )
+      end
+    end
+
+    context 'when custom power is given (100%)' do
+      let(:record) do
+        {
+          grid_import_power: 100,
+          house_power: 100,
+          heatpump_power: 0,
+          wallbox_power: 0,
+          battery_charging_power: 0,
+          custom_power: [30, 30],
+        }
+      end
+
+      it 'returns' do
+        expect(call).to eq(
+          {
+            house_power_grid: 100,
+            heatpump_power_grid: 0,
+            wallbox_power_grid: 0,
+            custom_power_01_grid: 30,
+            custom_power_02_grid: 30,
+          },
+        )
+      end
+    end
+
+    context 'when custom power is given (10%)' do
+      let(:record) do
+        {
+          grid_import_power: 10,
+          house_power: 100,
+          heatpump_power: 0,
+          wallbox_power: 0,
+          battery_charging_power: 0,
+          custom_power: [30, 30],
+        }
+      end
+
+      it 'calculates custom_power from grid' do
+        expect(call).to eq(
+          {
+            house_power_grid: 10,
+            heatpump_power_grid: 0,
+            wallbox_power_grid: 0,
+            custom_power_01_grid: 3,
+            custom_power_02_grid: 3,
+          },
+        )
+      end
+    end
+
+    context 'when custom power is given (some are nil)' do
+      let(:record) do
+        {
+          grid_import_power: 10,
+          house_power: 100,
+          heatpump_power: 0,
+          wallbox_power: 0,
+          battery_charging_power: 0,
+          custom_power: [60, nil],
+        }
+      end
+
+      it 'calculates custom_power from grid' do
+        expect(call).to eq(
+          {
+            house_power_grid: 10,
+            heatpump_power_grid: 0,
+            wallbox_power_grid: 0,
+            custom_power_01_grid: 6,
+          },
+        )
+      end
+    end
+
+    context 'when custom power is given (with separate customer)' do
+      let(:record) do
+        {
+          grid_import_power: 10,
+          house_power: 100,
+          heatpump_power: 0,
+          wallbox_power: 0,
+          battery_charging_power: 0,
+          custom_power: [60, nil, 100],
+        }
+      end
+
+      it 'calculates custom_power from grid' do
+        expect(call).to eq(
+          {
+            house_power_grid: 5,
+            heatpump_power_grid: 0,
+            wallbox_power_grid: 0,
+            custom_power_01_grid: 3,
+            custom_power_03_grid: 5,
           },
         )
       end

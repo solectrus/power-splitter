@@ -32,7 +32,11 @@ describe Config do
   end
 
   describe 'valid options (no wallbox)' do
-    let(:env) { valid_env.except('INFLUX_SENSOR_WALLBOX_POWER') }
+    let(:env) do
+      valid_env.except('INFLUX_SENSOR_WALLBOX_POWER').merge(
+        'INFLUX_EXCLUDE_FROM_HOUSE_POWER' => 'HEATPUMP_POWER',
+      )
+    end
 
     it 'initializes successfully' do
       expect(config).to be_a(described_class)
@@ -40,7 +44,11 @@ describe Config do
   end
 
   describe 'valid options (no heatpump)' do
-    let(:env) { valid_env.except('INFLUX_SENSOR_HEATPUMP_POWER') }
+    let(:env) do
+      valid_env.except('INFLUX_SENSOR_HEATPUMP_POWER').merge(
+        'INFLUX_EXCLUDE_FROM_HOUSE_POWER' => 'WALLBOX_POWER',
+      )
+    end
 
     it 'initializes successfully' do
       expect(config).to be_a(described_class)
@@ -48,7 +56,25 @@ describe Config do
   end
 
   describe 'valid options (empty heatpump)' do
-    let(:env) { valid_env.merge('INFLUX_SENSOR_HEATPUMP_POWER' => '') }
+    let(:env) do
+      valid_env.merge('INFLUX_SENSOR_HEATPUMP_POWER' => '').merge(
+        'INFLUX_EXCLUDE_FROM_HOUSE_POWER' => 'WALLBOX_POWER',
+      )
+    end
+
+    it 'initializes successfully' do
+      expect(config).to be_a(described_class)
+    end
+  end
+
+  describe 'valid options (custom sensors)' do
+    let(:env) do
+      valid_env.merge(
+        'INFLUX_SENSOR_CUSTOM_POWER_02' => 'm:f',
+        'INFLUX_EXCLUDE_FROM_HOUSE_POWER' =>
+          'HEATPUMP_POWER,WALLBOX_POWER,CUSTOM_POWER_02',
+      )
+    end
 
     it 'initializes successfully' do
       expect(config).to be_a(described_class)
@@ -112,18 +138,19 @@ describe Config do
       end
     end
 
-    context 'when no heatpump AND no wallbox' do
+    describe 'when exclusion list contains unknown sensor' do
       let(:env) do
-        valid_env.except(
-          'INFLUX_SENSOR_HEATPUMP_POWER',
-          'INFLUX_SENSOR_WALLBOX_POWER',
+        valid_env.merge(
+          'INFLUX_SENSOR_CUSTOM_POWER_02' => 'm:f',
+          'INFLUX_EXCLUDE_FROM_HOUSE_POWER' =>
+            'HEATPUMP_POWER,WALLBOX_POWER,CUSTOM_POWER_10',
         )
       end
 
       it 'raises an exception' do
         expect { described_class.new(env) }.to raise_error(
           Config::Error,
-          /At least one of/,
+          /Invalid sensor name/,
         )
       end
     end
