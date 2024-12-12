@@ -22,7 +22,7 @@ class Loop
       # 2. We received a USR1 signal and should restart.
       break unless restarting
 
-      # Restart requsted, so delete all data and loop again.
+      # Restart requested, so delete all data and loop again.
       delete_all
       @restarting = false
     end
