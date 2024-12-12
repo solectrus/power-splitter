@@ -16,7 +16,6 @@ describe Splitter do
           heatpump_power: 20,
           wallbox_power: 30,
           battery_charging_power: 0,
-          custom_power: [],
         }
       end
 
@@ -39,7 +38,6 @@ describe Splitter do
           heatpump_power: 20,
           wallbox_power: 30,
           battery_charging_power: 0,
-          custom_power: [],
         }
       end
 
@@ -62,7 +60,6 @@ describe Splitter do
           heatpump_power: 40,
           wallbox_power: 60,
           battery_charging_power: 0,
-          custom_power: [],
         }
       end
 
@@ -85,7 +82,6 @@ describe Splitter do
           heatpump_power: 40,
           wallbox_power: 60,
           battery_charging_power: 0,
-          custom_power: [],
         }
       end
 
@@ -108,7 +104,6 @@ describe Splitter do
           heatpump_power: 60,
           wallbox_power: 40,
           battery_charging_power: 0,
-          custom_power: [],
         }
       end
 
@@ -133,7 +128,6 @@ describe Splitter do
           wallbox_power: 60,
           battery_charging_power: 100,
           # battery_discharging_power: 0,
-          custom_power: [],
         }
       end
 

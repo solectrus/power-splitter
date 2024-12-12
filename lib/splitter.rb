@@ -7,7 +7,7 @@ class Splitter
     @house_power = kwargs[:house_power]
     @wallbox_power = kwargs[:wallbox_power]
     @heatpump_power = kwargs[:heatpump_power]
-    @custom_power = kwargs[:custom_power]
+    @custom_power = kwargs[:custom_power] || []
   end
 
   attr_reader :config,
