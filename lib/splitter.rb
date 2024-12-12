@@ -21,7 +21,7 @@ class Splitter
   def call
     remaining = grid_power_for_consumers
 
-    # Wallbox power is prioritized over other consumers
+    # Prioritize wallbox power over all other consumers
     if remaining&.positive? && wallbox_power&.positive?
       wallbox_power_grid = [wallbox_power, remaining].min
       remaining -= wallbox_power_grid
@@ -29,55 +29,50 @@ class Splitter
       wallbox_power_grid = wallbox_power ? 0 : nil
     end
 
-    # Now we have to split the remaining power between the other consumers
-    result = {
+    # Distribute the remaining grid power among the other consumers
+    {
       wallbox_power_grid:,
-      house_power_grid: grid_power(remaining, house_power, other_total),
-      heatpump_power_grid: grid_power(remaining, heatpump_power, other_total),
-    }
-
-    # Add custom power fields dynamically
-    custom_power.each_with_index do |cp, index|
-      cp_grid = grid_power(remaining, cp, other_total)
-
-      result[format('custom_power_%02d_grid', index + 1).to_sym] = cp_grid
+      house_power_grid: grid_power(remaining, house_power),
+      heatpump_power_grid: grid_power(remaining, heatpump_power),
+    }.tap do |result|
+      # Add custom power fields dynamically, based on the configuration
+      custom_power.each_with_index do |cp, index|
+        key = format('custom_power_%02d_grid', index + 1).to_sym
+        result[key] = grid_power(remaining, cp)
+      end
     end
-
-    result
   end
 
   private
 
+  # Calculate the grid power used by all consumers
+  # (battery charging is NOT considered a consumer)
   def grid_power_for_consumers
     return unless grid_import_power
 
-    # When the battery is charging while importing from the grid,
-    # this power should not be attributed to consumer usage
     grid_import_power - (battery_charging_power || 0)
   end
 
+  # Sum up all consumers except wallbox power
   def other_total
     @other_total ||=
       (house_power || 0) + (heatpump_power || 0) + custom_power_total
   end
 
+  # Sum up only the custom sensors explicitly excluded from house power
   def custom_power_total
-    # Only use custom sensors which are separate (= excluded from house power)
     config.exclude_from_house_power.sum do |sensor|
-      if (match = sensor.to_s.match(/\Acustom_power_(\d{2})\z/))
-        index = match[1].to_i
-        custom_power[index - 1] || 0
-      else
-        0
-      end
+      index = sensor.to_s[/\Acustom_power_(\d{2})\z/, 1]&.to_i
+      index ? (custom_power[index - 1] || 0) : 0
     end
   end
 
-  def grid_power(remaining, power, total)
-    return unless power && total && remaining
-    return 0 unless total.positive? && remaining.positive?
+  # Allocate grid power proportionally to the consumer's share of the total power
+  def grid_power(remaining, power)
+    return unless power && other_total && remaining
+    return 0 unless other_total.positive?
 
-    ratio = power.fdiv(total)
+    ratio = power.fdiv(other_total)
     [remaining * ratio, power].min
   end
 end
