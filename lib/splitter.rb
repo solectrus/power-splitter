@@ -18,12 +18,8 @@ class Splitter
               :heatpump_power,
               :custom_power
 
-  def call # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-    remaining = grid_import_power
-
-    # When the battery is charging while importing from the grid,
-    # this power should not be attributed to consumer usage
-    remaining -= battery_charging_power if battery_charging_power
+  def call
+    remaining = grid_power_for_consumers
 
     # Wallbox power is prioritized over other consumers
     if remaining&.positive? && wallbox_power&.positive?
@@ -52,6 +48,14 @@ class Splitter
 
   private
 
+  def grid_power_for_consumers
+    return unless grid_import_power
+
+    # When the battery is charging while importing from the grid,
+    # this power should not be attributed to consumer usage
+    grid_import_power - (battery_charging_power || 0)
+  end
+
   def other_total
     @other_total ||=
       (house_power || 0) + (heatpump_power || 0) + custom_power_total
@@ -70,7 +74,7 @@ class Splitter
   end
 
   def grid_power(remaining, power, total)
-    return unless power
+    return unless power && total && remaining
     return 0 unless total.positive? && remaining.positive?
 
     ratio = power.fdiv(total)
