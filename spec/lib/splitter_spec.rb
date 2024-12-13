@@ -63,7 +63,7 @@ describe Splitter do
         }
       end
 
-      it 'returns 0 distribution' do
+      it 'returns zero distribution' do
         expect(call).to eq(
           {
             house_power_grid: 0,
@@ -85,7 +85,7 @@ describe Splitter do
         }
       end
 
-      it 'returns wallbox-first distribution' do
+      it 'returns wallbox-first' do
         expect(call).to eq(
           {
             house_power_grid: 0,
@@ -121,13 +121,11 @@ describe Splitter do
     context 'when battery is charging' do
       let(:record) do
         {
-          # inverter_power: 100,
           grid_import_power: 100,
           house_power: 10,
           heatpump_power: 30,
           wallbox_power: 60,
           battery_charging_power: 100,
-          # battery_discharging_power: 0,
         }
       end
 
@@ -142,7 +140,7 @@ describe Splitter do
       end
     end
 
-    context 'when custom power is given (100%)' do
+    context 'when custom power is given (100% consumption)' do
       let(:record) do
         {
           grid_import_power: 100,
@@ -150,11 +148,11 @@ describe Splitter do
           heatpump_power: 0,
           wallbox_power: 0,
           battery_charging_power: 0,
-          custom_power: [30, 30],
+          custom_power: [30, 30, nil],
         }
       end
 
-      it 'returns' do
+      it 'distributes 100% to each consumer' do
         expect(call).to eq(
           {
             house_power_grid: 100,
@@ -162,12 +160,13 @@ describe Splitter do
             wallbox_power_grid: 0,
             custom_power_01_grid: 30,
             custom_power_02_grid: 30,
+            custom_power_03_grid: nil,
           },
         )
       end
     end
 
-    context 'when custom power is given (10%)' do
+    context 'when custom power is given (10% consumption)' do
       let(:record) do
         {
           grid_import_power: 10,
@@ -175,11 +174,11 @@ describe Splitter do
           heatpump_power: 0,
           wallbox_power: 0,
           battery_charging_power: 0,
-          custom_power: [30, 30],
+          custom_power: [30, 30, nil],
         }
       end
 
-      it 'calculates custom_power from grid' do
+      it 'distributes 10% to each consumer' do
         expect(call).to eq(
           {
             house_power_grid: 10,
@@ -187,6 +186,7 @@ describe Splitter do
             wallbox_power_grid: 0,
             custom_power_01_grid: 3,
             custom_power_02_grid: 3,
+            custom_power_03_grid: nil,
           },
         )
       end
@@ -200,11 +200,11 @@ describe Splitter do
           heatpump_power: 0,
           wallbox_power: 0,
           battery_charging_power: 0,
-          custom_power: [60, nil],
+          custom_power: [60, nil, nil],
         }
       end
 
-      it 'calculates custom_power from grid' do
+      it 'calculates' do
         expect(call).to eq(
           {
             house_power_grid: 10,
@@ -212,12 +212,40 @@ describe Splitter do
             wallbox_power_grid: 0,
             custom_power_01_grid: 6,
             custom_power_02_grid: nil,
+            custom_power_03_grid: nil,
           },
         )
       end
     end
 
-    context 'when custom power is given (with separate customer)' do
+    context 'when custom power is given (included consumers only)' do
+      let(:record) do
+        {
+          grid_import_power: 10,
+          house_power: 100,
+          heatpump_power: 0,
+          wallbox_power: 0,
+          battery_charging_power: 0,
+          custom_power: [50, 50, nil],
+          # => Total consumption: 100 => 10% from grid
+        }
+      end
+
+      it 'calculates' do
+        expect(call).to eq(
+          {
+            house_power_grid: 10, # 100% of grid belongs to house
+            heatpump_power_grid: 0,
+            wallbox_power_grid: 0,
+            custom_power_01_grid: 5,
+            custom_power_02_grid: 5,
+            custom_power_03_grid: nil,
+          },
+        )
+      end
+    end
+
+    context 'when custom power is given (included and excluded consumer)' do
       let(:record) do
         {
           grid_import_power: 10,
@@ -226,16 +254,44 @@ describe Splitter do
           wallbox_power: 0,
           battery_charging_power: 0,
           custom_power: [60, nil, 100],
+          # Total consumption: 100 + 100 = 200 => 5% from grid
         }
       end
 
-      it 'calculates custom_power from grid' do
+      it 'calculates' do
+        expect(call).to eq(
+          {
+            house_power_grid: 5, # 5% of 100
+            heatpump_power_grid: 0,
+            wallbox_power_grid: 0,
+            custom_power_01_grid: 3,
+            custom_power_02_grid: nil,
+            custom_power_03_grid: 5, # 5% of 100
+          },
+        )
+      end
+    end
+
+    context 'when custom power is given (excluded consumer only)' do
+      let(:record) do
+        {
+          grid_import_power: 10,
+          house_power: 100,
+          heatpump_power: 0,
+          wallbox_power: 0,
+          battery_charging_power: 0,
+          custom_power: [nil, nil, 100],
+          # Total consumption: 100 + 100 = 200 => 5% from grid
+        }
+      end
+
+      it 'calculates' do
         expect(call).to eq(
           {
             house_power_grid: 5,
             heatpump_power_grid: 0,
             wallbox_power_grid: 0,
-            custom_power_01_grid: 3,
+            custom_power_01_grid: nil,
             custom_power_02_grid: nil,
             custom_power_03_grid: 5,
           },
