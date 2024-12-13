@@ -102,25 +102,16 @@ class Processor
   end
 
   def split_power(record)
-    wallbox_power = power_value(record, :wallbox_power)
-    heatpump_power = power_value(record, :heatpump_power)
-    house_power = adjusted_house_power(record)
-
-    grid_import_power = power_value(record, :grid_import_power)
-    battery_charging_power = power_value(record, :battery_charging_power)
-
-    custom_power =
-      config.custom_sensors.map { |sensor| power_value(record, sensor) }
-
     Splitter
       .new(
         config,
-        grid_import_power:,
-        battery_charging_power:,
-        house_power:,
-        wallbox_power:,
-        heatpump_power:,
-        custom_power:,
+        grid_import_power: power_value(record, :grid_import_power),
+        battery_charging_power: power_value(record, :battery_charging_power),
+        house_power: adjusted_house_power(record),
+        wallbox_power: power_value(record, :wallbox_power),
+        heatpump_power: power_value(record, :heatpump_power),
+        custom_power:
+          config.custom_sensors.map { |sensor| power_value(record, sensor) },
       )
       .call
       .merge(time: record['time'])
