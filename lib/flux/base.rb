@@ -17,7 +17,8 @@ module Flux
           precision: InfluxDB2::WritePrecision::SECOND,
           bucket: config.influx_bucket,
           org: config.influx_org,
-          read_timeout: 30,
+          read_timeout: 300,
+          write_timeout: 300,
         )
     end
 
