@@ -46,11 +46,13 @@ class Splitter
   private
 
   # Calculate the grid power used by all consumers
-  # (battery charging is NOT considered a consumer)
   def grid_power_for_consumers
     return unless grid_import_power
 
-    grid_import_power - (battery_charging_power || 0)
+    # When battery is charging while importing from the grid,
+    # the battery is prioritized over all consumers.
+    # Examples: Emergency charging or charging during low grid prices
+    [grid_import_power - (battery_charging_power || 0), 0].max
   end
 
   # Sum up all consumers except wallbox power

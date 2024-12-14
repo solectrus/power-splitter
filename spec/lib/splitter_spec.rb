@@ -118,9 +118,10 @@ describe Splitter do
       end
     end
 
-    context 'when battery is charging' do
+    context 'when battery is charging from grid' do
       let(:record) do
         {
+          # inverter_power: 0
           grid_import_power: 100,
           house_power: 10,
           heatpump_power: 30,
@@ -130,6 +131,54 @@ describe Splitter do
       end
 
       it 'returns battery-first' do
+        expect(call).to eq(
+          {
+            house_power_grid: 0,
+            heatpump_power_grid: 0,
+            wallbox_power_grid: 0,
+          },
+        )
+      end
+    end
+
+    context 'when battery is charging partly from grid' do
+      let(:record) do
+        {
+          # inverter_power: 20
+          grid_import_power: 40,
+          house_power: 10,
+          heatpump_power: 30,
+          wallbox_power: 0,
+          battery_charging_power: 20,
+          # grid_export_power: 0
+        }
+      end
+
+      it 'returns all zero' do
+        expect(call).to eq(
+          {
+            house_power_grid: 5,
+            heatpump_power_grid: 15,
+            wallbox_power_grid: 0,
+          },
+        )
+      end
+    end
+
+    context 'when battery is charging from PV' do
+      let(:record) do
+        {
+          # inverter_power: 1000
+          grid_import_power: 0,
+          house_power: 10,
+          heatpump_power: 30,
+          wallbox_power: 60,
+          battery_charging_power: 100,
+          # grid_export_power: 800
+        }
+      end
+
+      it 'returns all zero' do
         expect(call).to eq(
           {
             house_power_grid: 0,
