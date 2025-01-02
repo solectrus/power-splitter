@@ -61,4 +61,4 @@ bundle exec rubocop
 
 ## License
 
-Copyright (c) 2024 Georg Ledermann <georg@ledermann.dev>
+Copyright (c) 2024-2025 Georg Ledermann <georg@ledermann.dev>
