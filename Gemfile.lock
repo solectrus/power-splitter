@@ -85,7 +85,7 @@ GEM
       ffi (~> 1.0)
     redis (5.3.0)
       redis-client (>= 0.22.0)
-    redis-client (0.23.0)
+    redis-client (0.23.1)
       connection_pool
     regexp_parser (2.10.0)
     rexml (3.4.0)
