@@ -25,6 +25,7 @@ describe Splitter do
             house_power_grid: 50,
             heatpump_power_grid: 20,
             wallbox_power_grid: 30,
+            battery_charging_power_grid: 0,
           },
         )
       end
@@ -47,6 +48,7 @@ describe Splitter do
             house_power_grid: 50,
             heatpump_power_grid: 20,
             wallbox_power_grid: 30,
+            battery_charging_power_grid: 0,
           },
         )
       end
@@ -69,6 +71,7 @@ describe Splitter do
             house_power_grid: 0,
             heatpump_power_grid: 0,
             wallbox_power_grid: 0,
+            battery_charging_power_grid: 0,
           },
         )
       end
@@ -91,6 +94,7 @@ describe Splitter do
             house_power_grid: 0,
             heatpump_power_grid: 0,
             wallbox_power_grid: 60,
+            battery_charging_power_grid: 0,
           },
         )
       end
@@ -113,6 +117,7 @@ describe Splitter do
             house_power_grid: 20,
             heatpump_power_grid: 60,
             wallbox_power_grid: 40,
+            battery_charging_power_grid: 0,
           },
         )
       end
@@ -136,6 +141,7 @@ describe Splitter do
             house_power_grid: 0,
             heatpump_power_grid: 0,
             wallbox_power_grid: 0,
+            battery_charging_power_grid: 100,
           },
         )
       end
@@ -160,6 +166,7 @@ describe Splitter do
             house_power_grid: 5,
             heatpump_power_grid: 15,
             wallbox_power_grid: 0,
+            battery_charging_power_grid: 20,
           },
         )
       end
@@ -184,6 +191,30 @@ describe Splitter do
             house_power_grid: 0,
             heatpump_power_grid: 0,
             wallbox_power_grid: 0,
+            battery_charging_power_grid: 0,
+          },
+        )
+      end
+    end
+
+    context 'when all is charged from grid' do
+      let(:record) do
+        {
+          grid_import_power: 200,
+          house_power: 50,
+          heatpump_power: 20,
+          wallbox_power: 30,
+          battery_charging_power: 100,
+        }
+      end
+
+      it 'returns full distribution' do
+        expect(call).to eq(
+          {
+            house_power_grid: 50,
+            heatpump_power_grid: 20,
+            wallbox_power_grid: 30,
+            battery_charging_power_grid: 100,
           },
         )
       end
@@ -210,6 +241,7 @@ describe Splitter do
             custom_power_01_grid: 30,
             custom_power_02_grid: 30,
             custom_power_03_grid: nil,
+            battery_charging_power_grid: 0,
           },
         )
       end
@@ -236,6 +268,7 @@ describe Splitter do
             custom_power_01_grid: 3,
             custom_power_02_grid: 3,
             custom_power_03_grid: nil,
+            battery_charging_power_grid: 0,
           },
         )
       end
@@ -262,6 +295,7 @@ describe Splitter do
             custom_power_01_grid: 6,
             custom_power_02_grid: nil,
             custom_power_03_grid: nil,
+            battery_charging_power_grid: 0,
           },
         )
       end
@@ -289,6 +323,7 @@ describe Splitter do
             custom_power_01_grid: 5,
             custom_power_02_grid: 5,
             custom_power_03_grid: nil,
+            battery_charging_power_grid: 0,
           },
         )
       end
@@ -316,6 +351,7 @@ describe Splitter do
             custom_power_01_grid: 3,
             custom_power_02_grid: nil,
             custom_power_03_grid: 5, # 5% of 100
+            battery_charging_power_grid: 0,
           },
         )
       end
@@ -343,6 +379,7 @@ describe Splitter do
             custom_power_01_grid: nil,
             custom_power_02_grid: nil,
             custom_power_03_grid: 5,
+            battery_charging_power_grid: 0,
           },
         )
       end
@@ -369,6 +406,7 @@ describe Splitter do
             custom_power_01_grid: nil,
             custom_power_02_grid: nil,
             custom_power_03_grid: nil,
+            battery_charging_power_grid: nil,
           },
         )
       end
@@ -395,6 +433,7 @@ describe Splitter do
             custom_power_01_grid: nil,
             custom_power_02_grid: nil,
             custom_power_03_grid: nil,
+            battery_charging_power_grid: nil,
           },
         )
       end

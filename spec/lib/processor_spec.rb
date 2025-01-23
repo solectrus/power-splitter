@@ -15,8 +15,8 @@ describe Processor do
           'time' => beginning + i.minutes,
           'SENEC:grid_power_plus' => 100,
           'SENEC:house_power' => 70,
-          'SENEC:wallbox_charge_power' => 30,
-          'SENEC:battery_charging_power' => 0,
+          'SENEC:wallbox_charge_power' => 20,
+          'SENEC:bat_power_plus' => 10,
           'Consumer:power' => 20,
           'TV:power' => 10,
           'Fridge:power' => 5,
@@ -29,7 +29,7 @@ describe Processor do
           'SENEC:grid_power_plus' => 0,
           'SENEC:house_power' => 140,
           'SENEC:wallbox_charge_power' => 60,
-          'SENEC:battery_charging_power' => 0,
+          'SENEC:bat_power_plus' => 0,
           'Consumer:power' => 40,
           'TV:power' => 10,
           'Fridge:power' => 5,
@@ -46,8 +46,8 @@ describe Processor do
 
       expect(lines).to eq(
         [
-          'power_splitter custom_power_01_grid=10i,custom_power_02_grid=5i,heatpump_power_grid=20i,house_power_grid=20i,wallbox_power_grid=30i 1641035100',
-          'power_splitter custom_power_01_grid=0i,custom_power_02_grid=0i,heatpump_power_grid=0i,house_power_grid=0i,wallbox_power_grid=0i 1641036900',
+          'power_splitter battery_charging_power_grid=10i,custom_power_01_grid=10i,custom_power_02_grid=5i,heatpump_power_grid=20i,house_power_grid=30i,wallbox_power_grid=20i 1641035100',
+          'power_splitter battery_charging_power_grid=0i,custom_power_01_grid=0i,custom_power_02_grid=0i,heatpump_power_grid=0i,house_power_grid=0i,wallbox_power_grid=0i 1641036900',
         ],
       )
     end

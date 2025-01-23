@@ -37,6 +37,13 @@ class Processor
       result.add_field('heatpump_power_grid', record[:heatpump_power_grid])
     end
 
+    if record[:battery_charging_power_grid]
+      result.add_field(
+        'battery_charging_power_grid',
+        record[:battery_charging_power_grid],
+      )
+    end
+
     config.custom_sensors.each do |sensor|
       key = :"#{sensor}_grid"
       next unless record[key]
@@ -56,6 +63,7 @@ class Processor
           house_power_grid: avg(items, :house_power_grid),
           wallbox_power_grid: avg(items, :wallbox_power_grid),
           heatpump_power_grid: avg(items, :heatpump_power_grid),
+          battery_charging_power_grid: avg(items, :battery_charging_power_grid),
         }
 
         custom_data =

@@ -32,6 +32,7 @@ class Splitter
     # Distribute the remaining grid power among the other consumers
     {
       wallbox_power_grid:,
+      battery_charging_power_grid:,
       house_power_grid: grid_power(remaining, house_power),
       heatpump_power_grid: grid_power(remaining, heatpump_power),
     }.tap do |result|
@@ -53,6 +54,13 @@ class Splitter
     # the battery is prioritized over all consumers.
     # Examples: Emergency charging or charging during low grid prices
     [grid_import_power - (battery_charging_power || 0), 0].max
+  end
+
+  def battery_charging_power_grid
+    return unless grid_power_for_consumers
+
+    # All the grid power not used by consumers is used to charge the battery
+    grid_import_power - grid_power_for_consumers
   end
 
   # Sum up all consumers except wallbox power
