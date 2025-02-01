@@ -14,8 +14,9 @@ module Flux
         #{from_bucket}
         |> #{range}
         |> #{filter(selected_sensors: config.sensor_names)}
-        |> aggregateWindow(every: 1m, fn: mean)
+        |> aggregateWindow(every: 5s, fn: last)
         |> fill(usePrevious: true)
+        |> aggregateWindow(every: 1m, fn: mean)
       FLUX
       result = query(query_string)
 
