@@ -19,9 +19,9 @@ class Splitter
               :custom_power
 
   def call
-    remaining = grid_power_for_consumers
+    remaining = grid_import_power
 
-    # Prioritize wallbox power over all other consumers
+    # Prioritize wallbox and battery charging over all other consumers
     if remaining&.positive? && wallbox_power&.positive?
       wallbox_power_grid = [wallbox_power, remaining].min
       remaining -= wallbox_power_grid
@@ -32,7 +32,8 @@ class Splitter
     # Distribute the remaining grid power among the other consumers
     {
       wallbox_power_grid:,
-      battery_charging_power_grid:,
+      battery_charging_power_grid:
+        grid_power(remaining, battery_charging_power),
       house_power_grid: grid_power(remaining, house_power),
       heatpump_power_grid: grid_power(remaining, heatpump_power),
     }.tap do |result|
@@ -46,27 +47,11 @@ class Splitter
 
   private
 
-  # Calculate the grid power used by all consumers
-  def grid_power_for_consumers
-    return unless grid_import_power
-
-    # When battery is charging while importing from the grid,
-    # the battery is prioritized over all consumers.
-    # Examples: Emergency charging or charging during low grid prices
-    [grid_import_power - (battery_charging_power || 0), 0].max
-  end
-
-  def battery_charging_power_grid
-    return unless grid_power_for_consumers
-
-    # All the grid power not used by consumers is used to charge the battery
-    grid_import_power - grid_power_for_consumers
-  end
-
-  # Sum up all consumers except wallbox power
+  # Sum up all consumers except wallbox power and battery charging power
   def other_total
     @other_total ||=
-      (house_power || 0) + (heatpump_power || 0) + custom_power_total
+      (house_power || 0) + (heatpump_power || 0) +
+        (battery_charging_power || 0) + custom_power_total
   end
 
   # Sum up only the custom sensors explicitly excluded from house power

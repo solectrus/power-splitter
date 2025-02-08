@@ -126,11 +126,11 @@ describe Splitter do
     context 'when battery is charging from grid' do
       let(:record) do
         {
-          # inverter_power: 0
+          # inverter_power: 100
           grid_import_power: 100,
           house_power: 10,
           heatpump_power: 30,
-          wallbox_power: 60,
+          wallbox_power: 30,
           battery_charging_power: 100,
         }
       end
@@ -138,10 +138,10 @@ describe Splitter do
       it 'returns battery-first' do
         expect(call).to eq(
           {
-            house_power_grid: 0,
-            heatpump_power_grid: 0,
-            wallbox_power_grid: 0,
-            battery_charging_power_grid: 100,
+            house_power_grid: 5,
+            heatpump_power_grid: 15,
+            wallbox_power_grid: 30,
+            battery_charging_power_grid: 50,
           },
         )
       end
@@ -150,8 +150,8 @@ describe Splitter do
     context 'when battery is charging partly from grid' do
       let(:record) do
         {
-          # inverter_power: 20
-          grid_import_power: 40,
+          # inverter_power: 30
+          grid_import_power: 30,
           house_power: 10,
           heatpump_power: 30,
           wallbox_power: 0,
@@ -160,13 +160,13 @@ describe Splitter do
         }
       end
 
-      it 'returns all zero' do
+      it 'calculates' do
         expect(call).to eq(
           {
             house_power_grid: 5,
             heatpump_power_grid: 15,
             wallbox_power_grid: 0,
-            battery_charging_power_grid: 20,
+            battery_charging_power_grid: 10,
           },
         )
       end
@@ -215,6 +215,30 @@ describe Splitter do
             heatpump_power_grid: 20,
             wallbox_power_grid: 30,
             battery_charging_power_grid: 100,
+          },
+        )
+      end
+    end
+
+    context 'when wallbox and battery charging' do
+      let(:record) do
+        {
+          # inverter_power: 2000
+          grid_import_power: 21_000,
+          wallbox_power: 21_000,
+          house_power: 600,
+          heatpump_power: 100,
+          battery_charging_power: 1300,
+        }
+      end
+
+      it 'returns wallbox-first' do
+        expect(call).to eq(
+          {
+            battery_charging_power_grid: 0.0,
+            heatpump_power_grid: 0.0,
+            house_power_grid: 0.0,
+            wallbox_power_grid: 21_000,
           },
         )
       end
