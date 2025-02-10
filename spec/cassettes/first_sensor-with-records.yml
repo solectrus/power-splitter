@@ -29,7 +29,7 @@ http_interactions:
       X-Influxdb-Version:
       - v2.7.11
       Date:
-      - Wed, 11 Dec 2024 13:49:09 GMT
+      - Mon, 10 Feb 2025 09:28:04 GMT
     body:
       encoding: UTF-8
       string: ''
@@ -43,11 +43,28 @@ http_interactions:
         filter(fn: (r) =\u003e r[\"_measurement\"] == \"SENEC\" and (r[\"_field\"]
         == \"grid_power_plus\" or r[\"_field\"] == \"house_power\" or r[\"_field\"]
         == \"wallbox_charge_power\" or r[\"_field\"] == \"bat_power_plus\") or r[\"_measurement\"]
-        == \"Consumer\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"TV\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] == \"Fridge\"
-        and (r[\"_field\"] == \"power\") or r[\"_measurement\"] == \"Pool\" and (r[\"_field\"]
-        == \"power\"))\n|\u003e first()\n|\u003e keep(columns: [\"_time\"])\n|\u003e
-        min(column: \"_time\")\n","dialect":{"header":true,"delimiter":",","annotations":["datatype","group","default"],"commentPrefix":"#","dateTimeFormat":"RFC3339"}}'
+        == \"Heatpump\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-01\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-02\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-03\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-04\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-05\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-06\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-07\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-08\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-09\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-10\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-11\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-12\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-13\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-14\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-15\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-16\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-17\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-18\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-19\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-20\" and (r[\"_field\"] == \"power\"))\n|\u003e first()\n|\u003e
+        keep(columns: [\"_time\"])\n|\u003e min(column: \"_time\")\n","dialect":{"header":true,"delimiter":",","annotations":["datatype","group","default"],"commentPrefix":"#","dateTimeFormat":"RFC3339"}}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -73,7 +90,7 @@ http_interactions:
       X-Influxdb-Version:
       - v2.7.11
       Date:
-      - Wed, 11 Dec 2024 13:49:09 GMT
+      - Mon, 10 Feb 2025 09:28:04 GMT
       Transfer-Encoding:
       - chunked
     body:
@@ -107,7 +124,7 @@ http_interactions:
       X-Influxdb-Version:
       - v2.7.11
       Date:
-      - Wed, 11 Dec 2024 13:49:09 GMT
+      - Mon, 10 Feb 2025 09:28:04 GMT
     body:
       encoding: UTF-8
       string: ''
