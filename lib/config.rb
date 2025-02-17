@@ -85,6 +85,21 @@ class Config # rubocop:disable Metrics/ClassLength
         .sort_by(&:to_s)
   end
 
+  CUSTOM_SENSOR_COUNT = 20
+  public_constant :CUSTOM_SENSOR_COUNT
+
+  SENSOR_NAMES = [
+    :grid_import_power,
+    :house_power,
+    :heatpump_power,
+    :wallbox_power,
+    :battery_charging_power,
+    *(1..CUSTOM_SENSOR_COUNT).map do |index|
+      format('custom_power_%02d', index).to_sym
+    end,
+  ].freeze
+  public_constant :SENSOR_NAMES
+
   private
 
   def validate_url!(url)
@@ -122,21 +137,6 @@ class Config # rubocop:disable Metrics/ClassLength
 
   class Error < RuntimeError
   end
-
-  CUSTOM_SENSOR_COUNT = 20
-  public_constant :CUSTOM_SENSOR_COUNT
-
-  SENSOR_NAMES = [
-    :grid_import_power,
-    :house_power,
-    :heatpump_power,
-    :wallbox_power,
-    :battery_charging_power,
-    *(1..CUSTOM_SENSOR_COUNT).map do |index|
-      format('custom_power_%02d', index).to_sym
-    end,
-  ].freeze
-  public_constant :SENSOR_NAMES
 
   def define_sensor(sensor_name, value)
     logger.info "  - Sensor '#{sensor_name}' #{value ? "mapped to '#{value}'" : 'ignored'}"
