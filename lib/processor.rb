@@ -59,7 +59,7 @@ class Processor
       .group_by { |item| (item[:time].to_i - 1.minute) / PERIOD }
       .map do |_interval, items|
         base_data = {
-          time: items.last[:time],
+          time: items.last[:time] - (PERIOD / 2.0),
           house_power_grid: avg(items, :house_power_grid),
           wallbox_power_grid: avg(items, :wallbox_power_grid),
           heatpump_power_grid: avg(items, :heatpump_power_grid),
