@@ -1,10 +1,8 @@
-require:
-  - rubocop-thread_safety
-
 plugins:
   - rubocop-rspec
   - rubocop-rake
   - rubocop-performance
+  - rubocop-thread_safety
 
 AllCops:
   TargetRubyVersion: 3.4
