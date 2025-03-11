@@ -22,7 +22,7 @@ class Loop
       # 2. We received a USR1 signal and should restart.
       break unless restarting
 
-      # Restart requsted, so delete all data and loop again.
+      # Restart requested, so delete all data and loop again.
       delete_all
       @restarting = false
     end
@@ -119,7 +119,7 @@ class Loop
   def delete_all
     config.logger.info "\n--- Deleting all records from InfluxDB measurement '#{config.influx_measurement}'"
     influx_push.delete_measurement(config.influx_measurement)
-    config.logger.info "  Ok, deleted sucessfully\n\n"
+    config.logger.info "  Ok, deleted successfully\n\n"
   end
 
   def influx_push

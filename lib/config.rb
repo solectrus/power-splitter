@@ -67,14 +67,38 @@ class Config # rubocop:disable Metrics/ClassLength
     when *SENSOR_NAMES
       measurement(sensor_name).present? && field(sensor_name).present?
     else
+      # :nocov:
       raise ArgumentError,
             "Unknown or invalid sensor name: #{sensor_name.inspect}"
+      # :nocov:
     end
   end
 
   def sensor_names
     @sensor_names ||= SENSOR_NAMES.filter { |sensor_name| exists?(sensor_name) }
   end
+
+  def custom_sensors
+    @custom_sensors ||=
+      SENSOR_NAMES
+        .select { |sensor| sensor.to_s.start_with?('custom_power_') }
+        .sort_by(&:to_s)
+  end
+
+  CUSTOM_SENSOR_COUNT = 20
+  public_constant :CUSTOM_SENSOR_COUNT
+
+  SENSOR_NAMES = [
+    :grid_import_power,
+    :house_power,
+    :heatpump_power,
+    :wallbox_power,
+    :battery_charging_power,
+    *(1..CUSTOM_SENSOR_COUNT).map do |index|
+      format('custom_power_%02d', index).to_sym
+    end,
+  ].freeze
+  public_constant :SENSOR_NAMES
 
   private
 
@@ -100,11 +124,6 @@ class Config # rubocop:disable Metrics/ClassLength
   end
 
   def validate_sensors!
-    unless exists?(:wallbox_power) || exists?(:heatpump_power)
-      raise Error,
-            'At least one of INFLUX_SENSOR_WALLBOX_POWER or INFLUX_SENSOR_HEATPUMP_POWER must be set.'
-    end
-
     unless exists?(:grid_import_power)
       raise Error, 'INFLUX_SENSOR_GRID_IMPORT_POWER must be set.'
     end
@@ -118,14 +137,6 @@ class Config # rubocop:disable Metrics/ClassLength
 
   class Error < RuntimeError
   end
-
-  SENSOR_NAMES = %i[
-    grid_import_power
-    house_power
-    heatpump_power
-    wallbox_power
-  ].freeze
-  public_constant :SENSOR_NAMES
 
   def define_sensor(sensor_name, value)
     logger.info "  - Sensor '#{sensor_name}' #{value ? "mapped to '#{value}'" : 'ignored'}"
@@ -143,7 +154,7 @@ class Config # rubocop:disable Metrics/ClassLength
     sensors_to_exclude =
       value.split(',').map { |sensor| sensor.strip.downcase.to_sym }
 
-    if sensors_to_exclude.any? { |sensor| SENSOR_NAMES.exclude?(sensor) }
+    unless sensors_to_exclude.all? { |sensor| sensor_names.include?(sensor) }
       raise Error,
             "Invalid sensor name in INFLUX_EXCLUDE_FROM_HOUSE_POWER: #{value}"
     end

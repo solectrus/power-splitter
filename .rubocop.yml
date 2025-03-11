@@ -1,11 +1,11 @@
-require:
+plugins:
   - rubocop-rspec
-  - rubocop-thread_safety
   - rubocop-rake
   - rubocop-performance
+  - rubocop-thread_safety
 
 AllCops:
-  TargetRubyVersion: 3.3
+  TargetRubyVersion: 3.4
   Exclude:
     - coverage/**/*
     - vendor/**/*

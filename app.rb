@@ -21,7 +21,7 @@ logger.info 'Power Splitter for SOLECTRUS, ' \
               "Version #{ENV.fetch('VERSION', '<unknown>')}, " \
               "built at #{buildtime}"
 logger.info "Using Ruby #{RUBY_VERSION} on platform #{RUBY_PLATFORM}"
-logger.info 'Copyright (c) 2024 Georg Ledermann <georg@ledermann.dev>'
+logger.info 'Copyright (c) 2024-2025 Georg Ledermann <georg@ledermann.dev>'
 logger.info 'https://github.com/solectrus/power-splitter'
 logger.info "\n"
 

@@ -22,7 +22,7 @@ describe Flux::Extractor do
             'wallbox_charge_power' => 42,
           },
         },
-        { time:, name: 'Consumer', fields: { 'power' => 42 } },
+        { time:, name: 'Heatpump', fields: { 'power' => 42 } },
       ]
 
       points =
@@ -49,7 +49,7 @@ describe Flux::Extractor do
                         'SENEC:grid_power_plus',
                         'SENEC:house_power',
                         'SENEC:wallbox_charge_power',
-                        'Consumer:power',
+                        'Heatpump:power',
                       ),
                     )
 
@@ -69,7 +69,7 @@ describe Flux::Extractor do
                         'SENEC:grid_power_plus',
                         'SENEC:house_power',
                         'SENEC:wallbox_charge_power',
-                        'Consumer:power',
+                        'Heatpump:power',
                       ),
                     )
 
