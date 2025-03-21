@@ -91,16 +91,33 @@ class Config # rubocop:disable Metrics/ClassLength
   public_constant :CUSTOM_SENSOR_COUNT
 
   SENSOR_NAMES = [
+    :inverter_power,
+    :balcony_inverter_power,
     :grid_import_power,
+    :grid_export_power,
     :house_power,
     :heatpump_power,
     :wallbox_power,
     :battery_charging_power,
+    :battery_discharging_power,
     *(1..CUSTOM_SENSOR_COUNT).map do |index|
       format('custom_power_%02d', index).to_sym
     end,
   ].freeze
   public_constant :SENSOR_NAMES
+
+  def can_calculate_house_power?
+    return @can_calculate_house_power if defined?(@can_calculate_house_power)
+
+    @can_calculate_house_power =
+      %i[
+        inverter_power
+        grid_import_power
+        grid_export_power
+        battery_charging_power
+        battery_discharging_power
+      ].all? { sensor_names.include?(it) }
+  end
 
   private
 

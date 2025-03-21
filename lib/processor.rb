@@ -1,7 +1,8 @@
 require 'config'
 require 'splitter'
+require 'house_power_formula'
 
-class Processor
+class Processor # rubocop:disable Metrics/ClassLength
   def initialize(day_records:, config:)
     @day_records = day_records
     @config = config
@@ -11,7 +12,18 @@ class Processor
 
   def call
     group_by_period(
-      day_records.reduce([]) { |acc, elem| acc << split_power(elem) },
+      day_records.reduce([]) do |acc, elem|
+        if config.can_calculate_house_power?
+          house_power = calculate_house_power(elem)
+
+          # Overwrite original house_power with the calculated value
+          elem[config.identifier(:house_power)] = house_power
+        else
+          house_power = nil
+        end
+
+        acc << { house_power:, **split_power(elem) }.compact
+      end,
     ).map { |elem| point(elem) }
   end
 
@@ -26,6 +38,7 @@ class Processor
         name: config.influx_measurement,
         time: record[:time].to_i,
         fields: {
+          'house_power' => record[:house_power],
           'house_power_grid' => record[:house_power_grid],
           'wallbox_power_grid' => record[:wallbox_power_grid],
           'heatpump_power_grid' => record[:heatpump_power_grid],
@@ -49,6 +62,7 @@ class Processor
       .map do |_interval, items|
         base_data = {
           time: items.last[:time] - (PERIOD / 2.0),
+          house_power: avg(items, :house_power),
           house_power_grid: avg(items, :house_power_grid),
           wallbox_power_grid: avg(items, :wallbox_power_grid),
           heatpump_power_grid: avg(items, :heatpump_power_grid),
@@ -81,12 +95,14 @@ class Processor
   def adjusted_house_power(record)
     result = power_value(record, :house_power, 0)
 
-    if config.exclude_from_house_power.include?(:heatpump_power)
-      result -= power_value(record, :heatpump_power, 0)
-    end
+    unless config.can_calculate_house_power?
+      if config.exclude_from_house_power.include?(:heatpump_power)
+        result -= power_value(record, :heatpump_power, 0)
+      end
 
-    if config.exclude_from_house_power.include?(:wallbox_power)
-      result -= power_value(record, :wallbox_power, 0)
+      if config.exclude_from_house_power.include?(:wallbox_power)
+        result -= power_value(record, :wallbox_power, 0)
+      end
     end
 
     config.custom_sensors.each do |sensor|
@@ -96,6 +112,20 @@ class Processor
     end
 
     [result, 0].max
+  end
+
+  def calculate_house_power(record)
+    HousePowerFormula.calculate(
+      inverter_power: power_value(record, :inverter_power),
+      balcony_inverter_power: power_value(record, :balcony_inverter_power),
+      grid_import_power: power_value(record, :grid_import_power),
+      grid_export_power: power_value(record, :grid_export_power),
+      battery_charging_power: power_value(record, :battery_charging_power),
+      battery_discharging_power:
+        power_value(record, :battery_discharging_power),
+      wallbox_power: power_value(record, :wallbox_power),
+      heatpump_power: power_value(record, :heatpump_power),
+    )
   end
 
   def split_power(record)
