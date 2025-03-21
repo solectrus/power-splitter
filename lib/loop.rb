@@ -112,8 +112,8 @@ class Loop
     day_records = influx_pull.day_records(day.beginning_of_day)
     return if day_records.empty?
 
-    splitted_powers = Processor.new(day_records:, config:).call
-    influx_push.push(splitted_powers)
+    processed_powers = Processor.new(day_records:, config:).call
+    influx_push.push(processed_powers)
   end
 
   def delete_all
