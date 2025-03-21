@@ -25,24 +25,13 @@ class Processor
       InfluxDB2::Point.new(
         name: config.influx_measurement,
         time: record[:time].to_i,
+        fields: {
+          'house_power_grid' => record[:house_power_grid],
+          'wallbox_power_grid' => record[:wallbox_power_grid],
+          'heatpump_power_grid' => record[:heatpump_power_grid],
+          'battery_charging_power_grid' => record[:battery_charging_power_grid],
+        },
       )
-
-    result.add_field('house_power_grid', record[:house_power_grid])
-
-    if record[:wallbox_power_grid]
-      result.add_field('wallbox_power_grid', record[:wallbox_power_grid])
-    end
-
-    if record[:heatpump_power_grid]
-      result.add_field('heatpump_power_grid', record[:heatpump_power_grid])
-    end
-
-    if record[:battery_charging_power_grid]
-      result.add_field(
-        'battery_charging_power_grid',
-        record[:battery_charging_power_grid],
-      )
-    end
 
     config.custom_sensors.each do |sensor|
       key = :"#{sensor}_grid"
