@@ -90,7 +90,7 @@ class Loop
   end
 
   def process_historical_data
-    day = influx_pull.last_splitter_date || influx_pull.first_sensor_date
+    day = influx_pull.last_splitter_date || config.installation_date || influx_pull.first_sensor_date
     return unless day
     return if day >= Date.current
 

@@ -14,6 +14,8 @@ describe Config do
       ###
       'POWER_SPLITTER_INTERVAL' => '600',
       ###
+      'INSTALLATION_DATE' => '2021-01-01',
+      ###
       'INFLUX_SENSOR_GRID_IMPORT_POWER' => 'SENEC:grid_power_plus',
       'INFLUX_SENSOR_HOUSE_POWER' => 'SENEC:house_power',
       'INFLUX_SENSOR_WALLBOX_POWER' => 'SENEC:wallbox_charge_power',
@@ -81,10 +83,10 @@ describe Config do
     end
   end
 
-  describe 'Influx methods' do
+  describe 'Influx options' do
     let(:env) { valid_env }
 
-    it 'matches the environment variables for Influx' do
+    it 'matches the environment variables' do
       expect(config.influx_host).to eq(valid_env['INFLUX_HOST'])
       expect(config.influx_schema).to eq(valid_env['INFLUX_SCHEMA'])
       expect(config.influx_port).to eq(valid_env['INFLUX_PORT'])
@@ -92,7 +94,15 @@ describe Config do
       expect(config.influx_org).to eq(valid_env['INFLUX_ORG'])
       expect(config.influx_bucket).to eq(valid_env['INFLUX_BUCKET'])
       expect(config.influx_url).to eq('https://influx.example.com:443')
+    end
+  end
+
+  describe 'Other options' do
+    let(:env) { valid_env }
+
+    it 'matches the environment variables' do
       expect(config.interval).to eq(600)
+      expect(config.installation_date).to eq(Date.new(2021, 1, 1))
     end
   end
 
