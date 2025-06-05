@@ -134,7 +134,7 @@ class Config # rubocop:disable Metrics/ClassLength
       raise Error, 'INFLUX_SENSOR_HOUSE_POWER must be set.'
     end
 
-    true
+    :ok
   end
 
   class Error < RuntimeError
