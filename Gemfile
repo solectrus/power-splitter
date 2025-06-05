@@ -18,6 +18,9 @@ gem 'activesupport'
 # A Ruby client library for Redis (https://github.com/redis/redis-rb)
 gem 'redis'
 
+# Pg is the Ruby interface to the PostgreSQL RDBMS (https://github.com/ged/ruby-pg)
+gem 'pg'
+
 group :development do
   # Guard gem for RSpec (https://github.com/guard/guard-rspec)
   gem 'guard-rspec', require: false
