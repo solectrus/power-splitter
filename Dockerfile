@@ -1,5 +1,5 @@
 FROM ruby:3.4.4-alpine AS builder
-RUN apk add --no-cache build-base
+RUN apk add --no-cache build-base postgresql-dev
 
 WORKDIR /power-splitter
 COPY Gemfile* /power-splitter/
@@ -13,7 +13,7 @@ LABEL org.opencontainers.image.authors="georg@ledermann.dev"
 LABEL org.opencontainers.image.description="Distributes imported grid power among individual consumers"
 
 # Add tzdata to get correct timezone
-RUN apk add --no-cache tzdata
+RUN apk add --no-cache tzdata libpq
 
 # Decrease memory usage
 ENV MALLOC_ARENA_MAX=2
