@@ -1,7 +1,7 @@
 [![Continuous integration](https://github.com/solectrus/power-splitter/actions/workflows/push.yml/badge.svg)](https://github.com/solectrus/power-splitter/actions/workflows/push.yml)
-[![Maintainability](https://api.codeclimate.com/v1/badges/16a4fcb8bca707fc7f6d/maintainability)](https://codeclimate.com/repos/66163a78163ab4576c30d62b/maintainability)
+[![Maintainability](https://qlty.sh/badges/7146b60b-ca86-4b1d-9e59-c18856a36fbf/maintainability.svg)](https://qlty.sh/gh/solectrus/projects/power-splitter)
 [![wakatime](https://wakatime.com/badge/user/697af4f5-617a-446d-ba58-407e7f3e0243/project/018eb19e-5a00-49ae-966c-943dba618dc8.svg)](https://wakatime.com/badge/user/697af4f5-617a-446d-ba58-407e7f3e0243/project/018eb19e-5a00-49ae-966c-943dba618dc8)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/16a4fcb8bca707fc7f6d/test_coverage)](https://codeclimate.com/repos/66163a78163ab4576c30d62b/test_coverage)
+[![Code Coverage](https://qlty.sh/badges/7146b60b-ca86-4b1d-9e59-c18856a36fbf/coverage.svg)](https://qlty.sh/gh/solectrus/projects/power-splitter)
 
 # Power Splitter
 

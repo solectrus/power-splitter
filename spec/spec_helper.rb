@@ -1,5 +1,6 @@
 require 'simplecov'
-SimpleCov.start
+require 'simplecov_json_formatter'
+SimpleCov.start { formatter SimpleCov::Formatter::JSONFormatter }
 
 require 'bundler/setup'
 Bundler.require
