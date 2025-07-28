@@ -33,6 +33,10 @@ GEM
     dotenv (3.1.8)
     drb (2.2.3)
     ffi (1.17.2)
+    ffi (1.17.2-aarch64-linux-musl)
+    ffi (1.17.2-arm-linux-musl)
+    ffi (1.17.2-arm64-darwin)
+    ffi (1.17.2-x86_64-linux-musl)
     formatador (1.1.1)
     guard (2.19.1)
       formatador (>= 0.2.4)
@@ -75,6 +79,9 @@ GEM
       ast (~> 2.4.1)
       racc
     pg (1.6.0)
+    pg (1.6.0-aarch64-linux)
+    pg (1.6.0-arm64-darwin)
+    pg (1.6.0-x86_64-linux)
     prism (1.4.0)
     pry (0.15.2)
       coderay (~> 1.1)
@@ -159,7 +166,11 @@ GEM
       hashdiff (>= 0.4.0, < 2.0.0)
 
 PLATFORMS
+  aarch64-linux-musl
+  arm-linux-musleabihf
+  arm64-darwin-24
   ruby
+  x86_64-linux-musl
 
 DEPENDENCIES
   activesupport

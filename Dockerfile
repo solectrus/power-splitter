@@ -5,6 +5,7 @@ WORKDIR /power-splitter
 COPY Gemfile* /power-splitter/
 RUN bundle config --local frozen 1 && \
     bundle config --local without 'development test' && \
+    bundle config --local force_ruby_platform true && \
     bundle install -j4 --retry 3 && \
     bundle clean --force
 
