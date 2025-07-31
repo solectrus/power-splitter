@@ -8,8 +8,7 @@ class PostgresSummaries
   attr_reader :config
 
   def reset
-    unless config.pg_host && config.pg_user && config.pg_password &&
-             config.pg_database
+    unless config.pg_host && config.pg_user && config.pg_password
       config.logger.warn 'PostgreSQL ENV vars not set, skipping reset'
       return
     end
@@ -19,7 +18,7 @@ class PostgresSummaries
         host: config.pg_host,
         user: config.pg_user,
         password: config.pg_password,
-        dbname: config.pg_database,
+        dbname: 'solectrus_production',
       )
 
     begin

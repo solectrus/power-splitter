@@ -35,7 +35,6 @@ class Config # rubocop:disable Metrics/ClassLength
     @pg_host = env.fetch('DB_HOST', nil)
     @pg_user = env.fetch('DB_USER', nil)
     @pg_password = env.fetch('DB_PASSWORD', nil)
-    @pg_database = 'solectrus_production'
 
     @interval = [env.fetch('POWER_SPLITTER_INTERVAL', '3600').to_i, 300].max
     @installation_date = env.fetch('INSTALLATION_DATE', nil).presence&.to_date
