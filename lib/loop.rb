@@ -2,6 +2,7 @@ require 'influx_push'
 require 'influx_pull'
 require 'processor'
 require 'redis_cache'
+require 'postgres_summaries'
 
 class Loop
   def initialize(config:, max_count: nil)
