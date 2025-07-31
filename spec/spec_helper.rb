@@ -1,6 +1,13 @@
 require 'simplecov'
 require 'simplecov_json_formatter'
-SimpleCov.start { formatter SimpleCov::Formatter::JSONFormatter }
+SimpleCov.start do
+  formatter SimpleCov::Formatter::MultiFormatter.new(
+              [
+                SimpleCov::Formatter::JSONFormatter,
+                SimpleCov::Formatter::HTMLFormatter,
+              ],
+            )
+end
 
 require 'bundler/setup'
 Bundler.require
