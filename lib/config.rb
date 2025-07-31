@@ -32,9 +32,9 @@ class Config # rubocop:disable Metrics/ClassLength
     logger.info "Accessing InfluxDB at #{influx_url}, bucket #{influx_bucket}"
 
     # PostgreSQL credentials
-    @pg_host = env.fetch('PG_HOST', nil)
-    @pg_user = env.fetch('PG_USER', nil)
-    @pg_password = env.fetch('PG_PASSWORD', nil)
+    @pg_host = env.fetch('DB_HOST', nil)
+    @pg_user = env.fetch('DB_USER', nil)
+    @pg_password = env.fetch('DB_PASSWORD', nil)
     @pg_database = 'solectrus_production'
 
     @interval = [env.fetch('POWER_SPLITTER_INTERVAL', '3600').to_i, 300].max
