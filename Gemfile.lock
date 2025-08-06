@@ -59,6 +59,7 @@ GEM
       concurrent-ruby (~> 1.0)
     influxdb-client (3.2.0)
       csv
+    io-console (0.8.1)
     json (2.13.2)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
@@ -98,6 +99,8 @@ GEM
     redis-client (0.25.1)
       connection_pool
     regexp_parser (2.11.0)
+    reline (0.6.2)
+      io-console (~> 0.5)
     rexml (3.4.1)
     rspec (3.13.1)
       rspec-core (~> 3.13.0)
@@ -181,6 +184,7 @@ DEPENDENCIES
   pg
   rake
   redis
+  reline
   rspec
   rubocop
   rubocop-performance
