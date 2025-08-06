@@ -103,7 +103,7 @@ class Loop
     end
 
     RedisCache.new(config:).flush
-    PostgresSummaries.new(config:).reset
+    PostgresSummaries.new(config:).reset(since: day)
 
     config.logger.info '--- Processing historical data successfully finished'
   end

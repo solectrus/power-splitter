@@ -7,7 +7,9 @@ describe PostgresSummaries do
   let(:logger) { MemoryLogger.new }
 
   describe '#reset' do
-    subject(:reset) { postgres_summaries.reset }
+    subject(:reset) { postgres_summaries.reset(since:) }
+
+    let(:since) { Date.yesterday }
 
     context 'when PostgreSQL is available' do
       before do
@@ -19,7 +21,10 @@ describe PostgresSummaries do
 
         conn_double = instance_double(PG::Connection)
         allow(PG).to receive(:connect).and_return(conn_double)
-        allow(conn_double).to receive(:exec).with('DELETE FROM summaries')
+        allow(conn_double).to receive(:exec).with(
+          'DELETE FROM summaries WHERE date >= $1',
+          [since],
+        )
         allow(conn_double).to receive(:close)
       end
 
@@ -27,7 +32,7 @@ describe PostgresSummaries do
         reset
 
         expect(logger.info_messages).to include(
-          'Summaries table reset successfully',
+          "Removed summaries since #{since}",
         )
       end
     end

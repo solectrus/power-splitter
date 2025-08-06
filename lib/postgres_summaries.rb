@@ -7,7 +7,7 @@ class PostgresSummaries
 
   attr_reader :config
 
-  def reset
+  def reset(since:)
     unless config.pg_host && config.pg_user && config.pg_password
       config.logger.warn 'PostgreSQL ENV vars not set, skipping reset'
       return
@@ -22,8 +22,8 @@ class PostgresSummaries
       )
 
     begin
-      conn.exec('DELETE FROM summaries')
-      config.logger.info 'Summaries table reset successfully'
+      conn.exec('DELETE FROM summaries WHERE date >= $1', [since])
+      config.logger.info "Removed summaries since #{since}"
     ensure
       conn&.close
     end
