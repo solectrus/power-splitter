@@ -31,9 +31,9 @@ http_interactions:
       X-Influxdb-Build:
       - OSS
       X-Influxdb-Version:
-      - v2.7.11
+      - v2.7.12
       Date:
-      - Wed, 11 Dec 2024 11:02:18 GMT
+      - Thu, 07 Aug 2025 05:16:16 GMT
       Transfer-Encoding:
       - chunked
     body:
