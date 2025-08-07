@@ -6,6 +6,13 @@ module Flux
       read_api.query(query: string)
     end
 
+    # Parse InfluxDB timestamp and convert to configured timezone
+    def parse_influx_time(time_str)
+      return unless time_str
+
+      config.time_zone.parse(time_str)
+    end
+
     private
 
     def from_bucket

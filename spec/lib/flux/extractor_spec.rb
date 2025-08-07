@@ -9,7 +9,7 @@ describe Flux::Extractor do
   describe '#records', vcr: 'extractor' do
     subject(:day_records) { extractor.records(day) }
 
-    let(:time) { day.to_time.change(hour: 9, min: 42) }
+    let(:time) { day.in_time_zone(config.time_zone).change(hour: 9, min: 42) }
 
     before do
       records = [

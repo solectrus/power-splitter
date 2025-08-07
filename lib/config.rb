@@ -38,7 +38,7 @@ class Config # rubocop:disable Metrics/ClassLength
 
     @interval = [env.fetch('POWER_SPLITTER_INTERVAL', '3600').to_i, 300].max
     @installation_date = env.fetch('INSTALLATION_DATE', nil).presence&.to_date
-    @time_zone = env.fetch('TZ', 'Europe/Berlin')
+    @time_zone = ActiveSupport::TimeZone[env.fetch('TZ', 'Europe/Berlin')]
     @redis_url = env.fetch('REDIS_URL', nil)
 
     init_sensors(env)
