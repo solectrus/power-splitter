@@ -1,8 +1,4 @@
-require 'active_support/time'
 require_relative 'reader'
-
-Time.zone = ENV['TZ'] || 'Europe/Berlin'
-ActiveSupport.to_time_preserves_timezone = :zone
 
 module Flux
   class Extractor < Flux::Reader
@@ -43,7 +39,7 @@ module Flux
       results_by_time =
         flux_tables.each_with_object({}) do |table, results|
           table.records.each do |record|
-            time = record.values['_time'].to_time
+            time = parse_influx_time(record.values['_time'])
             field = record.values['_field']
             measurement = record.values['_measurement']
             value = record.values['_value']

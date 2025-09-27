@@ -10,6 +10,9 @@ class Config # rubocop:disable Metrics/ClassLength
                 :influx_token,
                 :influx_org,
                 :influx_bucket,
+                :pg_host,
+                :pg_user,
+                :pg_password,
                 :interval,
                 :redis_url,
                 :installation_date,
@@ -25,12 +28,17 @@ class Config # rubocop:disable Metrics/ClassLength
     @influx_token = env.fetch('INFLUX_TOKEN')
     @influx_org = env.fetch('INFLUX_ORG')
     @influx_bucket = env.fetch('INFLUX_BUCKET')
-    @interval = [env.fetch('POWER_SPLITTER_INTERVAL', '3600').to_i, 300].max
     validate_url!(influx_url)
     logger.info "Accessing InfluxDB at #{influx_url}, bucket #{influx_bucket}"
 
+    # PostgreSQL credentials
+    @pg_host = env.fetch('DB_HOST', nil)
+    @pg_user = env.fetch('DB_USER', nil)
+    @pg_password = env.fetch('DB_PASSWORD', nil)
+
+    @interval = [env.fetch('POWER_SPLITTER_INTERVAL', '3600').to_i, 300].max
     @installation_date = env.fetch('INSTALLATION_DATE', nil).presence&.to_date
-    @time_zone = env.fetch('TZ', 'Europe/Berlin')
+    @time_zone = ActiveSupport::TimeZone[env.fetch('TZ', 'Europe/Berlin')]
     @redis_url = env.fetch('REDIS_URL', nil)
 
     init_sensors(env)
@@ -134,7 +142,7 @@ class Config # rubocop:disable Metrics/ClassLength
       raise Error, 'INFLUX_SENSOR_HOUSE_POWER must be set.'
     end
 
-    true
+    :ok
   end
 
   class Error < RuntimeError

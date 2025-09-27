@@ -15,7 +15,7 @@ module Flux
       result = query(query_string)
       return unless result.first
 
-      Time.new result.first.records.first.values['_time']
+      parse_influx_time(result.first.records.first.values['_time'])
     end
   end
 end

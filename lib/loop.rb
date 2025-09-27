@@ -2,6 +2,7 @@ require 'influx_push'
 require 'influx_pull'
 require 'processor'
 require 'redis_cache'
+require 'postgres_summaries'
 
 class Loop
   def initialize(config:, max_count: nil)
@@ -102,6 +103,7 @@ class Loop
     end
 
     RedisCache.new(config:).flush
+    PostgresSummaries.new(config:).reset(since: day)
 
     config.logger.info '--- Processing historical data successfully finished'
   end

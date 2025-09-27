@@ -1,19 +1,20 @@
-FROM ruby:3.4.4-alpine AS builder
-RUN apk add --no-cache build-base
+FROM ruby:3.4.6-alpine AS builder
+RUN apk add --no-cache build-base postgresql-dev
 
 WORKDIR /power-splitter
 COPY Gemfile* /power-splitter/
 RUN bundle config --local frozen 1 && \
     bundle config --local without 'development test' && \
+    bundle config --local force_ruby_platform true && \
     bundle install -j4 --retry 3 && \
     bundle clean --force
 
-FROM ruby:3.4.4-alpine
+FROM ruby:3.4.6-alpine
 LABEL org.opencontainers.image.authors="georg@ledermann.dev"
 LABEL org.opencontainers.image.description="Distributes imported grid power among individual consumers"
 
 # Add tzdata to get correct timezone
-RUN apk add --no-cache tzdata
+RUN apk add --no-cache tzdata libpq
 
 # Decrease memory usage
 ENV MALLOC_ARENA_MAX=2

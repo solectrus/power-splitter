@@ -18,6 +18,12 @@ gem 'activesupport'
 # A Ruby client library for Redis (https://github.com/redis/redis-rb)
 gem 'redis'
 
+# Pg is the Ruby interface to the PostgreSQL RDBMS (https://github.com/ged/ruby-pg)
+gem 'pg'
+
+# Alternative GNU Readline or Editline implementation by pure Ruby. (https://github.com/ruby/reline)
+gem 'reline'
+
 group :development do
   # Guard gem for RSpec (https://github.com/guard/guard-rspec)
   gem 'guard-rspec', require: false
@@ -27,7 +33,7 @@ group :development do
 end
 
 group :development, :test do
-  # rspec-3.13.0 (http://github.com/rspec)
+  # rspec-3.13.1 (https://rspec.info)
   gem 'rspec'
 
   # Rake is a Make-like program implemented in Ruby (https://github.com/ruby/rake)
