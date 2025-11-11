@@ -36,4 +36,30 @@ describe Loop do
       end
     end
   end
+
+  describe '#process_historical_data' do
+    let(:influx_pull) { instance_double(InfluxPull) }
+    let(:postgres_summaries) { instance_double(PostgresSummaries, reset: nil) }
+
+    before do
+      allow(Date).to receive(:current).and_return(Date.new(2025, 10, 14))
+      allow(InfluxPull).to receive(:new).and_return(influx_pull)
+      allow(influx_pull).to receive_messages(
+        last_splitter_date: Date.new(2025, 10, 10),
+        day_records: [],
+      )
+      allow(RedisCache).to receive(:new).and_return(
+        instance_double(RedisCache, flush: nil),
+      )
+      allow(PostgresSummaries).to receive(:new).and_return(postgres_summaries)
+    end
+
+    it 'resets PostgreSQL summaries from the first processed day' do
+      loop.__send__(:process_historical_data)
+
+      expect(postgres_summaries).to have_received(:reset).with(
+        since: Date.new(2025, 10, 10),
+      )
+    end
+  end
 end

@@ -97,10 +97,7 @@ class Loop
 
     config.logger.info "--- Processing historical data since #{day}"
 
-    while day <= Date.current
-      process_day(day)
-      day += 1.day
-    end
+    (day..Date.current).each { process_day(it) }
 
     RedisCache.new(config:).flush
     PostgresSummaries.new(config:).reset(since: day)
