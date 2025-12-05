@@ -1,4 +1,4 @@
-FROM ruby:3.4.7-alpine AS builder
+FROM ruby:3.4.7-alpine3.22 AS builder
 RUN apk add --no-cache build-base postgresql-dev
 
 WORKDIR /power-splitter
@@ -9,7 +9,7 @@ RUN bundle config --local frozen 1 && \
     bundle install -j4 --retry 3 && \
     bundle clean --force
 
-FROM ruby:3.4.7-alpine
+FROM ruby:3.4.7-alpine3.22
 LABEL org.opencontainers.image.authors="georg@ledermann.dev"
 LABEL org.opencontainers.image.description="Distributes imported grid power among individual consumers"
 
