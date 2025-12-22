@@ -7,6 +7,12 @@ describe Loop do
   let(:config) { Config.new(ENV.to_h, logger:) }
   let(:logger) { MemoryLogger.new }
 
+  before do
+    flux_writer = instance_double(Flux::Writer, ready?: true)
+    influx_push = instance_double(InfluxPush, flux_writer:)
+    allow(InfluxPush).to receive(:new).and_return(influx_push)
+  end
+
   it 'can be initialized' do
     expect(loop).to be_a(described_class)
   end

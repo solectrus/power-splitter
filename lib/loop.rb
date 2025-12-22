@@ -5,14 +5,17 @@ require 'redis_cache'
 require 'postgres_summaries'
 
 class Loop
-  def initialize(config:, max_count: nil)
+  def initialize(config:, max_count: nil, max_wait: 12)
     @config = config
     @max_count = max_count
+    @max_wait = max_wait
   end
 
-  attr_reader :config, :thread, :restarting, :max_count
+  attr_reader :config, :thread, :restarting, :max_count, :max_wait
 
   def start
+    return unless influx_ready?(max_wait)
+
     Signal.trap('USR1') { restart }
 
     loop do
@@ -119,6 +122,19 @@ class Loop
     config.logger.info "\n--- Deleting all records from InfluxDB measurement '#{config.influx_measurement}'"
     influx_push.delete_measurement(config.influx_measurement)
     config.logger.info "  Ok, deleted successfully\n\n"
+  end
+
+  def influx_ready?(max_wait)
+    count = 0
+    until (ready = influx_push.flux_writer.ready?) || (max_wait && count >= max_wait)
+      count += 1
+      config.logger.info "Wait until InfluxDB is ready ... (#{count}/#{max_wait || '∞'})"
+      sleep 5
+    end
+    return true if ready
+
+    config.logger.error "InfluxDB not ready after #{count * 5} seconds - aborting."
+    false
   end
 
   def influx_push
