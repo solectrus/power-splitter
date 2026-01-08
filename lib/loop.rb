@@ -14,7 +14,7 @@ class Loop
   attr_reader :config, :thread, :restarting, :max_count, :max_wait
 
   def start
-    return unless influx_ready?(max_wait)
+    exit(1) unless influx_ready?(max_wait)
 
     Signal.trap('USR1') { restart }
 
@@ -32,6 +32,7 @@ class Loop
     end
   rescue SystemExit, Interrupt
     config.logger.warn 'Exiting...'
+    raise
   end
 
   def restart

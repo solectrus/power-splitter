@@ -32,6 +32,9 @@ Metrics/AbcSize:
 Metrics/MethodLength:
   Max: 50
 
+Metrics/ClassLength:
+  Max: 120
+
 ### Style
 
 Style/BlockComments:
