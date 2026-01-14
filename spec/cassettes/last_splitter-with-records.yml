@@ -29,7 +29,7 @@ http_interactions:
       X-Influxdb-Version:
       - v2.8.0
       Date:
-      - Mon, 22 Dec 2025 07:37:41 GMT
+      - Wed, 14 Jan 2026 09:59:08 GMT
     body:
       encoding: UTF-8
       string: ''
@@ -67,7 +67,7 @@ http_interactions:
       X-Influxdb-Version:
       - v2.8.0
       Date:
-      - Mon, 22 Dec 2025 07:37:41 GMT
+      - Wed, 14 Jan 2026 09:59:08 GMT
       Transfer-Encoding:
       - chunked
     body:
@@ -101,9 +101,9 @@ http_interactions:
       X-Influxdb-Version:
       - v2.8.0
       Date:
-      - Mon, 22 Dec 2025 07:37:41 GMT
+      - Wed, 14 Jan 2026 09:59:08 GMT
     body:
       encoding: UTF-8
       string: ''
   recorded_at: Wed, 28 Aug 2024 07:42:00 GMT
-recorded_with: VCR 6.3.1
+recorded_with: VCR 6.4.0
