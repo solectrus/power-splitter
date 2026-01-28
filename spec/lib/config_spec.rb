@@ -111,7 +111,7 @@ describe Config do
       let(:env) { {} }
 
       it 'raises an exception' do
-        expect { described_class.new(env) }.to raise_error(KeyError)
+        expect { described_class.new(env) }.to raise_error(RuntimeError)
       end
     end
 
