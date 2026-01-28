@@ -23,11 +23,11 @@ class Config # rubocop:disable Metrics/ClassLength
 
     # InfluxDB credentials
     @influx_schema = env.fetch('INFLUX_SCHEMA', 'http')
-    @influx_host = env.fetch('INFLUX_HOST')
+    @influx_host = env['INFLUX_HOST']
     @influx_port = env.fetch('INFLUX_PORT', '8086')
-    @influx_token = env.fetch('INFLUX_TOKEN')
-    @influx_org = env.fetch('INFLUX_ORG')
-    @influx_bucket = env.fetch('INFLUX_BUCKET')
+    @influx_token = env['INFLUX_TOKEN']
+    @influx_org = env['INFLUX_ORG']
+    @influx_bucket = env['INFLUX_BUCKET']
     validate_url!(influx_url)
     logger.info "Accessing InfluxDB at #{influx_url}, bucket #{influx_bucket}"
 
