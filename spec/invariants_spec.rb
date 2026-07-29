@@ -27,7 +27,6 @@ describe 'Invariants' do
         'INFLUX_SENSOR_BATTERY_CHARGING_POWER' => 'SENEC:bat_power_plus',
         'INFLUX_SENSOR_BATTERY_DISCHARGING_POWER' => 'SENEC:bat_power_minus',
         'INFLUX_EXCLUDE_FROM_HOUSE_POWER' => 'HEATPUMP_POWER,WALLBOX_POWER',
-        'BATTERY_GRID_ATTRIBUTION' => 'true',
       },
     )
   end

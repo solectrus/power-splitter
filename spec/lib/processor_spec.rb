@@ -160,7 +160,6 @@ describe Processor do
       Config.new(
         ENV.to_h.merge(
           'INFLUX_SENSOR_BATTERY_DISCHARGING_POWER' => 'SENEC:bat_power_minus',
-          'BATTERY_GRID_ATTRIBUTION' => 'true',
         ),
       )
     end

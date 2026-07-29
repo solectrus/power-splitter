@@ -43,29 +43,28 @@ docker compose kill --signal USR1 power-splitter
 
 A home battery can be charged from the grid, so the energy taken out of it later
 is not necessarily PV. To tell the two apart, the Power Splitter needs to see
-both directions of the battery, and the attribution has to be switched on:
+both directions of the battery:
 
-| Variable                                  | Description                                                                                                                                                |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `INFLUX_SENSOR_BATTERY_CHARGING_POWER`    | Sensor for the power flowing into the battery, as `measurement:field`                                                                                      |
-| `INFLUX_SENSOR_BATTERY_DISCHARGING_POWER` | Sensor for the power flowing out of it. Optional, but without it the origin of the discharged energy is unknown and it counts as PV                        |
-| `BATTERY_GRID_ATTRIBUTION`                | Set to `true` to attribute grid energy stored in the battery to the consumers taking it out again. Defaults to `false`, because it changes existing values |
+| Variable                                  | Description                                                                                                                            |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `INFLUX_SENSOR_BATTERY_CHARGING_POWER`    | Sensor for the power flowing into the battery, as `measurement:field`                                                                  |
+| `INFLUX_SENSOR_BATTERY_DISCHARGING_POWER` | Sensor for the power flowing out of it. Without it there is nothing to tell the two apart by, and what leaves the battery counts as PV |
 
 The sensor names and their format are the same as in SOLECTRUS, so the lines can
 be copied over from its `.env`.
 
+Once both sensors are there, grid energy stored in the battery is attributed to
+the consumers taking it out again. There is no switch for it.
+
 > [!IMPORTANT]
-> `BATTERY_GRID_ATTRIBUTION` needs a SOLECTRUS version that knows about the
-> battery as a second source of grid electricity. With an older one, do not
-> switch it on.
->
-> Older versions expect the grid shares of all consumers to add up to the power
-> imported from the grid, and scale them until they do. That not only undoes the
-> attribution, it also drags down `battery_charging_power_grid` - a value that
-> was correct before. Leaving the attribution off keeps everything as it was.
+> The attribution needs a SOLECTRUS version that knows about the battery as a
+> second source of grid electricity. Older versions expect the grid shares of all
+> consumers to add up to the power imported from the grid, and scale them until
+> they do. That not only undoes the attribution, it also drags down
+> `battery_charging_power_grid` - a value that was correct before.
 
 This version calculates the grid shares differently than the one before it, with
-or without the attribution. Existing data is only overwritten where the new
+or without the battery sensors. Existing data is only overwritten where the new
 calculation writes something, so old and new numbers would otherwise sit side by
 side. After updating:
 

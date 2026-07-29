@@ -51,46 +51,6 @@ describe Config do
         expect(config).to be_battery_tracking
       end
     end
-
-    it 'does not attribute battery grid energy by default' do
-      expect(config).not_to be_battery_grid_attribution
-    end
-
-    context 'when attribution is enabled' do
-      let(:env) do
-        valid_env.merge(
-          'INFLUX_SENSOR_BATTERY_DISCHARGING_POWER' => 'SENEC:bat_power_minus',
-          'BATTERY_GRID_ATTRIBUTION' => 'true',
-        )
-      end
-
-      it 'attributes battery grid energy' do
-        expect(config).to be_battery_grid_attribution
-      end
-    end
-
-    context 'when attribution is enabled without tracking' do
-      let(:env) { valid_env.merge('BATTERY_GRID_ATTRIBUTION' => 'true') }
-
-      it 'stays off, as there is nothing to attribute' do
-        expect(config).not_to be_battery_grid_attribution
-      end
-
-      it 'says so, rather than ignoring the setting silently' do
-        logger = MemoryLogger.new
-        described_class.new(env, logger:)
-
-        expect(logger.warn_messages).to include(/BATTERY_GRID_ATTRIBUTION/)
-      end
-    end
-
-    context 'when attribution is set to something else' do
-      let(:env) { valid_env.merge('BATTERY_GRID_ATTRIBUTION' => 'nope') }
-
-      it 'stays off' do
-        expect(config).not_to be_battery_grid_attribution
-      end
-    end
   end
 
   describe 'valid options (no wallbox)' do

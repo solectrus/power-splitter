@@ -496,11 +496,9 @@ describe Splitter do
       Config.new(
         ENV.to_h.merge(
           'INFLUX_SENSOR_BATTERY_DISCHARGING_POWER' => 'SENEC:bat_power_minus',
-          'BATTERY_GRID_ATTRIBUTION' => attribution,
         ),
       )
     end
-    let(:attribution) { 'true' }
 
     # 1 minute at 2000 W is 33.33 Wh
     let(:full_discharge) do
@@ -656,23 +654,6 @@ describe Splitter do
       # again right away and the balance would have stayed at zero.
       it 'pays out before it books the deposit' do
         expect(call[:battery_energy_grid]).to be_within(0.01).of(6.67)
-      end
-    end
-
-    context 'when attribution is disabled' do
-      let(:attribution) { 'false' }
-      let(:record) { full_discharge.merge(battery_energy_grid: 50) }
-
-      it 'leaves the grid share of the consumers untouched' do
-        expect(call).to include(heatpump_power_grid: 0)
-      end
-
-      it 'still tracks the ledger' do
-        expect(call[:battery_energy_grid]).to be_within(0.01).of(16.67)
-      end
-
-      it 'does not report a grid share of the discharge' do
-        expect(call).not_to have_key(:battery_discharging_power_grid)
       end
     end
 

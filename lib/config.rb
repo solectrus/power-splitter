@@ -35,8 +35,6 @@ class Config # rubocop:disable Metrics/ClassLength
     @pg_password = env.fetch('DB_PASSWORD', nil)
 
     @interval = [env.fetch('POWER_SPLITTER_INTERVAL', '3600').to_i, 300].max
-    @battery_grid_attribution =
-      TRUTHY.include?(env.fetch('BATTERY_GRID_ATTRIBUTION', nil).to_s.downcase)
     @installation_date = env.fetch('INSTALLATION_DATE', nil).presence&.to_date
     @time_zone = init_time_zone(env)
     @redis_url = env.fetch('REDIS_URL', nil)
@@ -53,16 +51,6 @@ class Config # rubocop:disable Metrics/ClassLength
 
   def influx_measurement
     'power_splitter'
-  end
-
-  # When enabled, grid energy that was temporarily stored in the battery is
-  # attributed to the consumers taking it out again. This changes the meaning
-  # of the existing `*_power_grid` fields, so it is opt-in.
-  #
-  # Without the tracking there is nothing to attribute, so the switch reports
-  # itself as off - callers do not have to ask for both.
-  def battery_grid_attribution?
-    @battery_grid_attribution && battery_tracking?
   end
 
   # Tracking the grid share of the battery requires knowing what leaves it.
@@ -128,9 +116,6 @@ class Config # rubocop:disable Metrics/ClassLength
 
   private
 
-  TRUTHY = %w[1 true yes on].freeze
-  private_constant :TRUTHY
-
   def validate_url!(url)
     URI.parse(url)
   end
@@ -178,20 +163,7 @@ class Config # rubocop:disable Metrics/ClassLength
       raise Error, 'INFLUX_SENSOR_HOUSE_POWER must be set.'
     end
 
-    warn_unless_attributable
-
     :ok
-  end
-
-  # Asking for the attribution without the sensors it needs is more likely a
-  # mistake than an intention, and it would otherwise pass unnoticed: the
-  # switch reports itself as off and nothing changes.
-  def warn_unless_attributable
-    return unless @battery_grid_attribution
-    return if battery_tracking?
-
-    logger.warn 'BATTERY_GRID_ATTRIBUTION is set, but attributing grid ' \
-                  'energy needs both battery sensors - ignoring it.'
   end
 
   class Error < RuntimeError

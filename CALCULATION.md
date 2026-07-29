@@ -127,20 +127,16 @@ grid while it was gone - its share went to the others.
 | `battery_discharging_power_grid` | Grid share of what the battery handed to the consumers |
 | `battery_energy_grid`            | Grid electricity currently sitting in the battery (Wh) |
 
-The last two only when both battery sensors are configured, and
-`battery_discharging_power_grid` only when the attribution is switched on as
-well.
+The last two only when both battery sensors are configured - which is also what
+decides whether `<consumer>_power_grid` includes the part that came via the
+battery. Without the discharge sensor there is nothing to attribute.
 
 Nothing else is stored, because nothing else has to be. SOLECTRUS works out the
 solar share of a consumer as the difference between its power and its grid share.
 
-Whether `<consumer>_power_grid` includes the part that came via the battery
-depends on `BATTERY_GRID_ATTRIBUTION` - without it the ledger is still kept, but
-not applied to the consumers.
-
 ### Why the discharge share is stored separately
 
-Without the attribution, the grid shares of all consumers add up to the power
+Without the battery, the grid shares of all consumers add up to the power
 imported from the grid - there was nowhere else for grid electricity to come
 from. With it, the battery becomes a second source, and the shares add up to
 more:
@@ -155,8 +151,8 @@ these fields to take into account.
 SOLECTRUS does: its `SummaryCorrector` scales the `_grid` values so that they
 add up again, which smooths out rounding errors. It has to use the sum above as
 its target - otherwise it would scale away exactly the share that was attributed
-here. Without the attribution the extra term is zero and the target is the plain
-grid import, as it has always been.
+here. Without the battery sensors the extra term is missing and the target is the
+plain grid import, as it has always been.
 
 #### Why not derive it from the balance
 

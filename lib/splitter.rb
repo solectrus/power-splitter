@@ -50,12 +50,11 @@ class Splitter
 
   private
 
-  # Grid share of a consumer: what it took directly from the grid, plus - if
-  # attribution is enabled - the grid-sourced part of what it took from the
-  # battery.
+  # Grid share of a consumer: what it took directly from the grid, plus the
+  # grid-sourced part of what it took from the battery.
   def grid_share(key)
     direct = grid_allocator.call[key]
-    return direct unless config.battery_grid_attribution?
+    return direct unless config.battery_tracking?
 
     battery = battery_allocator.call[key]
     return direct if direct.nil? || battery.nil?
@@ -65,14 +64,13 @@ class Splitter
 
   # The grid electricity the battery handed to the consumers, as a power of
   # its own - a second source besides the import, by which the consumers' grid
-  # shares now exceed it. Only reported when the attribution actually happened,
-  # because otherwise nothing was added to those shares.
+  # shares now exceed it.
   #
   # Without a stage 1 pool there are no shares at all, and reporting a zero
   # next to them would be the one term of the balance that a record covering
   # several minutes averages over this minute as well.
   def battery_grid_share
-    return {} unless config.battery_grid_attribution?
+    return {} unless config.battery_tracking?
     return {} if grid_pool.nil?
 
     { battery_discharging_power_grid: to_power(withdrawn_energy) }
