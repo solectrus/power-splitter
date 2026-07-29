@@ -31,22 +31,22 @@ http_interactions:
       X-Influxdb-Build:
       - OSS
       X-Influxdb-Version:
-      - v2.8.0
+      - v2.9.1
       Date:
-      - Wed, 14 Jan 2026 09:59:08 GMT
+      - Wed, 29 Jul 2026 05:15:29 GMT
       Transfer-Encoding:
       - chunked
     body:
       encoding: UTF-8
-      string: "#datatype,string,long,dateTime:RFC3339\r\n#group,false,false,false\r\n#default,_result,,\r\n,result,table,_time\r\n,,0,2024-08-28T07:42:00Z\r\n\r\n"
-  recorded_at: Wed, 28 Aug 2024 07:42:00 GMT
+      string: "\r\n"
+  recorded_at: Wed, 29 Jul 2026 05:15:29 GMT
 - request:
     method: post
     uri: http://<INFLUX_HOST>:8086/api/v2/query?org=<INFLUX_ORG>
     body:
       encoding: UTF-8
-      string: '{"query":"from(bucket: \"<INFLUX_BUCKET>\")\n|\u003e range(start: 2024-08-28T00:00:00+02:00,
-        stop: 2024-08-28T09:40:00+02:00)\n|\u003e filter(fn: (r) =\u003e r[\"_measurement\"]
+      string: '{"query":"from(bucket: \"<INFLUX_BUCKET>\")\n|\u003e range(start: 2026-07-28T00:00:00+02:00,
+        stop: 2026-07-29T00:00:00+02:00)\n|\u003e filter(fn: (r) =\u003e r[\"_measurement\"]
         == \"SENEC\" and (r[\"_field\"] == \"grid_power_plus\" or r[\"_field\"] ==
         \"house_power\" or r[\"_field\"] == \"wallbox_charge_power\" or r[\"_field\"]
         == \"bat_power_plus\") or r[\"_measurement\"] == \"Heatpump\" and (r[\"_field\"]
@@ -95,13 +95,141 @@ http_interactions:
       X-Influxdb-Build:
       - OSS
       X-Influxdb-Version:
-      - v2.8.0
+      - v2.9.1
       Date:
-      - Wed, 14 Jan 2026 09:59:08 GMT
+      - Wed, 29 Jul 2026 05:15:29 GMT
       Transfer-Encoding:
       - chunked
     body:
       encoding: UTF-8
       string: "\r\n"
-  recorded_at: Wed, 28 Aug 2024 07:42:00 GMT
+  recorded_at: Wed, 29 Jul 2026 05:15:29 GMT
+- request:
+    method: post
+    uri: http://<INFLUX_HOST>:8086/api/v2/query?org=<INFLUX_ORG>
+    body:
+      encoding: UTF-8
+      string: '{"query":"from(bucket: \"<INFLUX_BUCKET>\")\n|\u003e range(start: 2026-07-29T00:00:00+02:00,
+        stop: 2026-07-29T07:15:00+02:00)\n|\u003e filter(fn: (r) =\u003e r[\"_measurement\"]
+        == \"SENEC\" and (r[\"_field\"] == \"grid_power_plus\" or r[\"_field\"] ==
+        \"house_power\" or r[\"_field\"] == \"wallbox_charge_power\" or r[\"_field\"]
+        == \"bat_power_plus\") or r[\"_measurement\"] == \"Heatpump\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-01\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-02\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-03\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-04\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-05\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-06\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-07\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-08\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-09\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-10\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-11\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-12\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-13\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-14\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-15\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-16\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-17\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-18\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-19\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-20\" and (r[\"_field\"]
+        == \"power\"))\n|\u003e aggregateWindow(every: 5s, fn: last)\n|\u003e fill(usePrevious:
+        true)\n|\u003e aggregateWindow(every: 1m, fn: mean)\n","dialect":{"header":true,"delimiter":",","annotations":["datatype","group","default"],"commentPrefix":"#","dateTimeFormat":"RFC3339"}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - influxdb-client-ruby/3.2.0
+      Authorization:
+      - Token <INFLUX_TOKEN>
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/csv; charset=utf-8
+      Vary:
+      - Accept-Encoding
+      X-Influxdb-Build:
+      - OSS
+      X-Influxdb-Version:
+      - v2.9.1
+      Date:
+      - Wed, 29 Jul 2026 05:15:29 GMT
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: "\r\n"
+  recorded_at: Wed, 29 Jul 2026 05:15:29 GMT
+- request:
+    method: post
+    uri: http://<INFLUX_HOST>:8086/api/v2/query?org=<INFLUX_ORG>
+    body:
+      encoding: UTF-8
+      string: '{"query":"from(bucket: \"<INFLUX_BUCKET>\")\n|\u003e range(start: 2026-07-29T00:00:00+02:00,
+        stop: 2026-07-29T07:15:00+02:00)\n|\u003e filter(fn: (r) =\u003e r[\"_measurement\"]
+        == \"SENEC\" and (r[\"_field\"] == \"grid_power_plus\" or r[\"_field\"] ==
+        \"house_power\" or r[\"_field\"] == \"wallbox_charge_power\" or r[\"_field\"]
+        == \"bat_power_plus\") or r[\"_measurement\"] == \"Heatpump\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-01\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-02\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-03\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-04\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-05\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-06\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-07\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-08\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-09\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-10\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-11\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-12\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-13\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-14\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-15\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-16\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-17\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-18\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-19\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-20\" and (r[\"_field\"]
+        == \"power\"))\n|\u003e aggregateWindow(every: 5s, fn: last)\n|\u003e fill(usePrevious:
+        true)\n|\u003e aggregateWindow(every: 1m, fn: mean)\n","dialect":{"header":true,"delimiter":",","annotations":["datatype","group","default"],"commentPrefix":"#","dateTimeFormat":"RFC3339"}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - influxdb-client-ruby/3.2.0
+      Authorization:
+      - Token <INFLUX_TOKEN>
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/csv; charset=utf-8
+      Vary:
+      - Accept-Encoding
+      X-Influxdb-Build:
+      - OSS
+      X-Influxdb-Version:
+      - v2.9.1
+      Date:
+      - Wed, 29 Jul 2026 05:15:29 GMT
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: "\r\n"
+  recorded_at: Wed, 29 Jul 2026 05:15:29 GMT
 recorded_with: VCR 6.4.0

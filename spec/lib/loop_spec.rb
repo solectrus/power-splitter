@@ -4,7 +4,8 @@ require 'config'
 describe Loop do
   subject(:loop) { described_class.new(config:, max_count: 1) }
 
-  let(:config) { Config.new(ENV.to_h, logger:) }
+  let(:config) { Config.new(ENV.to_h.merge(extra_env), logger:) }
+  let(:extra_env) { {} }
   let(:logger) { MemoryLogger.new }
 
   before do
@@ -20,6 +21,14 @@ describe Loop do
   describe '#start', vcr: 'loop-start' do
     subject(:start) { loop.start }
 
+    # Starting the loop works through every day since the installation, and
+    # against an empty InfluxDB that date comes from the environment - the one
+    # of the real system, years back. Pinned to yesterday here, because a fixed
+    # date would put one more day between itself and the present with every day
+    # that passes, and a recording made a year from now would query a year's
+    # worth of days.
+    let(:extra_env) { { 'INSTALLATION_DATE' => Date.yesterday.to_s } }
+
     it 'starts the loop' do
       expect { start }.to(change { config.logger.info_messages.size })
     end
@@ -27,6 +36,9 @@ describe Loop do
 
   describe '#restart', vcr: 'loop-restart' do
     subject(:start) { loop.restart }
+
+    # Same as above: the loop runs for real here too.
+    let(:extra_env) { { 'INSTALLATION_DATE' => Date.yesterday.to_s } }
 
     context "when there's a thread" do
       before { loop.__send__ :start_thread }
