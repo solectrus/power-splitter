@@ -67,8 +67,13 @@ class Splitter
   # its own - a second source besides the import, by which the consumers' grid
   # shares now exceed it. Only reported when the attribution actually happened,
   # because otherwise nothing was added to those shares.
+  #
+  # Without a stage 1 pool there are no shares at all, and reporting a zero
+  # next to them would be the one term of the balance that a record covering
+  # several minutes averages over this minute as well.
   def battery_grid_share
     return {} unless config.battery_grid_attribution?
+    return {} if grid_pool.nil?
 
     { battery_discharging_power_grid: to_power(withdrawn_energy) }
   end
@@ -81,11 +86,20 @@ class Splitter
     { battery_energy_grid: updated_ledger.balance }
   end
 
-  # Stage 1: the power imported from the grid right now
+  # Stage 1: the power imported from the grid right now.
+  #
+  # House power is part of the key the pool is split by, and as the residual
+  # consumer usually its largest term. Without it every share would be a guess,
+  # so a record missing it distributes nothing and leaves the ledger where it
+  # is - the same as a record missing the import itself.
+  def grid_pool
+    grid_import_power unless house_power.nil?
+  end
+
   def grid_allocator
     @grid_allocator ||=
       Allocator.new(
-        pool: grid_import_power,
+        pool: grid_pool,
         wallbox: wallbox_power,
         powers: consumer_powers.except(:wallbox_power),
         counted:,

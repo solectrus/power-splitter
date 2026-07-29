@@ -1,0 +1,214 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://<INFLUX_HOST>:8086/api/v2/write?bucket=<INFLUX_BUCKET>&org=<INFLUX_ORG>&precision=s
+    body:
+      encoding: UTF-8
+      string: |-
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724792400
+        Heatpump power=42i 1724792400
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724796000
+        Heatpump power=42i 1724796000
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724799600
+        Heatpump power=42i 1724799600
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724803200
+        Heatpump power=42i 1724803200
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724806800
+        Heatpump power=42i 1724806800
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724810400
+        Heatpump power=42i 1724810400
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724814000
+        Heatpump power=42i 1724814000
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724817600
+        Heatpump power=42i 1724817600
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724821200
+        Heatpump power=42i 1724821200
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724824800
+        Heatpump power=42i 1724824800
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724828400
+        Heatpump power=42i 1724828400
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724832000
+        Heatpump power=42i 1724832000
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724835600
+        Heatpump power=42i 1724835600
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724839200
+        Heatpump power=42i 1724839200
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724842800
+        Heatpump power=42i 1724842800
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724846400
+        Heatpump power=42i 1724846400
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724850000
+        Heatpump power=42i 1724850000
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724853600
+        Heatpump power=42i 1724853600
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724857200
+        Heatpump power=42i 1724857200
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724860800
+        Heatpump power=42i 1724860800
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724864400
+        Heatpump power=42i 1724864400
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724868000
+        Heatpump power=42i 1724868000
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724871600
+        Heatpump power=42i 1724871600
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724875200
+        Heatpump power=42i 1724875200
+        SENEC grid_power_plus=42i,house_power=42i,wallbox_charge_power=42i 1724878800
+        Heatpump power=42i 1724878800
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - influxdb-client-ruby/3.2.0
+      Authorization:
+      - Token <INFLUX_TOKEN>
+      Content-Type:
+      - text/plain
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      X-Influxdb-Build:
+      - OSS
+      X-Influxdb-Version:
+      - v2.9.1
+      Date:
+      - Wed, 29 Jul 2026 08:14:13 GMT
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Wed, 29 Jul 2026 08:14:13 GMT
+- request:
+    method: post
+    uri: http://<INFLUX_HOST>:8086/api/v2/query?org=<INFLUX_ORG>
+    body:
+      encoding: UTF-8
+      string: '{"query":"from(bucket: \"<INFLUX_BUCKET>\")\n|\u003e range(start: 2024-08-27T22:00:00+02:00,
+        stop: 2024-08-28T00:20:00+02:00)\n|\u003e filter(fn: (r) =\u003e r[\"_measurement\"]
+        == \"SENEC\" and (r[\"_field\"] == \"grid_power_plus\" or r[\"_field\"] ==
+        \"house_power\" or r[\"_field\"] == \"wallbox_charge_power\" or r[\"_field\"]
+        == \"bat_power_plus\") or r[\"_measurement\"] == \"Heatpump\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-01\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-02\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-03\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-04\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-05\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-06\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-07\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-08\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-09\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-10\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-11\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-12\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-13\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-14\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-15\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-16\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-17\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-18\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-19\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-20\" and (r[\"_field\"]
+        == \"power\"))\n|\u003e aggregateWindow(every: 5s, fn: last, timeSrc: \"_start\")\n|\u003e
+        fill(usePrevious: true)\n|\u003e aggregateWindow(every: 60s, fn: mean)\n|\u003e
+        filter(fn: (r) =\u003e exists r._value)\n|\u003e filter(fn: (r) =\u003e r[\"_time\"]
+        \u003e= 2024-08-27T22:01:00Z)\n|\u003e keep(columns: [\"_time\", \"_measurement\",
+        \"_field\", \"_value\"])\n|\u003e yield(name: \"values\")\nfrom(bucket: \"<INFLUX_BUCKET>\")\n|\u003e
+        range(start: 2024-08-27T22:00:00+02:00, stop: 2024-08-28T00:20:00+02:00)\n|\u003e
+        filter(fn: (r) =\u003e r[\"_measurement\"] == \"SENEC\" and (r[\"_field\"]
+        == \"grid_power_plus\" or r[\"_field\"] == \"house_power\" or r[\"_field\"]
+        == \"wallbox_charge_power\" or r[\"_field\"] == \"bat_power_plus\") or r[\"_measurement\"]
+        == \"Heatpump\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-01\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-02\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-03\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-04\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-05\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-06\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-07\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-08\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-09\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-10\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-11\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-12\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-13\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-14\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-15\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-16\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-17\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-18\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-19\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-20\" and (r[\"_field\"] == \"power\"))\n|\u003e aggregateWindow(every:
+        60s, fn: count, createEmpty: true)\n|\u003e stateDuration(fn: (r) =\u003e
+        not exists r._value or r._value == 0, column: \"silence\", unit: 1s)\n|\u003e
+        filter(fn: (r) =\u003e r[\"silence\"] \u003c 7200)\n|\u003e filter(fn: (r)
+        =\u003e r[\"_time\"] \u003e= 2024-08-27T22:01:00Z)\n|\u003e keep(columns:
+        [\"_time\", \"_measurement\", \"_field\"])\n|\u003e yield(name: \"reach\")\n","dialect":{"header":true,"delimiter":",","annotations":["datatype","group","default"],"commentPrefix":"#","dateTimeFormat":"RFC3339"}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - influxdb-client-ruby/3.2.0
+      Authorization:
+      - Token <INFLUX_TOKEN>
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/csv; charset=utf-8
+      Vary:
+      - Accept-Encoding
+      X-Influxdb-Build:
+      - OSS
+      X-Influxdb-Version:
+      - v2.9.1
+      Date:
+      - Wed, 29 Jul 2026 08:14:13 GMT
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: "#datatype,string,long,dateTime:RFC3339,string,string,double\r\n#group,false,false,false,true,true,false\r\n#default,values,,,,,\r\n,result,table,_time,_field,_measurement,_value\r\n,,0,2024-08-27T22:01:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:02:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:03:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:04:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:05:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:06:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:07:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:08:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:09:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:10:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:11:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:12:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:13:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:14:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:15:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:16:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:17:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:18:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:19:00Z,grid_power_plus,SENEC,42\r\n,,0,2024-08-27T22:20:00Z,grid_power_plus,SENEC,42\r\n,,1,2024-08-27T22:01:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:02:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:03:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:04:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:05:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:06:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:07:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:08:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:09:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:10:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:11:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:12:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:13:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:14:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:15:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:16:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:17:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:18:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:19:00Z,house_power,SENEC,42\r\n,,1,2024-08-27T22:20:00Z,house_power,SENEC,42\r\n,,2,2024-08-27T22:01:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:02:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:03:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:04:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:05:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:06:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:07:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:08:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:09:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:10:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:11:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:12:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:13:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:14:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:15:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:16:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:17:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:18:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:19:00Z,power,Heatpump,42\r\n,,2,2024-08-27T22:20:00Z,power,Heatpump,42\r\n,,3,2024-08-27T22:01:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:02:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:03:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:04:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:05:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:06:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:07:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:08:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:09:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:10:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:11:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:12:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:13:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:14:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:15:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:16:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:17:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:18:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:19:00Z,wallbox_charge_power,SENEC,42\r\n,,3,2024-08-27T22:20:00Z,wallbox_charge_power,SENEC,42\r\n\r\n#datatype,string,long,dateTime:RFC3339,string,string\r\n#group,false,false,false,true,true\r\n#default,reach,,,,\r\n,result,table,_time,_field,_measurement\r\n,,0,2024-08-27T22:01:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:02:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:03:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:04:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:05:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:06:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:07:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:08:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:09:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:10:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:11:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:12:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:13:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:14:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:15:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:16:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:17:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:18:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:19:00Z,grid_power_plus,SENEC\r\n,,0,2024-08-27T22:20:00Z,grid_power_plus,SENEC\r\n,,1,2024-08-27T22:01:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:02:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:03:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:04:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:05:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:06:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:07:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:08:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:09:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:10:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:11:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:12:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:13:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:14:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:15:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:16:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:17:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:18:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:19:00Z,house_power,SENEC\r\n,,1,2024-08-27T22:20:00Z,house_power,SENEC\r\n,,2,2024-08-27T22:01:00Z,power,Heatpump\r\n,,2,2024-08-27T22:02:00Z,power,Heatpump\r\n,,2,2024-08-27T22:03:00Z,power,Heatpump\r\n,,2,2024-08-27T22:04:00Z,power,Heatpump\r\n,,2,2024-08-27T22:05:00Z,power,Heatpump\r\n,,2,2024-08-27T22:06:00Z,power,Heatpump\r\n,,2,2024-08-27T22:07:00Z,power,Heatpump\r\n,,2,2024-08-27T22:08:00Z,power,Heatpump\r\n,,2,2024-08-27T22:09:00Z,power,Heatpump\r\n,,2,2024-08-27T22:10:00Z,power,Heatpump\r\n,,2,2024-08-27T22:11:00Z,power,Heatpump\r\n,,2,2024-08-27T22:12:00Z,power,Heatpump\r\n,,2,2024-08-27T22:13:00Z,power,Heatpump\r\n,,2,2024-08-27T22:14:00Z,power,Heatpump\r\n,,2,2024-08-27T22:15:00Z,power,Heatpump\r\n,,2,2024-08-27T22:16:00Z,power,Heatpump\r\n,,2,2024-08-27T22:17:00Z,power,Heatpump\r\n,,2,2024-08-27T22:18:00Z,power,Heatpump\r\n,,2,2024-08-27T22:19:00Z,power,Heatpump\r\n,,2,2024-08-27T22:20:00Z,power,Heatpump\r\n,,3,2024-08-27T22:01:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:02:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:03:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:04:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:05:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:06:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:07:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:08:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:09:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:10:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:11:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:12:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:13:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:14:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:15:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:16:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:17:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:18:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:19:00Z,wallbox_charge_power,SENEC\r\n,,3,2024-08-27T22:20:00Z,wallbox_charge_power,SENEC\r\n\r\n"
+  recorded_at: Tue, 27 Aug 2024 22:22:00 GMT
+- request:
+    method: post
+    uri: http://<INFLUX_HOST>:8086/api/v2/delete?bucket=<INFLUX_BUCKET>&org=<INFLUX_ORG>
+    body:
+      encoding: UTF-8
+      string: '{"start":"1970-01-01T01:00:00+01:00","stop":"2026-07-29T10:14:13+02:00"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - influxdb-client-ruby/3.2.0
+      Authorization:
+      - Token <INFLUX_TOKEN>
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      X-Influxdb-Build:
+      - OSS
+      X-Influxdb-Version:
+      - v2.9.1
+      Date:
+      - Wed, 29 Jul 2026 08:14:13 GMT
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Wed, 29 Jul 2026 08:14:13 GMT
+recorded_with: VCR 6.4.0

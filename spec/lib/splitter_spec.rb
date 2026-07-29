@@ -436,6 +436,31 @@ describe Splitter do
       end
     end
 
+    # House power is mandatory, so a nil is a gap in the data. It is part of
+    # the key the import is split by, and usually its largest term.
+    context 'when house_power is nil' do
+      let(:record) do
+        {
+          grid_import_power: 3000,
+          house_power: nil,
+          heatpump_power: 500,
+          wallbox_power: 0,
+          battery_charging_power: 0,
+        }
+      end
+
+      it 'returns nil for all fields' do
+        expect(call).to eq(
+          {
+            house_power_grid: nil,
+            heatpump_power_grid: nil,
+            wallbox_power_grid: nil,
+            battery_charging_power_grid: nil,
+          },
+        )
+      end
+    end
+
     context 'when grid_import_power is nil' do
       let(:record) do
         {
@@ -667,8 +692,24 @@ describe Splitter do
         expect(call[:battery_energy_grid]).to eq(50)
       end
 
+      # A zero would be the only term of the balance that survives averaging
+      # over a period in which some minutes have no shares at all.
       it 'reports no grid share of the discharge' do
-        expect(call[:battery_discharging_power_grid]).to eq(0)
+        expect(call).not_to have_key(:battery_discharging_power_grid)
+      end
+    end
+
+    context 'when house_power is nil' do
+      let(:record) do
+        full_discharge.merge(house_power: nil, battery_energy_grid: 50)
+      end
+
+      it 'reports no grid share for the consumers' do
+        expect(call).to include(heatpump_power_grid: nil)
+      end
+
+      it 'reports no grid share of the discharge' do
+        expect(call).not_to have_key(:battery_discharging_power_grid)
       end
     end
 

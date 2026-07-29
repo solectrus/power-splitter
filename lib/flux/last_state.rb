@@ -6,9 +6,10 @@ module Flux
   # recalculating a day idempotent.
   #
   # Only MAX_AGE is searched. The balance is written for every period that has
-  # data, so anything older means there is a gap in the data - and a balance
-  # from before a gap says nothing about what the battery did in between.
-  # Searching the whole history would only be slower, not more correct.
+  # data, and data stops being carried forward after MAX_AGE - so anything
+  # older means there is a gap in the data, and a balance from before a gap says
+  # nothing about what the battery did in between. Searching the whole history
+  # would only be slower, not more correct.
   class LastState < Flux::Reader
     FIELD = 'battery_energy_grid'.freeze
     public_constant :FIELD

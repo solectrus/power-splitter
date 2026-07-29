@@ -126,6 +126,7 @@ class Loop
 
     splitted_powers =
       Processor.new(
+        day:,
         day_records:,
         config:,
         battery_energy_grid: battery_energy_grid_for(day),
