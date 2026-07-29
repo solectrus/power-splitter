@@ -35,6 +35,8 @@ class Config # rubocop:disable Metrics/ClassLength
     @pg_password = env.fetch('DB_PASSWORD', nil)
 
     @interval = [env.fetch('POWER_SPLITTER_INTERVAL', '3600').to_i, 300].max
+    @battery_grid_attribution =
+      TRUTHY.include?(env.fetch('BATTERY_GRID_ATTRIBUTION', nil).to_s.downcase)
     @installation_date = env.fetch('INSTALLATION_DATE', nil).presence&.to_date
     @time_zone = init_time_zone(env)
     @redis_url = env.fetch('REDIS_URL', nil)
@@ -51,6 +53,21 @@ class Config # rubocop:disable Metrics/ClassLength
 
   def influx_measurement
     'power_splitter'
+  end
+
+  # When enabled, grid energy that was temporarily stored in the battery is
+  # attributed to the consumers taking it out again. This changes the meaning
+  # of the existing `*_power_grid` fields, so it is opt-in.
+  #
+  # Without the tracking there is nothing to attribute, so the switch reports
+  # itself as off - callers do not have to ask for both.
+  def battery_grid_attribution?
+    @battery_grid_attribution && battery_tracking?
+  end
+
+  # Tracking the grid share of the battery requires knowing what leaves it.
+  def battery_tracking?
+    exists?(:battery_charging_power) && exists?(:battery_discharging_power)
   end
 
   def measurement(sensor_name)
@@ -102,6 +119,7 @@ class Config # rubocop:disable Metrics/ClassLength
     :heatpump_power,
     :wallbox_power,
     :battery_charging_power,
+    :battery_discharging_power,
     *(1..CUSTOM_SENSOR_COUNT).map do |index|
       format('custom_power_%02d', index).to_sym
     end,
@@ -109,6 +127,9 @@ class Config # rubocop:disable Metrics/ClassLength
   public_constant :SENSOR_NAMES
 
   private
+
+  TRUTHY = %w[1 true yes on].freeze
+  private_constant :TRUTHY
 
   def validate_url!(url)
     URI.parse(url)
@@ -157,7 +178,20 @@ class Config # rubocop:disable Metrics/ClassLength
       raise Error, 'INFLUX_SENSOR_HOUSE_POWER must be set.'
     end
 
+    warn_unless_attributable
+
     :ok
+  end
+
+  # Asking for the attribution without the sensors it needs is more likely a
+  # mistake than an intention, and it would otherwise pass unnoticed: the
+  # switch reports itself as off and nothing changes.
+  def warn_unless_attributable
+    return unless @battery_grid_attribution
+    return if battery_tracking?
+
+    logger.warn 'BATTERY_GRID_ATTRIBUTION is set, but attributing grid ' \
+                  'energy needs both battery sensors - ignoring it.'
   end
 
   class Error < RuntimeError
@@ -179,13 +213,19 @@ class Config # rubocop:disable Metrics/ClassLength
     sensors_to_exclude =
       value.split(',').map { |sensor| sensor.strip.downcase.to_sym }
 
-    unless sensors_to_exclude.all? { |sensor| sensor_names.include?(sensor) }
+    unless sensors_to_exclude.all? { |sensor| excludable_sensors.include?(sensor) }
       raise Error,
             "Invalid sensor name in INFLUX_EXCLUDE_FROM_HOUSE_POWER: #{value}"
     end
 
     logger.info "  - Sensor 'house_power' excluded '#{sensors_to_exclude.join(', ')}'"
     define(:exclude_from_house_power, sensors_to_exclude)
+  end
+
+  # The battery discharge is a source, not a consumer of house power, so it can
+  # never be subtracted from it.
+  def excludable_sensors
+    sensor_names - [:battery_discharging_power]
   end
 
   def var_for(sensor_name)
