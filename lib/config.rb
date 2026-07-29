@@ -36,7 +36,7 @@ class Config # rubocop:disable Metrics/ClassLength
 
     @interval = [env.fetch('POWER_SPLITTER_INTERVAL', '3600').to_i, 300].max
     @installation_date = env.fetch('INSTALLATION_DATE', nil).presence&.to_date
-    @time_zone = ActiveSupport::TimeZone[env.fetch('TZ', 'Europe/Berlin')]
+    @time_zone = init_time_zone(env)
     @redis_url = env.fetch('REDIS_URL', nil)
 
     init_sensors(env)
@@ -112,6 +112,23 @@ class Config # rubocop:disable Metrics/ClassLength
 
   def validate_url!(url)
     URI.parse(url)
+  end
+
+  # The zone a day is meant in: midnight to midnight, local. Everything reading
+  # or stamping records asks for it here.
+  #
+  # Everything that can. A date has no zone of its own, so `Date.current`,
+  # `Date#beginning_of_day` and `#today?` go through `Time.zone` instead - and
+  # unset, that is the host's zone rather than the one below. The two would then
+  # draw the day boundary in different places, and every day would start behind
+  # what looks like a gap. Setting the default rather than `Time.zone` is what
+  # makes it hold in the worker thread as well.
+  def init_time_zone(env)
+    name = env.fetch('TZ', nil).presence || 'Europe/Berlin'
+    zone = ActiveSupport::TimeZone[name]
+    raise Error, "Unknown time zone in TZ: '#{name}'" unless zone
+
+    Time.zone_default = zone
   end
 
   def init_sensors(env)

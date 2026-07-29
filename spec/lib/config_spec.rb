@@ -106,6 +106,49 @@ describe Config do
     end
   end
 
+  describe 'time zone' do
+    # It is set app-wide, so an example must not leave a different one behind.
+    around do |example|
+      previous = Time.zone_default
+      example.run
+      Time.zone_default = previous
+    end
+
+    context 'without TZ' do
+      let(:env) { valid_env }
+
+      it 'falls back to Europe/Berlin' do
+        expect(config.time_zone).to eq(ActiveSupport::TimeZone['Europe/Berlin'])
+      end
+    end
+
+    context 'with TZ' do
+      let(:env) { valid_env.merge('TZ' => 'America/New_York') }
+
+      # A date has no zone of its own and goes through Time.zone, so that has to
+      # agree with the configured one - in the worker thread as well, which is
+      # where the days are actually processed.
+      it 'becomes the default zone for dates as well' do
+        zone = config.time_zone
+
+        thread = Thread.new { Date.new(2022, 1, 1).beginning_of_day } # rubocop:disable ThreadSafety/NewThread
+
+        expect(thread.value).to eq(Date.new(2022, 1, 1).in_time_zone(zone))
+      end
+    end
+
+    context 'with an unknown TZ' do
+      let(:env) { valid_env.merge('TZ' => 'Europe/Atlantis') }
+
+      it 'raises an exception' do
+        expect { described_class.new(env) }.to raise_error(
+          Config::Error,
+          /Unknown time zone/,
+        )
+      end
+    end
+  end
+
   describe 'invalid options' do
     context 'when all blank' do
       let(:env) { {} }
