@@ -7,7 +7,11 @@ $LOAD_PATH.unshift(File.expand_path('./lib', __dir__))
 
 require 'time'
 require 'dotenv/load'
+
+# Core extensions are loaded once here, for the whole app
 require 'active_support'
+require 'active_support/core_ext'
+
 require 'loop'
 require 'config'
 require 'stdout_logger'

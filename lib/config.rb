@@ -1,6 +1,4 @@
 require 'uri'
-require 'active_support'
-require 'active_support/core_ext'
 require 'null_logger'
 
 class Config # rubocop:disable Metrics/ClassLength

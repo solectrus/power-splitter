@@ -4,6 +4,10 @@ SimpleCov.start
 require 'bundler/setup'
 Bundler.require
 
+# Core extensions are loaded once here, as app.rb does for the app
+require 'active_support'
+require 'active_support/core_ext'
+
 require 'dotenv'
 Dotenv.load('.env.test.local', '.env.test')
 
