@@ -35,18 +35,13 @@ module Flux
       range(start:, stop:) if stop > start
     end
 
-    def extract_and_transform_data(flux_tables)
+    def extract_and_transform_data(rows)
       results_by_time =
-        flux_tables.each_with_object({}) do |table, results|
-          table.records.each do |record|
-            time = parse_influx_time(record.values['_time'])
-            field = record.values['_field']
-            measurement = record.values['_measurement']
-            value = record.values['_value']
+        rows.each_with_object({}) do |row, results|
+          time = parse_influx_time(row['_time'])
 
-            results[time] ||= { 'time' => time }
-            results[time]["#{measurement}:#{field}"] = value
-          end
+          result = (results[time] ||= { 'time' => time })
+          result["#{row['_measurement']}:#{row['_field']}"] = row['_value']
         end
 
       results_by_time.values

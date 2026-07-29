@@ -12,10 +12,7 @@ module Flux
         |> min(column: "_time")
       FLUX
 
-      result = query(query_string)
-      return unless result.first
-
-      parse_influx_time(result.first.records.first.values['_time'])
+      parse_influx_time(query(query_string).first&.[]('_time'))
     end
   end
 end

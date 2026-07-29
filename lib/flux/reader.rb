@@ -1,16 +1,27 @@
 require_relative 'base'
+require_relative 'csv_parser'
 
 module Flux
   class Reader < Flux::Base
+    # Returns the result as plain row hashes (column => value), flattened
+    # across Flux tables. The raw CSV is parsed here rather than by the client
+    # gem - see Flux::CsvParser for why.
     def query(string)
-      read_api.query(query: string)
+      CsvParser.call(read_api.query_raw(query: string))
     end
 
-    # Parse InfluxDB timestamp and convert to configured timezone
+    # Parse InfluxDB timestamp and convert to configured timezone.
+    #
+    # Memoized because a query covering several sensors returns one row per
+    # sensor and window, all stamped with the same instant: a day of minute
+    # records for eight sensors holds 11,520 rows but only 1,440 distinct
+    # timestamps. The cache lives as long as the reader, which is built per
+    # query, so it cannot grow past the result it was filled from.
     def parse_influx_time(time_str)
       return unless time_str
 
-      config.time_zone.parse(time_str)
+      @parsed_times ||= {}
+      @parsed_times[time_str] ||= config.time_zone.parse(time_str)
     end
 
     private
