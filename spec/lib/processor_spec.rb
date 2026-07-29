@@ -119,6 +119,13 @@ describe Processor do
       expect(field(call[3], 'heatpump_power_grid')).to eq(2000)
     end
 
+    # Unlike the ledger balance, this is a power and gets averaged over the
+    # period rather than carried over.
+    it 'reports the grid share of the discharge' do
+      expect(field(call.first, 'battery_discharging_power_grid')).to eq(0)
+      expect(field(call[2], 'battery_discharging_power_grid')).to eq(2000)
+    end
+
     it 'empties the ledger by what the heatpump consumed' do
       # 10 minutes at 2000 W is 333.33 Wh, leaving 166.67 Wh
       expect(field(call.last, 'battery_energy_grid')).to be_within(0.01).of(

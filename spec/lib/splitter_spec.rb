@@ -541,6 +541,10 @@ describe Splitter do
       it 'debits the ledger by what was passed on' do
         expect(call[:battery_energy_grid]).to be_within(0.01).of(16.67)
       end
+
+      it 'reports the grid share of the discharge' do
+        expect(call[:battery_discharging_power_grid]).to be_within(0.01).of(2000)
+      end
     end
 
     context 'when discharging a battery holding PV energy only' do
@@ -551,6 +555,10 @@ describe Splitter do
           heatpump_power_grid: 0,
           battery_energy_grid: 0,
         )
+      end
+
+      it 'reports no grid share of the discharge' do
+        expect(call[:battery_discharging_power_grid]).to eq(0)
       end
     end
 
@@ -563,6 +571,33 @@ describe Splitter do
 
       it 'empties the ledger' do
         expect(call[:battery_energy_grid]).to eq(0)
+      end
+    end
+
+    # The reported grid share is what makes the consumers' grid values balance
+    # again: they are fed from the import and from the battery.
+    context 'when balancing the grid values' do
+      let(:record) do
+        full_discharge.merge(
+          grid_import_power: 400,
+          house_power: 300,
+          wallbox_power: 500,
+          battery_energy_grid: 1000,
+        )
+      end
+
+      it 'accounts for the excess over the grid import' do
+        consumer_grid =
+          call.values_at(
+            :house_power_grid,
+            :heatpump_power_grid,
+            :wallbox_power_grid,
+            :battery_charging_power_grid,
+          ).sum
+
+        expect(consumer_grid).to be_within(0.01).of(
+          record[:grid_import_power] + call[:battery_discharging_power_grid],
+        )
       end
     end
 
@@ -610,6 +645,10 @@ describe Splitter do
       it 'still tracks the ledger' do
         expect(call[:battery_energy_grid]).to be_within(0.01).of(16.67)
       end
+
+      it 'does not report a grid share of the discharge' do
+        expect(call).not_to have_key(:battery_discharging_power_grid)
+      end
     end
 
     # Without the grid import nothing can be split, so the discharge must not
@@ -626,6 +665,10 @@ describe Splitter do
 
       it 'leaves the ledger untouched' do
         expect(call[:battery_energy_grid]).to eq(50)
+      end
+
+      it 'reports no grid share of the discharge' do
+        expect(call[:battery_discharging_power_grid]).to eq(0)
       end
     end
 

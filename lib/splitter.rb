@@ -45,7 +45,7 @@ class Splitter
     consumer_powers
       .keys
       .to_h { |key| [:"#{key}_grid", grid_share(key)] }
-      .merge(ledger_balance)
+      .merge(battery_grid_share, ledger_balance)
   end
 
   private
@@ -61,6 +61,16 @@ class Splitter
     return direct if direct.nil? || battery.nil?
 
     direct + (battery * battery_grid_ratio)
+  end
+
+  # The grid electricity the battery handed to the consumers, as a power of
+  # its own - a second source besides the import, by which the consumers' grid
+  # shares now exceed it. Only reported when the attribution actually happened,
+  # because otherwise nothing was added to those shares.
+  def battery_grid_share
+    return {} unless config.battery_grid_attribution?
+
+    { battery_discharging_power_grid: to_power(withdrawn_energy) }
   end
 
   # The only state that has to survive a record: what a later day is seeded
@@ -162,5 +172,9 @@ class Splitter
 
   def to_energy(power)
     (power || 0) * duration.in_hours
+  end
+
+  def to_power(energy)
+    energy / duration.in_hours
   end
 end
