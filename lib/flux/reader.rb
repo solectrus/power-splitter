@@ -3,6 +3,12 @@ require_relative 'csv_parser'
 
 module Flux
   class Reader < Flux::Base
+    # How far back the battery ledger balance is searched. A balance older than
+    # this sits behind a gap in the data, and what the battery did in between
+    # is unknown - so it is not a starting point, it is a guess.
+    MAX_AGE = 120.minutes
+    public_constant :MAX_AGE
+
     # Returns the result as plain row hashes (column => value), flattened
     # across Flux tables. The raw CSV is parsed here rather than by the client
     # gem - see Flux::CsvParser for why.

@@ -1,5 +1,6 @@
 require 'flux/first_sensor'
 require 'flux/last_splitter'
+require 'flux/last_state'
 require 'flux/extractor'
 
 class InfluxPull
@@ -20,5 +21,9 @@ class InfluxPull
 
   def day_records(day)
     Flux::Extractor.new(config:).records(day)
+  end
+
+  def battery_energy_grid_before(time)
+    Flux::LastState.new(config:).battery_energy_grid(before: time)
   end
 end

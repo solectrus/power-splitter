@@ -116,14 +116,37 @@ class Loop
     config.logger.info '--- Processing historical data successfully finished'
   end
 
+  # Days must be processed in chronological order: the battery ledger of a day
+  # continues where the previous day left off.
   def process_day(day)
     config.logger.info "\n#{Time.current} - Processing day #{day}"
 
     day_records = influx_pull.day_records(day.beginning_of_day)
     return if day_records.empty?
 
-    splitted_powers = Processor.new(day_records:, config:).call
+    splitted_powers =
+      Processor.new(
+        day_records:,
+        config:,
+        battery_energy_grid: battery_energy_grid_for(day),
+      ).call
     influx_push.push(splitted_powers)
+  end
+
+  # Seed for the battery ledger, read back from InfluxDB so that recalculating
+  # a day always starts from the same value.
+  #
+  # Without a recent balance the ledger starts empty. That happens at the very
+  # beginning and after a gap in the data - and after a gap an old balance
+  # would be a guess, not a measurement.
+  def battery_energy_grid_for(day)
+    return 0 unless config.battery_tracking?
+
+    balance = influx_pull.battery_energy_grid_before(day.beginning_of_day)
+    return balance if balance
+
+    config.logger.info '  No recent battery ledger balance, starting empty'
+    0
   end
 
   def delete_all
