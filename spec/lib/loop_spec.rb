@@ -68,4 +68,67 @@ describe Loop do
       )
     end
   end
+
+  describe '#process_pending_days' do
+    subject(:process) { loop.__send__(:process_pending_days, last_time) }
+
+    let(:influx_pull) { instance_double(InfluxPull, day_records: []) }
+
+    before do
+      allow(Date).to receive(:current).and_return(Date.new(2025, 10, 14))
+      allow(InfluxPull).to receive(:new).and_return(influx_pull)
+    end
+
+    context 'when never run before' do
+      let(:last_time) { nil }
+
+      it 'processes nothing' do
+        process
+
+        expect(influx_pull).not_to have_received(:day_records)
+      end
+    end
+
+    context 'when still on the same day' do
+      let(:last_time) { Time.new(2025, 10, 14, 6, 0, 0) }
+
+      it 'processes nothing' do
+        process
+
+        expect(influx_pull).not_to have_received(:day_records)
+      end
+    end
+
+    context 'when the day just rolled over' do
+      let(:last_time) { Time.new(2025, 10, 13, 23, 55, 0) }
+
+      it 'completes yesterday' do
+        process
+
+        expect(influx_pull).to have_received(:day_records).with(
+          Date.new(2025, 10, 13).beginning_of_day,
+        ).once
+      end
+    end
+
+    # A stalled iteration must not leave a hole: a skipped day is never
+    # written at all, and nothing comes back to fill it in later.
+    context 'when multiple days were missed' do
+      let(:last_time) { Time.new(2025, 10, 11, 8, 0, 0) }
+
+      it 'completes them in chronological order' do
+        process
+
+        expect(influx_pull).to have_received(:day_records).with(
+          Date.new(2025, 10, 11).beginning_of_day,
+        ).ordered
+        expect(influx_pull).to have_received(:day_records).with(
+          Date.new(2025, 10, 12).beginning_of_day,
+        ).ordered
+        expect(influx_pull).to have_received(:day_records).with(
+          Date.new(2025, 10, 13).beginning_of_day,
+        ).ordered
+      end
+    end
+  end
 end

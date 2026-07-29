@@ -77,10 +77,7 @@ class Loop
     count = 0
     last_time = nil
     loop do
-      # Ensure that the last minutes of yesterday are processed
-      if last_time && last_time.to_date < Date.current
-        process_day(Date.yesterday)
-      end
+      process_pending_days(last_time)
 
       # Process the current day
       last_time = Time.current
@@ -92,6 +89,16 @@ class Loop
       config.logger.info "  Sleeping for #{config.interval} seconds...\n\n"
       sleep(config.interval)
     end
+  end
+
+  # Complete every day that ended while we were busy. After a long stall more
+  # than one day can be pending, and none of them may be skipped: a day passed
+  # over here is never written at all, and nothing comes back for it later. The
+  # range is empty while we are still on the same day.
+  def process_pending_days(last_time)
+    return unless last_time
+
+    (last_time.to_date..Date.yesterday).each { process_day(it) }
   end
 
   def process_historical_data
