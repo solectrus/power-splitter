@@ -54,4 +54,111 @@ describe Processor do
       )
     end
   end
+
+  describe '#call with battery tracking' do
+    subject(:call) do
+      described_class.new(day_records:, config:, battery_energy_grid:).call
+    end
+
+    let(:config) do
+      Config.new(
+        ENV.to_h.merge(
+          'INFLUX_SENSOR_BATTERY_DISCHARGING_POWER' => 'SENEC:bat_power_minus',
+          'BATTERY_GRID_ATTRIBUTION' => 'true',
+        ),
+      )
+    end
+    let(:battery_energy_grid) { 0 }
+
+    # 23:51 of one day until 00:10 of the next, so that the day boundary falls
+    # right between two 5-minute periods.
+    let(:midnight) { Time.new('2022-01-02 00:00:00 +01:00') }
+
+    # 10 minutes of charging the battery from the grid at 3000 W (500 Wh),
+    # then 10 minutes of running the heatpump off the battery at 2000 W.
+    let(:day_records) do
+      [
+        *Array.new(10) { |i| charging(midnight - 9.minutes + i.minutes) },
+        *Array.new(10) { |i| discharging(midnight + 1.minute + i.minutes) },
+      ]
+    end
+
+    def charging(time)
+      {
+        'time' => time,
+        'SENEC:grid_power_plus' => 3300,
+        'SENEC:house_power' => 300,
+        'SENEC:bat_power_plus' => 3000,
+        'SENEC:bat_power_minus' => 0,
+        'Heatpump:power' => 0,
+      }
+    end
+
+    def discharging(time)
+      {
+        'time' => time,
+        'SENEC:grid_power_plus' => 0,
+        'SENEC:house_power' => 2000,
+        'SENEC:bat_power_plus' => 0,
+        'SENEC:bat_power_minus' => 2000,
+        'Heatpump:power' => 2000,
+      }
+    end
+
+    def field(point, name)
+      point.instance_variable_get(:@fields)[name]
+    end
+
+    it 'fills the ledger while charging from the grid' do
+      expect(field(call.first, 'battery_energy_grid')).to be_within(0.01).of(250)
+      expect(field(call[1], 'battery_energy_grid')).to be_within(0.01).of(500)
+    end
+
+    it 'attributes the discharge to the heatpump' do
+      expect(field(call[2], 'heatpump_power_grid')).to eq(2000)
+      expect(field(call[3], 'heatpump_power_grid')).to eq(2000)
+    end
+
+    it 'empties the ledger by what the heatpump consumed' do
+      # 10 minutes at 2000 W is 333.33 Wh, leaving 166.67 Wh
+      expect(field(call.last, 'battery_energy_grid')).to be_within(0.01).of(
+        166.67,
+      )
+    end
+
+    context 'when the battery holds PV energy only' do
+      let(:day_records) do
+        Array.new(10) { |i| discharging(midnight + 1.minute + i.minutes) }
+      end
+
+      it 'attributes nothing to the grid' do
+        expect(field(call.first, 'heatpump_power_grid')).to eq(0)
+      end
+    end
+
+    # The ledger carries over between days, so processing a day on its own must
+    # give the same result as processing it as part of a longer stretch.
+    describe 'day boundary' do
+      def process(records, seed)
+        described_class.new(
+          day_records: records,
+          config:,
+          battery_energy_grid: seed,
+        ).call
+      end
+
+      it 'neither books a minute twice nor drops one' do
+        first_day = process(day_records.select { |r| r['time'] <= midnight }, 0)
+        second_day =
+          process(
+            day_records.select { |r| r['time'] > midnight },
+            field(first_day.last, 'battery_energy_grid'),
+          )
+
+        expect((first_day + second_day).map(&:to_line_protocol)).to eq(
+          call.map(&:to_line_protocol),
+        )
+      end
+    end
+  end
 end

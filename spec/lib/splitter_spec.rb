@@ -463,4 +463,204 @@ describe Splitter do
       end
     end
   end
+
+  describe '#call with battery tracking' do
+    subject(:call) { splitter.call }
+
+    let(:config) do
+      Config.new(
+        ENV.to_h.merge(
+          'INFLUX_SENSOR_BATTERY_DISCHARGING_POWER' => 'SENEC:bat_power_minus',
+          'BATTERY_GRID_ATTRIBUTION' => attribution,
+        ),
+      )
+    end
+    let(:attribution) { 'true' }
+
+    # 1 minute at 2000 W is 33.33 Wh
+    let(:full_discharge) do
+      {
+        grid_import_power: 0,
+        house_power: 0,
+        heatpump_power: 2000,
+        wallbox_power: 0,
+        battery_charging_power: 0,
+        battery_discharging_power: 2000,
+      }
+    end
+
+    context 'when the battery is charged from the grid' do
+      let(:record) do
+        {
+          grid_import_power: 3300,
+          house_power: 300,
+          heatpump_power: 0,
+          wallbox_power: 0,
+          battery_charging_power: 3000,
+          battery_discharging_power: 0,
+          battery_energy_grid: 0,
+        }
+      end
+
+      it 'books the grid share of the charging into the ledger' do
+        expect(call).to include(
+          battery_charging_power_grid: 3000,
+          battery_energy_grid: 50, # 3000 W for 1 minute
+        )
+      end
+    end
+
+    context 'when the battery is charged from PV' do
+      let(:record) do
+        {
+          grid_import_power: 0,
+          house_power: 300,
+          heatpump_power: 0,
+          wallbox_power: 0,
+          battery_charging_power: 3000,
+          battery_discharging_power: 0,
+          battery_energy_grid: 0,
+        }
+      end
+
+      it 'leaves the ledger empty' do
+        expect(call).to include(
+          battery_charging_power_grid: 0,
+          battery_energy_grid: 0,
+        )
+      end
+    end
+
+    context 'when discharging a battery holding grid energy' do
+      let(:record) { full_discharge.merge(battery_energy_grid: 50) }
+
+      it 'reports the heatpump as fully grid-powered' do
+        expect(call).to include(heatpump_power_grid: 2000)
+      end
+
+      it 'debits the ledger by what was passed on' do
+        expect(call[:battery_energy_grid]).to be_within(0.01).of(16.67)
+      end
+    end
+
+    context 'when discharging a battery holding PV energy only' do
+      let(:record) { full_discharge.merge(battery_energy_grid: 0) }
+
+      it 'reports the heatpump as fully PV-powered' do
+        expect(call).to include(
+          heatpump_power_grid: 0,
+          battery_energy_grid: 0,
+        )
+      end
+    end
+
+    context 'when discharging a battery holding a mix' do
+      let(:record) { full_discharge.merge(battery_energy_grid: 16.665) }
+
+      it 'splits the heatpump in half' do
+        expect(call[:heatpump_power_grid]).to be_within(1).of(1000)
+      end
+
+      it 'empties the ledger' do
+        expect(call[:battery_energy_grid]).to eq(0)
+      end
+    end
+
+    context 'when the discharge exceeds the current consumption' do
+      let(:record) do
+        full_discharge.merge(heatpump_power: 500, battery_energy_grid: 50)
+      end
+
+      it 'only pays out what reached the consumers' do
+        expect(call).to include(heatpump_power_grid: 500)
+        # 500 W for 1 minute is 8.33 Wh
+        expect(call[:battery_energy_grid]).to be_within(0.01).of(41.67)
+      end
+    end
+
+    context 'when the battery charges and discharges within the same minute' do
+      let(:record) do
+        {
+          grid_import_power: 1200,
+          house_power: 0,
+          heatpump_power: 1200,
+          wallbox_power: 0,
+          battery_charging_power: 600,
+          battery_discharging_power: 600,
+          battery_energy_grid: 0,
+        }
+      end
+
+      # Nothing is paid out, because the ledger was empty when the discharge
+      # was booked. Had the deposit come first, it would have been paid out
+      # again right away and the balance would have stayed at zero.
+      it 'pays out before it books the deposit' do
+        expect(call[:battery_energy_grid]).to be_within(0.01).of(6.67)
+      end
+    end
+
+    context 'when attribution is disabled' do
+      let(:attribution) { 'false' }
+      let(:record) { full_discharge.merge(battery_energy_grid: 50) }
+
+      it 'leaves the grid share of the consumers untouched' do
+        expect(call).to include(heatpump_power_grid: 0)
+      end
+
+      it 'still tracks the ledger' do
+        expect(call[:battery_energy_grid]).to be_within(0.01).of(16.67)
+      end
+    end
+
+    # Without the grid import nothing can be split, so the discharge must not
+    # drain the ledger either - the grid energy would be gone without any
+    # consumer having been credited with it.
+    context 'when grid_import_power is nil' do
+      let(:record) do
+        full_discharge.merge(grid_import_power: nil, battery_energy_grid: 50)
+      end
+
+      it 'reports no grid share for the consumers' do
+        expect(call).to include(heatpump_power_grid: nil)
+      end
+
+      it 'leaves the ledger untouched' do
+        expect(call[:battery_energy_grid]).to eq(50)
+      end
+    end
+
+    # The wallbox is served first and would otherwise be the one consumer that
+    # still gets a share - draining the ledger all by itself.
+    context 'when grid_import_power is nil while the wallbox runs' do
+      let(:record) do
+        full_discharge.merge(
+          grid_import_power: nil,
+          wallbox_power: 1500,
+          battery_energy_grid: 50,
+        )
+      end
+
+      it 'reports no grid share for the wallbox either' do
+        expect(call).to include(wallbox_power_grid: nil)
+      end
+
+      it 'leaves the ledger untouched' do
+        expect(call[:battery_energy_grid]).to eq(50)
+      end
+    end
+
+    context 'when the wallbox competes with the heatpump' do
+      let(:record) do
+        full_discharge.merge(wallbox_power: 1500, battery_energy_grid: 1000)
+      end
+
+      # The whole discharge is grid-sourced here, so the shares show through
+      it 'serves the wallbox first, as it does for grid import' do
+        expect(call).to include(
+          wallbox_power_grid: 1500,
+          heatpump_power_grid: 500,
+        )
+      end
+    end
+  end
 end
