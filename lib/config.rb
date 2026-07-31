@@ -53,6 +53,11 @@ class Config # rubocop:disable Metrics/ClassLength
     'power_splitter'
   end
 
+  # Tracking the grid share of the battery requires knowing what leaves it.
+  def battery_tracking?
+    exists?(:battery_charging_power) && exists?(:battery_discharging_power)
+  end
+
   def measurement(sensor_name)
     @measurement ||= {}
     @measurement[sensor_name] ||= splitted_sensor_name(sensor_name)&.first
@@ -102,6 +107,7 @@ class Config # rubocop:disable Metrics/ClassLength
     :heatpump_power,
     :wallbox_power,
     :battery_charging_power,
+    :battery_discharging_power,
     *(1..CUSTOM_SENSOR_COUNT).map do |index|
       format('custom_power_%02d', index).to_sym
     end,
@@ -179,13 +185,19 @@ class Config # rubocop:disable Metrics/ClassLength
     sensors_to_exclude =
       value.split(',').map { |sensor| sensor.strip.downcase.to_sym }
 
-    unless sensors_to_exclude.all? { |sensor| sensor_names.include?(sensor) }
+    unless sensors_to_exclude.all? { |sensor| excludable_sensors.include?(sensor) }
       raise Error,
             "Invalid sensor name in INFLUX_EXCLUDE_FROM_HOUSE_POWER: #{value}"
     end
 
     logger.info "  - Sensor 'house_power' excluded '#{sensors_to_exclude.join(', ')}'"
     define(:exclude_from_house_power, sensors_to_exclude)
+  end
+
+  # The battery discharge is a source, not a consumer of house power, so it can
+  # never be subtracted from it.
+  def excludable_sensors
+    sensor_names - [:battery_discharging_power]
   end
 
   def var_for(sensor_name)

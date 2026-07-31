@@ -15,6 +15,16 @@ VCR.configure do |config|
     config.filter_sensitive_data("<#{key_name}>") { ENV.fetch(key_name, nil) }
   end
 
+  # Flux queries all go to the same URI and differ only in their body. Deletes
+  # carry a current timestamp, so their body must not be matched on.
+  config.register_request_matcher(:flux_query) do |request, other|
+    if request.uri.include?('/api/v2/query')
+      request.body == other.body
+    else
+      true
+    end
+  end
+
   record_mode = ENV['VCR'] ? ENV['VCR'].to_sym : :once
   config.default_cassette_options = {
     record: record_mode,

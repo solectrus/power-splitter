@@ -143,4 +143,58 @@ describe Loop do
       end
     end
   end
+
+  describe '#battery_energy_grid_for' do
+    subject(:seed) { loop.__send__(:battery_energy_grid_for, day) }
+
+    # Battery tracking needs a discharging sensor, so it is on by default here
+    let(:extra_env) do
+      { 'INFLUX_SENSOR_BATTERY_DISCHARGING_POWER' => 'SENEC:bat_power_minus' }
+    end
+    let(:state) { nil }
+
+    def day
+      Date.new(2025, 10, 14)
+    end
+
+    before do
+      influx_pull = instance_double(InfluxPull)
+      allow(influx_pull).to receive(:battery_energy_grid_before).and_return(
+        state,
+      )
+      allow(InfluxPull).to receive(:new).and_return(influx_pull)
+    end
+
+    context 'without battery tracking' do
+      let(:extra_env) { {} }
+
+      it 'starts empty' do
+        expect(seed).to eq(0)
+      end
+    end
+
+    context 'when nothing was written yet' do
+      it 'starts empty' do
+        expect(seed).to eq(0)
+      end
+    end
+
+    context 'when the previous day left a balance' do
+      let(:state) { 123.4 }
+
+      it 'continues where the previous day left off' do
+        expect(seed).to eq(123.4)
+      end
+    end
+
+    # Anything outside the lookback window reads as nil, so a gap in the data
+    # and a fresh start are the same case here.
+    context 'when the balance is out of reach' do
+      it 'says so' do
+        seed
+
+        expect(logger.info_messages.join).to include('starting empty')
+      end
+    end
+  end
 end

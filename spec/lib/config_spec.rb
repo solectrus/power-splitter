@@ -33,6 +33,26 @@ describe Config do
     end
   end
 
+  describe 'battery tracking' do
+    let(:env) { valid_env }
+
+    it 'is off without a discharging sensor' do
+      expect(config).not_to be_battery_tracking
+    end
+
+    context 'with a discharging sensor' do
+      let(:env) do
+        valid_env.merge(
+          'INFLUX_SENSOR_BATTERY_DISCHARGING_POWER' => 'SENEC:bat_power_minus',
+        )
+      end
+
+      it 'is on' do
+        expect(config).to be_battery_tracking
+      end
+    end
+  end
+
   describe 'valid options (no wallbox)' do
     let(:env) do
       valid_env.except('INFLUX_SENSOR_WALLBOX_POWER').merge(
@@ -187,6 +207,23 @@ describe Config do
         expect { described_class.new(env) }.to raise_error(
           Config::Error,
           /must be set/,
+        )
+      end
+    end
+
+    describe 'when exclusion list contains the battery discharge' do
+      let(:env) do
+        valid_env.merge(
+          'INFLUX_SENSOR_BATTERY_DISCHARGING_POWER' => 'SENEC:bat_power_minus',
+          'INFLUX_EXCLUDE_FROM_HOUSE_POWER' =>
+            'HEATPUMP_POWER,BATTERY_DISCHARGING_POWER',
+        )
+      end
+
+      it 'raises an exception' do
+        expect { described_class.new(env) }.to raise_error(
+          Config::Error,
+          /Invalid sensor name/,
         )
       end
     end
