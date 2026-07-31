@@ -15,6 +15,7 @@ require 'active_support/core_ext'
 require 'loop'
 require 'config'
 require 'stdout_logger'
+require 'app_version'
 
 logger = StdoutLogger.new
 
@@ -22,7 +23,7 @@ buildtime = ENV.fetch('BUILDTIME', nil).presence
 buildtime = buildtime ? Time.parse(buildtime).localtime : '<unknown>'
 
 logger.info 'Power Splitter for SOLECTRUS, ' \
-              "Version #{ENV.fetch('VERSION', '<unknown>')}, " \
+              "Version #{AppVersion.current || '<unknown>'}, " \
               "built at #{buildtime}"
 logger.info "Using Ruby #{RUBY_VERSION} on platform #{RUBY_PLATFORM}"
 logger.info 'Copyright (c) 2024-2026 Georg Ledermann <georg@ledermann.dev>'
