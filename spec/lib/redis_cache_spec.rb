@@ -35,8 +35,8 @@ describe RedisCache do
 
     context 'when Redis cannot flush' do
       before do
-        allow(Redis).to receive(:new).and_return(
-          instance_double(Redis, flushall: 'ERROR'),
+        allow(RedisClient).to receive(:new).and_return(
+          instance_double(RedisClient, call: 'ERROR'),
         )
       end
 

@@ -15,8 +15,8 @@ gem 'ostruct'
 # A toolkit of support libraries and Ruby core extensions extracted from the Rails framework. (https://rubyonrails.org)
 gem 'activesupport'
 
-# A Ruby client library for Redis (https://github.com/redis/redis-rb)
-gem 'redis'
+# Simple low-level client for Redis 6+ (https://github.com/redis-rb/redis-client)
+gem 'redis-client'
 
 # Pg is the Ruby interface to the PostgreSQL RDBMS (https://github.com/ged/ruby-pg)
 gem 'pg'

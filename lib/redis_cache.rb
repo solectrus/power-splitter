@@ -1,4 +1,4 @@
-require 'redis'
+require 'redis-client'
 
 class RedisCache
   def initialize(config:)
@@ -12,7 +12,7 @@ class RedisCache
       return
     end
 
-    result = redis.flushall
+    result = redis.call('FLUSHALL')
     if result == 'OK'
       config.logger.info 'Redis cache flushed'
     else
@@ -25,6 +25,6 @@ class RedisCache
   def redis
     return unless config.redis_url
 
-    @redis ||= Redis.new(url: config.redis_url)
+    @redis ||= RedisClient.new(url: config.redis_url)
   end
 end
