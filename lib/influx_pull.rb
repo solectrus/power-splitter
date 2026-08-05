@@ -26,4 +26,8 @@ class InfluxPull
   def battery_energy_grid_before(time)
     Flux::LastState.new(config:).battery_energy_grid(before: time)
   end
+
+  def battery_ledger_written?
+    Flux::LastState.new(config:).written?
+  end
 end

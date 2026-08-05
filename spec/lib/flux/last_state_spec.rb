@@ -6,6 +6,54 @@ describe Flux::LastState do
   let(:first_time) { Time.new('2022-01-01 12:00:00 +01:00') }
   let(:second_time) { Time.new('2022-01-01 13:00:00 +01:00') }
 
+  def point(fields)
+    InfluxDB2::Point.new(
+      name: config.influx_measurement,
+      time: first_time.to_i,
+      fields:,
+    )
+  end
+
+  describe '#written?' do
+    context 'when the measurement is empty', vcr: 'last_state-written-empty' do
+      it 'returns false' do
+        expect(last_state.written?).to be(false)
+      end
+    end
+
+    context 'when the records predate the ledger',
+            vcr: {
+              cassette_name: 'last_state-written-without-ledger',
+              match_requests_on: %i[method uri flux_query],
+            } do
+      before { flux_write(point('house_power_grid' => 42)) }
+
+      after { flux_delete_all }
+
+      it 'returns false' do
+        expect(last_state.written?).to be(false)
+      end
+    end
+
+    # Older than the lookback window on purpose: this is about the whole
+    # history, not about a balance that can still be carried forward.
+    context 'when the ledger was written',
+            vcr: {
+              cassette_name: 'last_state-written-with-ledger',
+              match_requests_on: %i[method uri flux_query],
+            } do
+      before do
+        flux_write(point('house_power_grid' => 42, 'battery_energy_grid' => 0.0))
+      end
+
+      after { flux_delete_all }
+
+      it 'returns true' do
+        expect(last_state.written?).to be(true)
+      end
+    end
+  end
+
   describe '#battery_energy_grid' do
     context 'when there are no records', vcr: 'last_state-without-records' do
       it 'returns nil' do

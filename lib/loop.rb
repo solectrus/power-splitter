@@ -3,6 +3,7 @@ require 'influx_pull'
 require 'processor'
 require 'redis_cache'
 require 'postgres_summaries'
+require 'outdated_records'
 
 class Loop
   def initialize(config:, max_count: nil, max_wait: 12)
@@ -15,6 +16,8 @@ class Loop
 
   def start
     exit(1) unless influx_ready?(max_wait)
+
+    discard_outdated_records
 
     Signal.trap('USR1') { restart }
 
@@ -148,6 +151,10 @@ class Loop
 
     config.logger.info '  No recent battery ledger balance, starting empty'
     0
+  end
+
+  def discard_outdated_records
+    delete_all if OutdatedRecords.new(config:).exist?
   end
 
   def delete_all

@@ -144,6 +144,38 @@ describe Loop do
     end
   end
 
+  describe '#discard_outdated_records' do
+    subject(:discard) { loop.__send__(:discard_outdated_records) }
+
+    let(:outdated_records) { instance_double(OutdatedRecords, exist?: true) }
+    let(:influx_push) { instance_double(InfluxPush, delete_measurement: nil) }
+
+    before do
+      allow(OutdatedRecords).to receive(:new).and_return(outdated_records)
+      allow(InfluxPush).to receive(:new).and_return(influx_push)
+    end
+
+    context 'when the records are outdated' do
+      it 'deletes the measurement' do
+        discard
+
+        expect(influx_push).to have_received(:delete_measurement).with(
+          config.influx_measurement,
+        )
+      end
+    end
+
+    context 'when the records are up to date' do
+      let(:outdated_records) { instance_double(OutdatedRecords, exist?: false) }
+
+      it 'keeps them' do
+        discard
+
+        expect(influx_push).not_to have_received(:delete_measurement)
+      end
+    end
+  end
+
   describe '#battery_energy_grid_for' do
     subject(:seed) { loop.__send__(:battery_energy_grid_for, day) }
 

@@ -14,6 +14,21 @@ module Flux
     FIELD = 'battery_energy_grid'.freeze
     public_constant :FIELD
 
+    # Whether the ledger was ever written, searched over the whole history
+    # rather than MAX_AGE: this asks which version calculated the records, not
+    # what the battery did.
+    def written?
+      query_string = <<~FLUX
+        #{from_bucket}
+        |> #{range(start: Time.at(0))}
+        |> filter(fn: (r) => r["_measurement"] == "#{config.influx_measurement}" and r["_field"] == "#{FIELD}")
+        |> first()
+        |> keep(columns: ["_time"])
+      FLUX
+
+      query(query_string).any?
+    end
+
     def battery_energy_grid(before:)
       query_string = <<~FLUX
         #{from_bucket}

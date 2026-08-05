@@ -66,7 +66,14 @@ the consumers taking it out again. There is no switch for it.
 This version calculates the grid shares differently than the one before it, with
 or without the battery sensors. Existing data is only overwritten where the new
 calculation writes something, so old and new numbers would otherwise sit side by
-side. After updating:
+side.
+
+With both battery sensors set, this is noticed on start: records that do not
+carry the battery ledger were calculated by an older version, so they are
+deleted and rebuilt from scratch. The daily summaries are reset along with them,
+as long as the `DB_*` variables are set. Nothing needs to be done by hand.
+
+Without them there is no such marker, so after updating:
 
 1. Force a rebuild (see above)
 2. Reset the daily summaries in SOLECTRUS
