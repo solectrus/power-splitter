@@ -75,7 +75,7 @@ describe 'Day boundary' do # rubocop:disable RSpec/DescribeClass
     fields(process(day, seed).last)['battery_energy_grid']
   end
 
-  after { flux_delete_all }
+  after { flux_cleanup }
 
   # Data that stops before midnight and comes back hours later. The balance of
   # the day before is still there to be found - and must not be used.

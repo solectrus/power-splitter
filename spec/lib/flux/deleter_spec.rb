@@ -15,6 +15,18 @@ describe Flux::Deleter do
   describe '#delete_measurement' do
     subject(:delete) { deleter.delete_measurement('power_splitter') }
 
+    # The bucket holds the readings of every other SOLECTRUS component too,
+    # and a predicate is what keeps them out of reach.
+    it 'is limited to that measurement' do
+      delete
+
+      expect(delete_api).to have_received(:delete).with(
+        anything,
+        anything,
+        predicate: '_measurement="power_splitter"',
+      )
+    end
+
     # The range only exists because InfluxDB requires one, so it must not
     # select anything: a period is written under the timestamp of its center,
     # for one, so the one being measured right now lies ahead of the present.

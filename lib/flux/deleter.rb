@@ -1,6 +1,10 @@
 require_relative 'base'
 
 module Flux
+  # Deletes records, always of one named measurement. There is deliberately no
+  # way to express "everything": the bucket holds the readings of every other
+  # SOLECTRUS component as well, and nothing here has any business touching
+  # those - the app only ever throws away what it wrote itself.
   class Deleter < Flux::Base
     # A deletion is always a time range - InfluxDB requires both ends of it -
     # and we never mean anything but everything the predicate matches. So the
@@ -18,20 +22,10 @@ module Flux
     private_constant :BEGINNING, :END_OF_TIME
 
     def delete_measurement(measurement)
-      delete(measurement:)
-    end
-
-    def delete_all
-      delete
-    end
-
-    private
-
-    def delete(measurement: nil)
       delete_api.delete(
         BEGINNING,
         END_OF_TIME,
-        predicate: measurement ? "_measurement=\"#{measurement}\"" : nil,
+        predicate: "_measurement=\"#{measurement}\"",
       )
     end
   end

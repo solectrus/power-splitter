@@ -41,7 +41,7 @@ describe Flux::Extractor do
       flux_write(points)
     end
 
-    after { flux_delete_all }
+    after { flux_cleanup }
 
     context 'when day is in the past' do
       let(:day) { Date.yesterday }
@@ -193,7 +193,7 @@ describe Flux::Extractor do
       )
     end
 
-    after { flux_delete_all }
+    after { flux_cleanup }
 
     it 'weighs each value by the seconds it covered' do
       record = day_records.find { it['time'] == noon + 1.minute }

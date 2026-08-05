@@ -48,7 +48,7 @@ describe Flux::LastSplitter do
         flux_write(points)
       end
 
-      after { flux_delete_all }
+      after { flux_cleanup }
 
       it 'returns time' do
         expect(last_splitter.time).to eq(second_time)

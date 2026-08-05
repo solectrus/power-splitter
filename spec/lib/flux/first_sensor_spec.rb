@@ -40,7 +40,7 @@ describe Flux::FirstSensor do
         flux_write(points)
       end
 
-      after { flux_delete_all }
+      after { flux_cleanup }
 
       it 'returns time' do
         expect(first_sensor.time).to eq(first_time)

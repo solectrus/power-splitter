@@ -30,8 +30,8 @@ class Loop
       # 2. We received a USR1 signal and should restart.
       break unless restarting
 
-      # Restart requested, so delete all data and loop again.
-      delete_all
+      # Restart requested, so throw away what we calculated and loop again.
+      delete_own_records
       @restarting = false
     end
   rescue SystemExit, Interrupt
@@ -155,10 +155,12 @@ class Loop
   end
 
   def discard_outdated_records
-    delete_all if OutdatedRecords.new(config:).exist?
+    delete_own_records if OutdatedRecords.new(config:).exist?
   end
 
-  def delete_all
+  # Only the measurement the splitter writes itself. The bucket it shares with
+  # the other SOLECTRUS components is never touched as a whole.
+  def delete_own_records
     config.logger.info "\n--- Deleting all records from InfluxDB measurement '#{config.influx_measurement}'"
     influx_push.delete_measurement(config.influx_measurement)
     config.logger.info "  Ok, deleted successfully\n\n"

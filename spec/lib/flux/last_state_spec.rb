@@ -28,7 +28,7 @@ describe Flux::LastState do
             } do
       before { flux_write(point('house_power_grid' => 42)) }
 
-      after { flux_delete_all }
+      after { flux_cleanup }
 
       it 'returns false' do
         expect(last_state.written?).to be(false)
@@ -46,7 +46,7 @@ describe Flux::LastState do
         flux_write(point('house_power_grid' => 42, 'battery_energy_grid' => 0.0))
       end
 
-      after { flux_delete_all }
+      after { flux_cleanup }
 
       it 'returns true' do
         expect(last_state.written?).to be(true)
@@ -82,7 +82,7 @@ describe Flux::LastState do
         flux_write(points)
       end
 
-      after { flux_delete_all }
+      after { flux_cleanup }
 
       it 'returns the last balance before the given time' do
         expect(last_state.battery_energy_grid(before: second_time)).to eq(100.5)
