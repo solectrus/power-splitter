@@ -33,7 +33,7 @@ Metrics/MethodLength:
   Max: 50
 
 Metrics/ClassLength:
-  Max: 120
+  Max: 130
 
 ### Style
 

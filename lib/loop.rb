@@ -5,6 +5,7 @@ require 'redis_cache'
 require 'postgres_summaries'
 require 'outdated_records'
 require 'first_day'
+require 'timings'
 
 class Loop
   def initialize(config:, max_count: nil, max_wait: 12)
@@ -122,20 +123,27 @@ class Loop
 
   # Days must be processed in chronological order: the battery ledger of a day
   # continues where the previous day left off.
+  #
+  # The phases are timed and reported because which of them a slow day is spent
+  # in cannot be guessed: reading and writing are InfluxDB's time, calculating
+  # is ours, and on a small machine both compete for the same cores.
   def process_day(day)
+    timings = Timings.new
     config.logger.info "\n#{Time.current} - Processing day #{day}"
 
-    day_records = influx_pull.day_records(day.beginning_of_day)
+    day_records =
+      timings.measure(:read) { influx_pull.day_records(day.beginning_of_day) }
     return if day_records.empty?
 
-    splitted_powers =
-      Processor.new(
-        day:,
-        day_records:,
-        config:,
-        battery_energy_grid: battery_energy_grid_for(day),
-      ).call
-    influx_push.push(splitted_powers)
+    seed = timings.measure(:ledger) { battery_energy_grid_for(day) }
+    powers = timings.measure(:calc) { split(day, day_records, seed) }
+    timings.measure(:write) { influx_push.push(powers) }
+  ensure
+    config.logger.info "  #{timings}"
+  end
+
+  def split(day, day_records, battery_energy_grid)
+    Processor.new(day:, day_records:, config:, battery_energy_grid:).call
   end
 
   # Seed for the battery ledger, read back from InfluxDB so that recalculating
