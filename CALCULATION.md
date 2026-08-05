@@ -200,7 +200,7 @@ told apart from PV, and the two battery sensors, which are the deposit and the
 withdrawal themselves. A minute only loses a sensor after two hours of silence
 from it, so by then the battery may have been filled or emptied unseen. A full
 rebuild deletes the stored data along with the ledger and builds it up again
-from the installation date.
+from where the sensor data begins, at the earliest from the installation date.
 
 Two hours is also how long a measured value is carried forward: sensors report
 irregularly, so the last one has to cover the moments in between - and every

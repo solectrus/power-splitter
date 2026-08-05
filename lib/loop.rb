@@ -4,6 +4,7 @@ require 'processor'
 require 'redis_cache'
 require 'postgres_summaries'
 require 'outdated_records'
+require 'first_day'
 
 class Loop
   def initialize(config:, max_count: nil, max_wait: 12)
@@ -105,7 +106,7 @@ class Loop
   end
 
   def process_historical_data
-    day = influx_pull.last_splitter_date || config.installation_date || influx_pull.first_sensor_date
+    day = influx_pull.last_splitter_date || FirstDay.new(config:).date
     return unless day
     return if day >= Date.current
 
