@@ -6,8 +6,9 @@ require 'postgres_summaries'
 require 'outdated_records'
 require 'first_day'
 require 'timings'
+require 'read_ahead'
 
-class Loop
+class Loop # rubocop:disable Metrics/ClassLength
   def initialize(config:, max_count: nil, max_wait: 12)
     @config = config
     @max_count = max_count
@@ -86,7 +87,7 @@ class Loop
 
       # Process the current day
       last_time = Time.current
-      process_day(Date.current)
+      process_days(Date.current..Date.current)
 
       count += 1
       break if max_count && count >= max_count
@@ -103,7 +104,7 @@ class Loop
   def process_pending_days(last_time)
     return unless last_time
 
-    (last_time.to_date..Date.yesterday).each { process_day(it) }
+    process_days(last_time.to_date..Date.yesterday)
   end
 
   def process_historical_data
@@ -113,7 +114,7 @@ class Loop
 
     config.logger.info "--- Processing historical data since #{day}"
 
-    (day..Date.current).each { process_day(it) }
+    process_days(day..Date.current)
 
     RedisCache.new(config:).flush
     PostgresSummaries.new(config:).reset(since: day)
@@ -122,17 +123,33 @@ class Loop
   end
 
   # Days must be processed in chronological order: the battery ledger of a day
-  # continues where the previous day left off.
-  #
+  # continues where the previous day left off. Which is what makes reading
+  # ahead worth it - the days cannot be spread over several workers, but the
+  # reading of one can overlap the calculating of another.
+  def process_days(days)
+    reader =
+      ReadAhead.new(days) { |day| influx_pull.day_records(day.beginning_of_day) }
+
+    days.each { |day| process_day(day, reader) }
+  ensure
+    reader&.cancel
+  end
+
   # The phases are timed and reported because which of them a slow day is spent
-  # in cannot be guessed: reading and writing are InfluxDB's time, calculating
-  # is ours, and on a small machine both compete for the same cores.
-  def process_day(day)
+  # in cannot be guessed. They run one after the other here, so they add up to
+  # the day - but two of them no longer mean what their name suggests, now that
+  # the next day is read while this one is worked on.
+  #
+  # `read` is the wait for records that are largely there already, not the
+  # length of the query. And `calc` covers the parsing of the next day's answer
+  # as well: that happens in the other thread, but against the same GVL, so it
+  # lands on this clock rather than beside it. A `calc` that grew while `read`
+  # collapsed is the two trading places, not a split that got slower.
+  def process_day(day, reader)
     timings = Timings.new
     config.logger.info "\n#{Time.current} - Processing day #{day}"
 
-    day_records =
-      timings.measure(:read) { influx_pull.day_records(day.beginning_of_day) }
+    day_records = timings.measure(:read) { reader.records(day) }
     return if day_records.empty?
 
     seed = timings.measure(:ledger) { battery_energy_grid_for(day) }
