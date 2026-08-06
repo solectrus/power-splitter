@@ -1,3 +1,4 @@
+require 'config'
 require 'allocator'
 require 'battery_ledger'
 
@@ -44,11 +45,17 @@ class Splitter
   def call
     consumer_powers
       .keys
-      .to_h { |key| [:"#{key}_grid", grid_share(key)] }
+      .to_h { |key| [GRID_KEYS.fetch(key), grid_share(key)] }
       .merge(battery_grid_share, ledger_balance)
   end
 
   private
+
+  # The name each consumer reports its grid share under. Built once from the
+  # sensors that exist rather than per consumer and record, where it was some
+  # thirty thousand interned strings a day.
+  GRID_KEYS = Config::SENSOR_NAMES.to_h { [it, :"#{it}_grid"] }.freeze
+  private_constant :GRID_KEYS
 
   # Grid share of a consumer: what it took directly from the grid, plus the
   # grid-sourced part of what it took from the battery.
@@ -141,9 +148,13 @@ class Splitter
     }
   end
 
+  # The config lists the custom sensors in the same order the powers arrive in,
+  # so their names are read off it rather than formatted back - and a power
+  # with no sensor to belong to says the two have drifted apart, which is worth
+  # more than a key of nil.
   def custom_powers
     custom_power.each_with_index.to_h do |power, index|
-      [format('custom_power_%02d', index + 1).to_sym, power]
+      [config.custom_sensors.fetch(index), power]
     end
   end
 
@@ -152,7 +163,7 @@ class Splitter
   def counted
     @counted ||=
       consumer_powers.keys.reject do |key|
-        key.to_s.start_with?('custom_power_') &&
+        key.start_with?('custom_power_') &&
           !config.exclude_from_house_power.include?(key)
       end
   end

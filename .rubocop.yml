@@ -66,6 +66,12 @@ Style/InlineComment:
 Style/StringHashKeys:
   Enabled: false
 
+# `[]` answers a missing key with nil and `fetch` raises, so which one belongs
+# at a call site is what that site means, not a matter of style. Off upstream
+# for the same reason.
+Style/HashLookupMethod:
+  Enabled: false
+
 Style/DocumentationMethod:
   Enabled: false
 

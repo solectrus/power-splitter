@@ -180,6 +180,16 @@ class Processor
     record[identifier] || default
   end
 
+  # The sensors house power is broken out into, in the order they are listed.
+  # Which ones those are follows from the config alone, so the list is drawn up
+  # once rather than searched per record - of the twenty-two candidates a
+  # typical config names two.
+  def excluded_sensors
+    @excluded_sensors ||=
+      [:heatpump_power, :wallbox_power, *config.custom_sensors] &
+        config.exclude_from_house_power
+  end
+
   # House power is mandatory, so a record without it is a gap rather than a
   # sensor that does not exist. Reading it as zero would claim the house drew
   # nothing from the grid and shrink the key the split is proportional to.
@@ -187,11 +197,7 @@ class Processor
     result = power_value(record, :house_power)
     return if result.nil?
 
-    [:heatpump_power, :wallbox_power, *config.custom_sensors].each do |sensor|
-      next unless config.exclude_from_house_power.include?(sensor)
-
-      result -= power_value(record, sensor, 0)
-    end
+    excluded_sensors.each { |sensor| result -= power_value(record, sensor, 0) }
 
     [result, 0].max
   end

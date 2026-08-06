@@ -68,11 +68,15 @@ class Config # rubocop:disable Metrics/ClassLength
     @field[sensor_name] ||= splitted_sensor_name(sensor_name)&.last
   end
 
+  # Asked for every sensor of every record, so the answer - which is fixed for
+  # the life of the config - is kept rather than looked up again. `nil` is one
+  # of the answers, hence `key?` rather than `||=`.
   def identifier(sensor_name)
-    sensor_method = sensor_name.downcase
-    return unless respond_to?(sensor_method)
+    @identifier ||= {}
+    return @identifier[sensor_name] if @identifier.key?(sensor_name)
 
-    public_send(sensor_method)
+    sensor_method = sensor_name.downcase
+    @identifier[sensor_name] = (public_send(sensor_method) if respond_to?(sensor_method))
   end
 
   def exists?(sensor_name)
@@ -89,10 +93,17 @@ class Config # rubocop:disable Metrics/ClassLength
     @sensor_names ||= SENSOR_NAMES.filter { |sensor_name| exists?(sensor_name) }
   end
 
+  # Only the ones that were given a sensor. The others reported nothing but nil
+  # all the way through the split, to be dropped again at the end - twenty
+  # consumers carried through every record of every day so that a config naming
+  # two of them could find them.
+  #
+  # The order is what names them: the powers travel to the Splitter as a list,
+  # and it reads their names back off here.
   def custom_sensors
     @custom_sensors ||=
       SENSOR_NAMES
-        .select { |sensor| sensor.to_s.start_with?('custom_power_') }
+        .select { |sensor| sensor.start_with?('custom_power_') && exists?(sensor) }
         .sort_by(&:to_s)
   end
 
