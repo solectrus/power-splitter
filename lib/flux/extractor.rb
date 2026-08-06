@@ -4,7 +4,11 @@ module Flux
   # Reads a day of sensor readings out of InfluxDB, for the sensors the config
   # names.
   #
-  #   Flux::Extractor.new(config:).records(Date.new(2024, 8, 27))
+  # Read in two halves, so that the waiting can be done beside the rest of the
+  # work rather than before it:
+  #
+  #   extractor = Flux::Extractor.new(config:)
+  #   extractor.records(extractor.fetch(Date.new(2024, 8, 27)))
   #   # => [{ "time"                  => 2024-08-27 00:01:00 +0200,
   #   #       "SENEC:grid_power_plus" => 2500.0,
   #   #       "SENEC:house_power"     => 481.5,
@@ -38,16 +42,31 @@ module Flux
 
     private_constant :VALUES, :GAPS, :KEY_COLUMNS
 
-    def records(day)
+    # InfluxDB's answer to the day's query, unread. Waiting for it is the one
+    # part of reading a day that is not Ruby's own work, so it is the part that
+    # can be done in a thread beside the rest without taking the GVL from it.
+    #
+    # Nil for a day that has not begun, which there is nothing to ask about.
+    def fetch(day)
       start = day.beginning_of_day
       stop = day_stop(day)
-      return [] if stop <= start
+      return if stop <= start
 
       # What a minute is worth and whether it is worth anything at all are
       # asked at different resolutions: the value needs the 5s stream, whether
       # it counts only the raw one. Both travel in one request.
-      rows = query(values_query(start, stop) + gaps_query(start, stop))
-      extract_and_transform_data(within_reach(rows))
+      read_api.query_raw(
+        query: values_query(start, stop) + gaps_query(start, stop),
+      )
+    end
+
+    # The records that answer holds. Ruby from end to end, against the same GVL
+    # as the split that follows - so it is done in line with the split rather
+    # than beside it, where the two would only take turns.
+    def records(answer)
+      return [] unless answer
+
+      extract_and_transform_data(within_reach(CsvParser.call(answer)))
     end
 
     private

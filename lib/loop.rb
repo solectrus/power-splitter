@@ -128,7 +128,7 @@ class Loop # rubocop:disable Metrics/ClassLength
   # reading of one can overlap the calculating of another.
   def process_days(days)
     reader =
-      ReadAhead.new(days) { |day| influx_pull.day_records(day.beginning_of_day) }
+      ReadAhead.new(days) { |day| influx_pull.fetch_day(day.beginning_of_day) }
 
     days.each { |day| process_day(day, reader) }
   ensure
@@ -137,19 +137,18 @@ class Loop # rubocop:disable Metrics/ClassLength
 
   # The phases are timed and reported because which of them a slow day is spent
   # in cannot be guessed. They run one after the other here, so they add up to
-  # the day - but two of them no longer mean what their name suggests, now that
-  # the next day is read while this one is worked on.
+  # the day - and each of them means what it says, because the only thing
+  # happening beside them waits rather than works.
   #
-  # `read` is the wait for records that are largely there already, not the
-  # length of the query. And `calc` covers the parsing of the next day's answer
-  # as well: that happens in the other thread, but against the same GVL, so it
-  # lands on this clock rather than beside it. A `calc` that grew while `read`
-  # collapsed is the two trading places, not a split that got slower.
+  # `read` is what is left of the wait for an answer that was asked for while
+  # the day before was still being worked on: the part of the query that could
+  # not be hidden behind it, and nothing else.
   def process_day(day, reader)
     timings = Timings.new
     config.logger.info "\n#{Time.current} - Processing day #{day}"
 
-    day_records = timings.measure(:read) { reader.records(day) }
+    answer = timings.measure(:read) { reader.answer(day) }
+    day_records = timings.measure(:parse) { influx_pull.records_from(answer) }
     return if day_records.empty?
 
     seed = timings.measure(:ledger) { battery_energy_grid_for(day) }

@@ -1,7 +1,7 @@
 # Time spent in the phases of a run, in the order they were measured.
 #
 #   timings = Timings.new
-#   timings.measure(:read) { influx_pull.day_records(day) }
+#   timings.measure(:read) { influx_pull.fetch_day(day) }
 #   timings.measure(:calc) { Processor.new(...).call }
 #   timings.to_s # => "read 3.81s, calc 1.14s, total 4.95s"
 #

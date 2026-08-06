@@ -19,8 +19,15 @@ class InfluxPull
     Flux::LastSplitter.new(config:).time&.to_date
   end
 
-  def day_records(day)
-    Flux::Extractor.new(config:).records(day)
+  # Reading a day is split in two: waiting for InfluxDB, which is nothing of
+  # ours, and reading its answer, which is Ruby like everything after it. Only
+  # the first belongs in a thread of its own.
+  def fetch_day(day)
+    Flux::Extractor.new(config:).fetch(day)
+  end
+
+  def records_from(answer)
+    Flux::Extractor.new(config:).records(answer)
   end
 
   def battery_energy_grid_before(time)

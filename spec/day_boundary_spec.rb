@@ -65,7 +65,7 @@ describe 'Day boundary' do # rubocop:disable RSpec/DescribeClass
   def process(day, seed)
     Processor.new(
       day:,
-      day_records: extractor.records(day),
+      day_records: extractor.records(extractor.fetch(day)),
       config:,
       battery_energy_grid: seed,
     ).call
@@ -94,7 +94,7 @@ describe 'Day boundary' do # rubocop:disable RSpec/DescribeClass
     end
 
     it 'starts the day behind the gap' do
-      expect(extractor.records(today).first['time']).to eq(
+      expect(extractor.records(extractor.fetch(today)).first['time']).to eq(
         today.in_time_zone(config.time_zone) + 91.minutes,
       )
     end
@@ -128,7 +128,7 @@ describe 'Day boundary' do # rubocop:disable RSpec/DescribeClass
     end
 
     it 'starts the day at its first minute' do
-      expect(extractor.records(today).first['time']).to eq(
+      expect(extractor.records(extractor.fetch(today)).first['time']).to eq(
         today.in_time_zone(config.time_zone) + 1.minute,
       )
     end

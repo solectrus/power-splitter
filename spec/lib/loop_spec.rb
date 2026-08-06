@@ -225,7 +225,8 @@ describe Loop do
       allow(InfluxPull).to receive(:new).and_return(influx_pull)
       allow(influx_pull).to receive_messages(
         last_splitter_date: Date.new(2025, 10, 10),
-        day_records: [],
+        fetch_day: nil,
+        records_from: [],
       )
       allow(RedisCache).to receive(:new).and_return(
         instance_double(RedisCache, flush: nil),
@@ -261,7 +262,7 @@ describe Loop do
   describe '#process_pending_days' do
     subject(:process) { loop.__send__(:process_pending_days, last_time) }
 
-    let(:influx_pull) { instance_double(InfluxPull, day_records: []) }
+    let(:influx_pull) { instance_double(InfluxPull, fetch_day: nil, records_from: []) }
 
     before do
       allow(Date).to receive(:current).and_return(Date.new(2025, 10, 14))
@@ -274,7 +275,7 @@ describe Loop do
       it 'processes nothing' do
         process
 
-        expect(influx_pull).not_to have_received(:day_records)
+        expect(influx_pull).not_to have_received(:fetch_day)
       end
     end
 
@@ -284,7 +285,7 @@ describe Loop do
       it 'processes nothing' do
         process
 
-        expect(influx_pull).not_to have_received(:day_records)
+        expect(influx_pull).not_to have_received(:fetch_day)
       end
     end
 
@@ -294,7 +295,7 @@ describe Loop do
       it 'completes yesterday' do
         process
 
-        expect(influx_pull).to have_received(:day_records).with(
+        expect(influx_pull).to have_received(:fetch_day).with(
           Date.new(2025, 10, 13).beginning_of_day,
         ).once
       end
@@ -308,13 +309,13 @@ describe Loop do
       it 'completes them in chronological order' do
         process
 
-        expect(influx_pull).to have_received(:day_records).with(
+        expect(influx_pull).to have_received(:fetch_day).with(
           Date.new(2025, 10, 11).beginning_of_day,
         ).ordered
-        expect(influx_pull).to have_received(:day_records).with(
+        expect(influx_pull).to have_received(:fetch_day).with(
           Date.new(2025, 10, 12).beginning_of_day,
         ).ordered
-        expect(influx_pull).to have_received(:day_records).with(
+        expect(influx_pull).to have_received(:fetch_day).with(
           Date.new(2025, 10, 13).beginning_of_day,
         ).ordered
       end

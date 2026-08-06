@@ -7,7 +7,7 @@ describe Flux::Extractor do
   let(:config) { Config.new(ENV) }
 
   describe '#records', vcr: 'extractor' do
-    subject(:day_records) { extractor.records(day) }
+    subject(:day_records) { extractor.records(extractor.fetch(day)) }
 
     let(:time) { day.in_time_zone(config.time_zone).change(hour: 9, min: 42) }
 
@@ -170,7 +170,7 @@ describe Flux::Extractor do
              cassette_name: 'extractor-irregular',
              match_requests_on: %i[method uri flux_query],
            } do
-    subject(:day_records) { extractor.records(day) }
+    subject(:day_records) { extractor.records(extractor.fetch(day)) }
 
     let(:day) { Date.new(2024, 8, 27) }
     let(:noon) { day.in_time_zone(config.time_zone).change(hour: 12) }
@@ -208,7 +208,7 @@ describe Flux::Extractor do
   # tables no longer span the same minutes. Assembled in table order, the
   # records would come out interleaved.
   describe '#records when the sensors cover different minutes' do
-    subject(:day_records) { extractor.records(day) }
+    subject(:day_records) { extractor.records(extractor.fetch(day)) }
 
     let(:day) { Date.new(2024, 8, 27) }
 
@@ -269,7 +269,7 @@ describe Flux::Extractor do
     before { travel_to(day.in_time_zone(config.time_zone).change(min: 2)) }
 
     it 'returns nothing' do
-      expect(extractor.records(day)).to eq([])
+      expect(extractor.records(extractor.fetch(day))).to eq([])
     end
   end
 end
