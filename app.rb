@@ -25,7 +25,7 @@ buildtime = buildtime ? Time.parse(buildtime).localtime : '<unknown>'
 logger.info 'Power Splitter for SOLECTRUS, ' \
               "Version #{AppVersion.current || '<unknown>'}, " \
               "built at #{buildtime}"
-logger.info "Using Ruby #{RUBY_VERSION} on platform #{RUBY_PLATFORM}"
+logger.info "Using #{RUBY_DESCRIPTION}"
 logger.info 'Copyright (c) 2024-2026 Georg Ledermann <georg@ledermann.dev>'
 logger.info 'https://github.com/solectrus/power-splitter'
 logger.info "\n"
