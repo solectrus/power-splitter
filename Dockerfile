@@ -3,6 +3,11 @@ RUN apk add --no-cache build-base postgresql-dev
 
 WORKDIR /power-splitter
 COPY Gemfile* /power-splitter/
+# The precompiled musl build of pg carries its own libpq with OpenSSL and krb5
+# linked in statically - six times the size of the one built here against the
+# 350 KB libpq of Alpine. Building it costs seconds of CI; shipping it costs
+# every user megabytes on every pull. Hence no precompiled gems, and hence no
+# musl platforms in Gemfile.lock: they would never be used.
 RUN bundle config --local frozen 1 && \
     bundle config --local without 'development test' && \
     bundle config --local force_ruby_platform true && \
