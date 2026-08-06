@@ -33,6 +33,41 @@ describe Config do
     end
   end
 
+  describe '#exists?' do
+    let(:env) { valid_env }
+
+    it 'is true for a configured sensor' do
+      expect(config.exists?(:house_power)).to be(true)
+    end
+
+    it 'is false for a sensor left out' do
+      expect(config.exists?(:battery_discharging_power)).to be(false)
+    end
+
+    # A name outside the list is a typo in the code, not a missing sensor -
+    # answering false would let it pass as one that was never configured.
+    it 'rejects a name that is no sensor at all' do
+      expect { config.exists?(:solar_power) }.to raise_error(
+        ArgumentError,
+        /Unknown or invalid sensor name/,
+      )
+    end
+  end
+
+  # The accessors exist only for what was actually configured, so a name that
+  # is no sensor at all maps to nothing instead of blowing up.
+  describe 'a name that is no sensor' do
+    let(:env) { valid_env }
+
+    it 'has no identifier' do
+      expect(config.identifier(:solar_power)).to be_nil
+    end
+
+    it 'has no field' do
+      expect(config.field(:solar_power)).to be_nil
+    end
+  end
+
   describe 'battery tracking' do
     let(:env) { valid_env }
 

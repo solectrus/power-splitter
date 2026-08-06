@@ -1,4 +1,5 @@
 require 'influx_push'
+require 'flux/last_splitter'
 require 'config'
 
 describe InfluxPush do
@@ -52,5 +53,31 @@ describe InfluxPush do
     expect(config.logger.error_messages).to include(
       /Error while pushing to InfluxDB: StandardError/,
     )
+  end
+
+  describe '#delete_measurement',
+           vcr: {
+             cassette_name: 'influx_push-delete',
+             match_requests_on: %i[method uri flux_query],
+           } do
+    before do
+      flux_write(
+        InfluxDB2::Point.new(
+          name: config.influx_measurement,
+          time: Time.new('2022-01-01 12:00:00 +01:00').to_i,
+          fields: {
+            'house_power_grid' => 42,
+          },
+        ),
+      )
+    end
+
+    after { flux_cleanup }
+
+    it 'removes what was written' do
+      expect do
+        influx_push.delete_measurement(config.influx_measurement)
+      end.to change { Flux::LastSplitter.new(config:).time }.to(nil)
+    end
   end
 end

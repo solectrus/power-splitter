@@ -260,4 +260,16 @@ describe Flux::Extractor do
       )
     end
   end
+
+  # A day only reaches up to its last completed period, and right after
+  # midnight there is none - so there is nothing to ask InfluxDB about either.
+  describe '#records before the first period of the day is complete' do
+    let(:day) { Date.new(2024, 8, 28) }
+
+    before { travel_to(day.in_time_zone(config.time_zone).change(min: 2)) }
+
+    it 'returns nothing' do
+      expect(extractor.records(day)).to eq([])
+    end
+  end
 end

@@ -69,7 +69,7 @@ module Flux
     end
 
     def range(start:, stop: nil)
-      start = start&.iso8601
+      start = start.iso8601
       stop = stop&.iso8601
 
       stop ? "range(start: #{start}, stop: #{stop})" : "range(start: #{start})"

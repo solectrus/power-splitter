@@ -25,7 +25,7 @@ class PostgresSummaries
       conn.exec('DELETE FROM summaries WHERE date >= $1', [since])
       config.logger.info "Removed summaries since #{since}"
     ensure
-      conn&.close
+      conn.close
     end
   rescue StandardError => e
     config.logger.error "Failed to reset summaries table: #{e.message}"

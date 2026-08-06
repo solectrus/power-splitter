@@ -1,5 +1,16 @@
 require 'simplecov'
-SimpleCov.start
+SimpleCov.start do
+  # A line that runs is not a line that was tried both ways, and the gaps that
+  # matter here are the ones where a branch was never taken.
+  enable_coverage :branch
+
+  # A run of a single spec file covers a fraction of the code, so the gate
+  # belongs to the complete suite - which is what CI always runs, and what an
+  # `rspec` without arguments is locally.
+  if ENV['CI'] || ARGV.grep_v(/\A-/).empty?
+    minimum_coverage line: 100, branch: 100
+  end
+end
 
 require 'bundler/setup'
 Bundler.require

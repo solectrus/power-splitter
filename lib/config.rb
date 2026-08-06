@@ -80,10 +80,8 @@ class Config # rubocop:disable Metrics/ClassLength
     when *SENSOR_NAMES
       measurement(sensor_name).present? && field(sensor_name).present?
     else
-      # simplecov:disable
       raise ArgumentError,
             "Unknown or invalid sensor name: #{sensor_name.inspect}"
-      # simplecov:enable
     end
   end
 
@@ -170,7 +168,7 @@ class Config # rubocop:disable Metrics/ClassLength
   end
 
   def define_sensor(sensor_name, value)
-    logger.info "  - Sensor '#{sensor_name}' #{value ? "mapped to '#{value}'" : 'ignored'}"
+    logger.info "  - Sensor '#{sensor_name}' mapped to '#{value}'"
 
     define(sensor_name, value)
   end
@@ -214,7 +212,6 @@ class Config # rubocop:disable Metrics/ClassLength
   private_constant :SENSOR_REGEX
 
   def validate!(sensor_name, value)
-    return if value.nil?
     return if value.match?(SENSOR_REGEX)
 
     raise Error,

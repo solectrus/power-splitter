@@ -1,147 +1,12 @@
 ---
 http_interactions:
 - request:
-    method: get
-    uri: http://<INFLUX_HOST>:8086/ping
-    body:
-      encoding: US-ASCII
-      string: ''
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - influxdb-client-ruby/3.2.0
-      Authorization:
-      - Token <INFLUX_TOKEN>
-  response:
-    status:
-      code: 204
-      message: No Content
-    headers:
-      Vary:
-      - Accept-Encoding
-      X-Influxdb-Build:
-      - OSS
-      X-Influxdb-Version:
-      - v2.9.1
-      Date:
-      - Thu, 06 Aug 2026 06:19:36 GMT
-    body:
-      encoding: UTF-8
-      string: ''
-  recorded_at: Thu, 06 Aug 2026 06:19:36 GMT
-- request:
     method: post
     uri: http://<INFLUX_HOST>:8086/api/v2/query?org=<INFLUX_ORG>
     body:
       encoding: UTF-8
-      string: '{"query":"from(bucket: \"<INFLUX_BUCKET>\")\n|\u003e range(start: 1970-01-01T01:00:00+01:00)\n|\u003e
-        filter(fn: (r) =\u003e r[\"_measurement\"] == \"power_splitter\")\n|\u003e
-        last()\n|\u003e keep(columns: [\"_time\"])\n|\u003e max(column: \"_time\")\n","dialect":{"header":true,"delimiter":",","annotations":["datatype","group","default"],"commentPrefix":"#","dateTimeFormat":"RFC3339"}}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - influxdb-client-ruby/3.2.0
-      Authorization:
-      - Token <INFLUX_TOKEN>
-      Content-Type:
-      - application/json
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Content-Type:
-      - text/csv; charset=utf-8
-      Vary:
-      - Accept-Encoding
-      X-Influxdb-Build:
-      - OSS
-      X-Influxdb-Version:
-      - v2.9.1
-      Date:
-      - Thu, 06 Aug 2026 06:19:36 GMT
-      Transfer-Encoding:
-      - chunked
-    body:
-      encoding: UTF-8
-      string: "\r\n"
-  recorded_at: Thu, 06 Aug 2026 06:19:36 GMT
-- request:
-    method: post
-    uri: http://<INFLUX_HOST>:8086/api/v2/query?org=<INFLUX_ORG>
-    body:
-      encoding: UTF-8
-      string: '{"query":"from(bucket: \"<INFLUX_BUCKET>\")\n|\u003e range(start: 1970-01-01T01:00:00+01:00)\n|\u003e
-        filter(fn: (r) =\u003e r[\"_measurement\"] == \"SENEC\" and (r[\"_field\"]
-        == \"grid_power_plus\" or r[\"_field\"] == \"house_power\" or r[\"_field\"]
-        == \"wallbox_charge_power\" or r[\"_field\"] == \"bat_power_plus\") or r[\"_measurement\"]
-        == \"Heatpump\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-01\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-02\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-03\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-04\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-05\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-06\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-07\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-08\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-09\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-10\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-11\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-12\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-13\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-14\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-15\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-16\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-17\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-18\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-19\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
-        \"Consumer-20\" and (r[\"_field\"] == \"power\"))\n|\u003e first()\n|\u003e
-        keep(columns: [\"_time\"])\n|\u003e min(column: \"_time\")\n","dialect":{"header":true,"delimiter":",","annotations":["datatype","group","default"],"commentPrefix":"#","dateTimeFormat":"RFC3339"}}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - influxdb-client-ruby/3.2.0
-      Authorization:
-      - Token <INFLUX_TOKEN>
-      Content-Type:
-      - application/json
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Content-Type:
-      - text/csv; charset=utf-8
-      Vary:
-      - Accept-Encoding
-      X-Influxdb-Build:
-      - OSS
-      X-Influxdb-Version:
-      - v2.9.1
-      Date:
-      - Thu, 06 Aug 2026 06:19:36 GMT
-      Transfer-Encoding:
-      - chunked
-    body:
-      encoding: UTF-8
-      string: "\r\n"
-  recorded_at: Thu, 06 Aug 2026 06:19:36 GMT
-- request:
-    method: post
-    uri: http://<INFLUX_HOST>:8086/api/v2/query?org=<INFLUX_ORG>
-    body:
-      encoding: UTF-8
-      string: '{"query":"from(bucket: \"<INFLUX_BUCKET>\")\n|\u003e range(start: 2026-08-05T22:00:00+02:00,
-        stop: 2026-08-06T08:15:00+02:00)\n|\u003e filter(fn: (r) =\u003e r[\"_measurement\"]
+      string: '{"query":"from(bucket: \"<INFLUX_BUCKET>\")\n|\u003e range(start: 2024-06-11T22:00:00+02:00,
+        stop: 2024-06-12T06:00:00+02:00)\n|\u003e filter(fn: (r) =\u003e r[\"_measurement\"]
         == \"SENEC\" and (r[\"_field\"] == \"grid_power_plus\" or r[\"_field\"] ==
         \"house_power\" or r[\"_field\"] == \"wallbox_charge_power\" or r[\"_field\"]
         == \"bat_power_plus\") or r[\"_measurement\"] == \"Heatpump\" and (r[\"_field\"]
@@ -168,9 +33,9 @@ http_interactions:
         == \"power\"))\n|\u003e aggregateWindow(every: 5s, fn: last, timeSrc: \"_start\")\n|\u003e
         fill(usePrevious: true)\n|\u003e aggregateWindow(every: 60s, fn: mean)\n|\u003e
         filter(fn: (r) =\u003e exists r._value)\n|\u003e filter(fn: (r) =\u003e r[\"_time\"]
-        \u003e= 2026-08-05T22:01:00Z)\n|\u003e keep(columns: [\"_time\", \"_measurement\",
+        \u003e= 2024-06-11T22:01:00Z)\n|\u003e keep(columns: [\"_time\", \"_measurement\",
         \"_field\", \"_value\"])\n|\u003e yield(name: \"values\")\nfrom(bucket: \"<INFLUX_BUCKET>\")\n|\u003e
-        range(start: 2026-08-05T22:00:00+02:00, stop: 2026-08-06T08:15:00+02:00)\n|\u003e
+        range(start: 2024-06-11T22:00:00+02:00, stop: 2024-06-12T06:00:00+02:00)\n|\u003e
         filter(fn: (r) =\u003e r[\"_measurement\"] == \"SENEC\" and (r[\"_field\"]
         == \"grid_power_plus\" or r[\"_field\"] == \"house_power\" or r[\"_field\"]
         == \"wallbox_charge_power\" or r[\"_field\"] == \"bat_power_plus\") or r[\"_measurement\"]
@@ -198,7 +63,7 @@ http_interactions:
         60s, fn: count, createEmpty: true)\n|\u003e stateDuration(fn: (r) =\u003e
         not exists r._value or r._value == 0, column: \"silence\", unit: 1s)\n|\u003e
         filter(fn: (r) =\u003e r[\"silence\"] \u003e= 7200)\n|\u003e filter(fn: (r)
-        =\u003e r[\"_time\"] \u003e= 2026-08-05T22:01:00Z)\n|\u003e keep(columns:
+        =\u003e r[\"_time\"] \u003e= 2024-06-11T22:01:00Z)\n|\u003e keep(columns:
         [\"_time\", \"_measurement\", \"_field\"])\n|\u003e yield(name: \"gaps\")\n","dialect":{"header":true,"delimiter":",","annotations":["datatype","group","default"],"commentPrefix":"#","dateTimeFormat":"RFC3339"}}'
     headers:
       Accept-Encoding:
@@ -231,5 +96,102 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "\r\n\r\n"
-  recorded_at: Thu, 06 Aug 2026 06:19:36 GMT
+  recorded_at: Wed, 12 Jun 2024 04:00:00 GMT
+- request:
+    method: post
+    uri: http://<INFLUX_HOST>:8086/api/v2/query?org=<INFLUX_ORG>
+    body:
+      encoding: UTF-8
+      string: '{"query":"from(bucket: \"<INFLUX_BUCKET>\")\n|\u003e range(start: 2024-06-11T22:00:00+02:00,
+        stop: 2024-06-12T06:00:00+02:00)\n|\u003e filter(fn: (r) =\u003e r[\"_measurement\"]
+        == \"SENEC\" and (r[\"_field\"] == \"grid_power_plus\" or r[\"_field\"] ==
+        \"house_power\" or r[\"_field\"] == \"wallbox_charge_power\" or r[\"_field\"]
+        == \"bat_power_plus\") or r[\"_measurement\"] == \"Heatpump\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-01\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-02\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-03\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-04\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-05\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-06\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-07\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-08\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-09\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-10\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-11\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-12\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-13\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-14\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-15\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-16\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-17\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-18\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-19\" and (r[\"_field\"]
+        == \"power\") or r[\"_measurement\"] == \"Consumer-20\" and (r[\"_field\"]
+        == \"power\"))\n|\u003e aggregateWindow(every: 5s, fn: last, timeSrc: \"_start\")\n|\u003e
+        fill(usePrevious: true)\n|\u003e aggregateWindow(every: 60s, fn: mean)\n|\u003e
+        filter(fn: (r) =\u003e exists r._value)\n|\u003e filter(fn: (r) =\u003e r[\"_time\"]
+        \u003e= 2024-06-11T22:01:00Z)\n|\u003e keep(columns: [\"_time\", \"_measurement\",
+        \"_field\", \"_value\"])\n|\u003e yield(name: \"values\")\nfrom(bucket: \"<INFLUX_BUCKET>\")\n|\u003e
+        range(start: 2024-06-11T22:00:00+02:00, stop: 2024-06-12T06:00:00+02:00)\n|\u003e
+        filter(fn: (r) =\u003e r[\"_measurement\"] == \"SENEC\" and (r[\"_field\"]
+        == \"grid_power_plus\" or r[\"_field\"] == \"house_power\" or r[\"_field\"]
+        == \"wallbox_charge_power\" or r[\"_field\"] == \"bat_power_plus\") or r[\"_measurement\"]
+        == \"Heatpump\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-01\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-02\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-03\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-04\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-05\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-06\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-07\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-08\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-09\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-10\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-11\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-12\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-13\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-14\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-15\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-16\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-17\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-18\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-19\" and (r[\"_field\"] == \"power\") or r[\"_measurement\"] ==
+        \"Consumer-20\" and (r[\"_field\"] == \"power\"))\n|\u003e aggregateWindow(every:
+        60s, fn: count, createEmpty: true)\n|\u003e stateDuration(fn: (r) =\u003e
+        not exists r._value or r._value == 0, column: \"silence\", unit: 1s)\n|\u003e
+        filter(fn: (r) =\u003e r[\"silence\"] \u003e= 7200)\n|\u003e filter(fn: (r)
+        =\u003e r[\"_time\"] \u003e= 2024-06-11T22:01:00Z)\n|\u003e keep(columns:
+        [\"_time\", \"_measurement\", \"_field\"])\n|\u003e yield(name: \"gaps\")\n","dialect":{"header":true,"delimiter":",","annotations":["datatype","group","default"],"commentPrefix":"#","dateTimeFormat":"RFC3339"}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - influxdb-client-ruby/3.2.0
+      Authorization:
+      - Token <INFLUX_TOKEN>
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/csv; charset=utf-8
+      Vary:
+      - Accept-Encoding
+      X-Influxdb-Build:
+      - OSS
+      X-Influxdb-Version:
+      - v2.9.1
+      Date:
+      - Thu, 06 Aug 2026 06:19:36 GMT
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: "\r\n\r\n"
+  recorded_at: Wed, 12 Jun 2024 04:00:00 GMT
 recorded_with: VCR 6.4.0

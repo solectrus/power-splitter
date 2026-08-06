@@ -228,4 +228,25 @@ describe Flux::CsvParser do
       expect(rows).to eq([])
     end
   end
+
+  # Nothing says what the columns hold, so every cell stays the string it
+  # arrived as - and an empty one stays nil rather than becoming a zero.
+  context 'without the annotation block' do
+    let(:body) do
+      csv(',result,table,_time,_value', ',,0,2026-07-01T00:01:00Z,412.5')
+    end
+
+    it 'leaves every value uncast' do
+      expect(rows).to eq(
+        [
+          {
+            'result' => nil,
+            'table' => '0',
+            '_time' => '2026-07-01T00:01:00Z',
+            '_value' => '412.5',
+          },
+        ],
+      )
+    end
+  end
 end
