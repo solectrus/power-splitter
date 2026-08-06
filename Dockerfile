@@ -12,7 +12,8 @@ RUN bundle config --local frozen 1 && \
     bundle config --local without 'development test' && \
     bundle config --local force_ruby_platform true && \
     bundle install -j4 --retry 3 && \
-    bundle clean --force
+    bundle clean --force && \
+    rm -rf /usr/local/bundle/cache
 
 FROM ruby:4.0.6-alpine
 LABEL org.opencontainers.image.authors="georg@ledermann.dev"

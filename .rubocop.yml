@@ -6,6 +6,10 @@ plugins:
 
 AllCops:
   TargetRubyVersion: 4.0
+  # Minitest is a Gemfile entry only to keep prism out of the runtime image -
+  # nothing here writes Minitest tests.
+  SuggestExtensions:
+    rubocop-minitest: false
   Exclude:
     - coverage/**/*
     - vendor/**/*

@@ -66,14 +66,11 @@ GEM
     logger (1.7.0)
     lumberjack (1.4.2)
     method_source (1.1.0)
-    minitest (6.0.6)
-      drb (~> 2.0)
-      prism (~> 1.5)
+    minitest (5.27.0)
     nenv (0.3.0)
     notiffany (0.1.3)
       nenv (~> 0.1)
       shellany (~> 0.0)
-    ostruct (0.6.3)
     parallel (2.1.0)
     parser (3.3.12.0)
       ast (~> 2.4.1)
@@ -166,15 +163,15 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   amazing_print
+  base64
   csv
   dotenv
   guard-rspec
   influxdb-client
-  ostruct
+  minitest (~> 5.25)
   pg
   rake
   redis-client
-  reline
   rspec
   rubocop
   rubocop-performance

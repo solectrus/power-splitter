@@ -11,20 +11,23 @@ gem 'influxdb-client'
 # CSV Reading and Writing (https://github.com/ruby/csv)
 gem 'csv'
 
-# Class to build custom data structures, similar to a Hash. (https://github.com/ruby/ostruct)
-gem 'ostruct'
+# Support for encoding and decoding binary data using a Base64 representation. (https://github.com/ruby/base64)
+gem 'base64'
 
 # A toolkit of support libraries and Ruby core extensions extracted from the Rails framework. (https://rubyonrails.org)
 gem 'activesupport'
+
+# ActiveSupport pulls minitest in for `active_support/testing`, which nothing
+# here loads - but Bundler installs it either way. Minitest 6 depends on prism,
+# and that lands in the runtime image as 10 MB of gem plus compiled extension
+# for a parser no production code touches. Minitest 5 has no dependencies.
+gem 'minitest', '~> 5.25', require: false
 
 # Simple low-level client for Redis 6+ (https://github.com/redis-rb/redis-client)
 gem 'redis-client'
 
 # Pg is the Ruby interface to the PostgreSQL RDBMS (https://github.com/ged/ruby-pg)
 gem 'pg'
-
-# Alternative GNU Readline or Editline implementation by pure Ruby. (https://github.com/ruby/reline)
-gem 'reline'
 
 group :development do
   # Guard gem for RSpec (https://github.com/guard/guard-rspec)

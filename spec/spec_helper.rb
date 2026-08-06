@@ -17,7 +17,16 @@ Bundler.require
 
 # Core extensions are loaded once here, as app.rb does for the app
 require 'active_support'
-require 'active_support/core_ext'
+require 'active_support/core_ext/object/blank'
+require 'active_support/core_ext/object/json'
+require 'active_support/core_ext/string/conversions'
+require 'active_support/core_ext/numeric/time'
+require 'active_support/core_ext/integer/time'
+require 'active_support/core_ext/date/calculations'
+require 'active_support/core_ext/date/conversions'
+require 'active_support/core_ext/time/calculations'
+require 'active_support/core_ext/time/zones'
+require 'active_support/core_ext/date/zones'
 
 require 'dotenv'
 Dotenv.load('.env.test.local', '.env.test')
