@@ -25,6 +25,10 @@ VCR.configure do |config|
     end
   end
 
+  # VCR=all records again - but delete the cassettes first. It records into the
+  # file rather than over it, so whatever the code no longer asks for stays
+  # behind, and the specs pass either way because VCR still finds a matching
+  # interaction. Only counting them afterwards shows it.
   record_mode = ENV['VCR'] ? ENV['VCR'].to_sym : :once
   config.default_cassette_options = {
     record: record_mode,

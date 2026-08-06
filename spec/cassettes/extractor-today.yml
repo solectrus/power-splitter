@@ -77,11 +77,11 @@ http_interactions:
       X-Influxdb-Version:
       - v2.9.1
       Date:
-      - Wed, 29 Jul 2026 08:14:13 GMT
+      - Thu, 06 Aug 2026 05:55:49 GMT
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Wed, 29 Jul 2026 08:14:13 GMT
+  recorded_at: Thu, 06 Aug 2026 05:55:49 GMT
 - request:
     method: post
     uri: http://<INFLUX_HOST>:8086/api/v2/query?org=<INFLUX_ORG>
@@ -172,7 +172,7 @@ http_interactions:
       X-Influxdb-Version:
       - v2.9.1
       Date:
-      - Wed, 29 Jul 2026 08:14:13 GMT
+      - Thu, 06 Aug 2026 05:55:49 GMT
       Transfer-Encoding:
       - chunked
     body:
@@ -184,7 +184,7 @@ http_interactions:
     uri: http://<INFLUX_HOST>:8086/api/v2/delete?bucket=<INFLUX_BUCKET>&org=<INFLUX_ORG>
     body:
       encoding: UTF-8
-      string: '{"start":"1970-01-01T01:00:00+01:00","stop":"2026-07-29T10:14:13+02:00"}'
+      string: '{"start":"1970-01-01T00:00:00+00:00","stop":"2100-01-01T00:00:00+00:00","predicate":"_measurement=\"SENEC\""}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -206,9 +206,41 @@ http_interactions:
       X-Influxdb-Version:
       - v2.9.1
       Date:
-      - Wed, 29 Jul 2026 08:14:13 GMT
+      - Thu, 06 Aug 2026 05:55:49 GMT
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Wed, 29 Jul 2026 08:14:13 GMT
+  recorded_at: Thu, 06 Aug 2026 05:55:49 GMT
+- request:
+    method: post
+    uri: http://<INFLUX_HOST>:8086/api/v2/delete?bucket=<INFLUX_BUCKET>&org=<INFLUX_ORG>
+    body:
+      encoding: UTF-8
+      string: '{"start":"1970-01-01T00:00:00+00:00","stop":"2100-01-01T00:00:00+00:00","predicate":"_measurement=\"Heatpump\""}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - influxdb-client-ruby/3.2.0
+      Authorization:
+      - Token <INFLUX_TOKEN>
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      X-Influxdb-Build:
+      - OSS
+      X-Influxdb-Version:
+      - v2.9.1
+      Date:
+      - Thu, 06 Aug 2026 05:55:49 GMT
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Thu, 06 Aug 2026 05:55:49 GMT
 recorded_with: VCR 6.4.0
