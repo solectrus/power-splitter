@@ -202,8 +202,11 @@ class Config # rubocop:disable Metrics/ClassLength
     "INFLUX_SENSOR_#{sensor_name.upcase}"
   end
 
+  # On the instance rather than on Config: which sensors exist is what
+  # #identifier reads back from #respond_to?, so an accessor defined on the
+  # class would make every other config claim a sensor it was never given.
   def define(sensor_name, value)
-    self.class.attr_accessor(sensor_name)
+    singleton_class.attr_accessor(sensor_name)
     instance_variable_set(:"@#{sensor_name}", value)
   end
 

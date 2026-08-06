@@ -68,6 +68,25 @@ describe Config do
     end
   end
 
+  # Which sensors a config has is read back from the accessors it carries, so
+  # they have to belong to it alone - one built with a battery must not make
+  # the next one answer for a sensor it was never given.
+  describe 'a sensor another config was given' do
+    let(:env) { valid_env }
+
+    before do
+      described_class.new(
+        valid_env.merge(
+          'INFLUX_SENSOR_BATTERY_DISCHARGING_POWER' => 'SENEC:bat_power_minus',
+        ),
+      )
+    end
+
+    it 'stays unknown here' do
+      expect(config).not_to respond_to(:battery_discharging_power)
+    end
+  end
+
   describe 'battery tracking' do
     let(:env) { valid_env }
 
