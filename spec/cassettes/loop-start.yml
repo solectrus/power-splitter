@@ -33,13 +33,13 @@ http_interactions:
       X-Influxdb-Version:
       - v2.9.1
       Date:
-      - Thu, 06 Aug 2026 05:55:50 GMT
+      - Thu, 06 Aug 2026 05:57:10 GMT
       Transfer-Encoding:
       - chunked
     body:
       encoding: UTF-8
       string: "\r\n"
-  recorded_at: Thu, 06 Aug 2026 05:55:50 GMT
+  recorded_at: Thu, 06 Aug 2026 05:57:10 GMT
 - request:
     method: post
     uri: http://<INFLUX_HOST>:8086/api/v2/query?org=<INFLUX_ORG>
@@ -96,13 +96,13 @@ http_interactions:
       X-Influxdb-Version:
       - v2.9.1
       Date:
-      - Thu, 06 Aug 2026 05:55:50 GMT
+      - Thu, 06 Aug 2026 05:57:10 GMT
       Transfer-Encoding:
       - chunked
     body:
       encoding: UTF-8
       string: "\r\n"
-  recorded_at: Thu, 06 Aug 2026 05:55:50 GMT
+  recorded_at: Thu, 06 Aug 2026 05:57:10 GMT
 - request:
     method: post
     uri: http://<INFLUX_HOST>:8086/api/v2/query?org=<INFLUX_ORG>
@@ -165,9 +165,9 @@ http_interactions:
         \"Consumer-20\" and (r[\"_field\"] == \"power\"))\n|\u003e aggregateWindow(every:
         60s, fn: count, createEmpty: true)\n|\u003e stateDuration(fn: (r) =\u003e
         not exists r._value or r._value == 0, column: \"silence\", unit: 1s)\n|\u003e
-        filter(fn: (r) =\u003e r[\"silence\"] \u003c 7200)\n|\u003e filter(fn: (r)
+        filter(fn: (r) =\u003e r[\"silence\"] \u003e= 7200)\n|\u003e filter(fn: (r)
         =\u003e r[\"_time\"] \u003e= 2026-08-05T22:01:00Z)\n|\u003e keep(columns:
-        [\"_time\", \"_measurement\", \"_field\"])\n|\u003e yield(name: \"reach\")\n","dialect":{"header":true,"delimiter":",","annotations":["datatype","group","default"],"commentPrefix":"#","dateTimeFormat":"RFC3339"}}'
+        [\"_time\", \"_measurement\", \"_field\"])\n|\u003e yield(name: \"gaps\")\n","dialect":{"header":true,"delimiter":",","annotations":["datatype","group","default"],"commentPrefix":"#","dateTimeFormat":"RFC3339"}}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -193,11 +193,11 @@ http_interactions:
       X-Influxdb-Version:
       - v2.9.1
       Date:
-      - Thu, 06 Aug 2026 05:55:50 GMT
+      - Thu, 06 Aug 2026 05:57:10 GMT
       Transfer-Encoding:
       - chunked
     body:
       encoding: UTF-8
       string: "\r\n\r\n"
-  recorded_at: Thu, 06 Aug 2026 05:55:50 GMT
+  recorded_at: Thu, 06 Aug 2026 05:57:10 GMT
 recorded_with: VCR 6.4.0

@@ -31,12 +31,12 @@ module Flux
     # The names the two streams are yielded under, and come back under in the
     # "result" column.
     VALUES = 'values'.freeze
-    REACH = 'reach'.freeze
+    GAPS = 'gaps'.freeze
 
     # What the two streams are matched on, so both queries have to keep them.
     KEY_COLUMNS = %w[_time _measurement _field].freeze
 
-    private_constant :VALUES, :REACH, :KEY_COLUMNS
+    private_constant :VALUES, :GAPS, :KEY_COLUMNS
 
     def records(day)
       start = day.beginning_of_day
@@ -44,9 +44,9 @@ module Flux
       return [] if stop <= start
 
       # What a minute is worth and whether it is worth anything at all are
-      # asked at different resolutions: the value needs the 5s stream, the
-      # reach only the raw one. Both travel in one request.
-      rows = query(values_query(start, stop) + reach_query(start, stop))
+      # asked at different resolutions: the value needs the 5s stream, whether
+      # it counts only the raw one. Both travel in one request.
+      rows = query(values_query(start, stop) + gaps_query(start, stop))
       extract_and_transform_data(within_reach(rows))
     end
 
@@ -55,11 +55,15 @@ module Flux
     # Keeps the value of every minute a sensor reading still backs. Matched up
     # in Ruby because neither stream reads the other - joining them in Flux
     # measured several times slower.
+    #
+    # The second stream names the minutes to drop rather than the ones to keep,
+    # so most days it is empty and there is nothing to match at all.
     def within_reach(rows)
-      values, reach = rows.partition { it['result'] == VALUES }
-      reached = reach.to_set { key_of(it) }
+      values, gaps = rows.partition { it['result'] == VALUES }
+      return values if gaps.empty?
 
-      values.select { reached.include?(key_of(it)) }
+      out_of_reach = gaps.to_set { key_of(it) }
+      values.reject { out_of_reach.include?(key_of(it)) }
     end
 
     def key_of(row)
@@ -100,21 +104,28 @@ module Flux
       FLUX
     end
 
-    # The minutes each sensor is still within reach of a reading. Counting per
+    # The minutes each sensor has fallen out of reach of a reading. Counting per
     # minute rather than per 5s window draws the line in the same place, because
     # MAX_AGE is a whole number of minutes.
     #
     # An empty window arrives as a count of zero, or as nothing before the
     # sensor's first report - `stateDuration` counts both as silence.
-    def reach_query(start, stop)
+    #
+    # Asking for the minutes to drop rather than the ones to keep is the same
+    # question: both streams are windowed over the same grid, so each is the
+    # complement of the other. It is the far smaller half. A day without a gap
+    # answers with nothing at all here, where the minutes in reach are a row per
+    # sensor and minute - some 12,000 of them, half the answer, carrying no
+    # value and existing only to be matched against.
+    def gaps_query(start, stop)
       <<~FLUX
         #{source(start, stop)}
         |> aggregateWindow(every: #{RECORD_DURATION.to_i}s, fn: count, createEmpty: true)
         |> stateDuration(fn: (r) => not exists r._value or r._value == 0, column: "silence", unit: 1s)
-        |> filter(fn: (r) => r["silence"] < #{MAX_AGE.to_i})
+        |> filter(fn: (r) => r["silence"] >= #{MAX_AGE.to_i})
         |> #{lead_in_trim(start)}
         |> keep(columns: #{KEY_COLUMNS.inspect})
-        |> yield(name: "#{REACH}")
+        |> yield(name: "#{GAPS}")
       FLUX
     end
 

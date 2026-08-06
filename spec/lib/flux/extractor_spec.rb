@@ -213,34 +213,34 @@ describe Flux::Extractor do
     let(:day) { Date.new(2024, 8, 27) }
 
     # Annotated CSV as InfluxDB returns it, with one table per sensor and both
-    # yielded results one after the other - the values, and the minutes still
-    # within reach of a reading.
+    # yielded results one after the other - the values, and the minutes out of
+    # reach of a reading. The second is empty here, as it is on any day without
+    # a gap: the sensors below cover different minutes, but none of them is
+    # silent long enough to fall out of reach.
     let(:csv) do
       [
         '#datatype,string,long,dateTime:RFC3339,string,string,double',
         '#group,false,false,false,true,true,false',
         '#default,values,,,,,',
         ',result,table,_time,_field,_measurement,_value',
-        *rows_for('values', 42),
+        *value_rows,
         '',
         '#datatype,string,long,dateTime:RFC3339,string,string',
         '#group,false,false,false,true,true',
-        '#default,reach,,,,',
+        '#default,gaps,,,,',
         ',result,table,_time,_field,_measurement',
-        *rows_for('reach'),
       ].join("\r\n")
     end
 
     # One table per sensor: the first reports at 00:01, 00:02 and 00:05, the
     # second every minute up to 00:05.
-    def rows_for(name, value = nil)
+    def value_rows
       {
         'bat_power_minus' => [1, 2, 5],
         'grid_power_plus' => [1, 2, 3, 4, 5],
       }.each_with_index.flat_map do |(field, minutes), table|
         minutes.map do |minute|
-          time = "2024-08-26T22:0#{minute}:00Z"
-          ",#{[name, table, time, field, 'SENEC', value].compact.join(',')}"
+          ",values,#{table},2024-08-26T22:0#{minute}:00Z,#{field},SENEC,42"
         end
       end
     end
