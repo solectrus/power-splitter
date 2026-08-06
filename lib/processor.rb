@@ -2,7 +2,7 @@ require 'config'
 require 'splitter'
 require 'flux/reader'
 
-class Processor
+class Processor # rubocop:disable Metrics/ClassLength
   def initialize(day:, day_records:, config:, battery_energy_grid: 0)
     @day = day
     @day_records = day_records
@@ -13,10 +13,26 @@ class Processor
   attr_reader :day, :day_records, :config, :battery_energy_grid
 
   def call
-    group_by_period(split_all).map { |elem| point(elem) }
+    periods.map { |elem| point(elem) }
+  end
+
+  # The ledger balance the day ends on, and the time it is written under - what
+  # the next day continues from. Nil when there is no ledger, or no period to
+  # end on.
+  def closing_balance
+    period = periods.last
+    return unless period&.key?(:battery_energy_grid)
+
+    [period[:time], period[:battery_energy_grid]]
   end
 
   private
+
+  # Kept, so that the balance above can be read off the day that was already
+  # split rather than splitting it again.
+  def periods
+    @periods ||= group_by_period(split_all)
+  end
 
   PERIOD = 5.minutes
   private_constant :PERIOD

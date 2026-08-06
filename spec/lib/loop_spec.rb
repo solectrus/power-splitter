@@ -321,6 +321,66 @@ describe Loop do
     end
   end
 
+  # The balance a day starts from is what the day before wrote, so within one
+  # run only the first day has to ask InfluxDB for it. Every day that cannot be
+  # answered from the day before still asks.
+  describe '#process_days' do
+    subject(:process) { loop.__send__(:process_days, first..(first + 2)) }
+
+    let(:first) { Date.new(2025, 10, 11) }
+    let(:extra_env) do
+      { 'INFLUX_SENSOR_BATTERY_DISCHARGING_POWER' => 'SENEC:bat_power_minus' }
+    end
+    let(:influx_pull) { instance_double(InfluxPull) }
+
+    # The last half hour of a day, so that the balance left behind is stamped
+    # within reach of the midnight that follows
+    def records_for(day)
+      midnight = day.in_time_zone(config.time_zone) + 1.day
+
+      Array.new(30) do |i|
+        {
+          'time' => midnight - 30.minutes + (i + 1).minutes,
+          'SENEC:grid_power_plus' => 1000,
+          'SENEC:house_power' => 500,
+          'SENEC:bat_power_plus' => 500,
+          'SENEC:bat_power_minus' => 0,
+        }
+      end
+    end
+
+    before do
+      allow(InfluxPull).to receive(:new).and_return(influx_pull)
+      allow(influx_pull).to receive(:day_records) { |time| records_for(time.to_date) }
+      allow(influx_pull).to receive(:battery_energy_grid_before).and_return(nil)
+      allow(InfluxPush).to receive(:new).and_return(
+        instance_double(InfluxPush, push: nil),
+      )
+    end
+
+    it 'asks InfluxDB for the balance of the first day only' do
+      process
+
+      expect(influx_pull).to have_received(:battery_energy_grid_before).once
+    end
+
+    # Nothing was written for that day, so there is nothing for the next one to
+    # continue from - and InfluxDB is the only one that knows what is there.
+    context 'when a day in between holds no data' do
+      before do
+        allow(influx_pull).to receive(:day_records).with(
+          (first + 1).beginning_of_day,
+        ).and_return([])
+      end
+
+      it 'asks again for the day after it' do
+        process
+
+        expect(influx_pull).to have_received(:battery_energy_grid_before).twice
+      end
+    end
+  end
+
   describe '#discard_outdated_records' do
     subject(:discard) { loop.__send__(:discard_outdated_records) }
 
