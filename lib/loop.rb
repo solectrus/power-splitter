@@ -7,7 +7,6 @@ require 'outdated_records'
 require 'first_day'
 require 'timings'
 require 'read_ahead'
-require 'ledger_seed'
 
 class Loop # rubocop:disable Metrics/ClassLength
   def initialize(config:, max_count: nil, max_wait: 12)
@@ -131,15 +130,11 @@ class Loop # rubocop:disable Metrics/ClassLength
     reader =
       ReadAhead.new(days) { |day| influx_pull.day_records(day.beginning_of_day) }
 
-    carried = nil
-    days.each { |day| carried = process_day(day, reader, carried) }
+    days.each { |day| process_day(day, reader) }
   ensure
     reader&.cancel
   end
 
-  # Hands back what the day it wrote leaves for the next one, for the caller to
-  # pass along.
-  #
   # The phases are timed and reported because which of them a slow day is spent
   # in cannot be guessed. They run one after the other here, so they add up to
   # the day - but two of them no longer mean what their name suggests, now that
@@ -150,50 +145,34 @@ class Loop # rubocop:disable Metrics/ClassLength
   # as well: that happens in the other thread, but against the same GVL, so it
   # lands on this clock rather than beside it. A `calc` that grew while `read`
   # collapsed is the two trading places, not a split that got slower.
-  def process_day(day, reader, carried = nil)
+  def process_day(day, reader)
     timings = Timings.new
     config.logger.info "\n#{Time.current} - Processing day #{day}"
 
     day_records = timings.measure(:read) { reader.records(day) }
     return if day_records.empty?
 
-    seed = timings.measure(:ledger) { battery_energy_grid_for(day, carried) }
-    processor = split(day, day_records, seed)
-    powers = timings.measure(:calc) { processor.call }
+    seed = timings.measure(:ledger) { battery_energy_grid_for(day) }
+    powers = timings.measure(:calc) { split(day, day_records, seed) }
     timings.measure(:write) { influx_push.push(powers) }
-
-    left_behind(day, processor)
   ensure
     config.logger.info "  #{timings}"
   end
 
   def split(day, day_records, battery_energy_grid)
-    Processor.new(day:, day_records:, config:, battery_energy_grid:)
-  end
-
-  def left_behind(day, processor)
-    time, balance = processor.closing_balance
-
-    LedgerSeed.new(day:, time:, balance:) if balance
+    Processor.new(day:, day_records:, config:, battery_energy_grid:).call
   end
 
   # Seed for the battery ledger, read back from InfluxDB so that recalculating
   # a day always starts from the same value.
   #
-  # The day before, when this run wrote it, already knows that value - it is
-  # what it just wrote, and the query would only read it back. Anything less
-  # than a definite answer from there still asks InfluxDB, which alone sees
-  # what other runs left behind.
-  #
   # Without a recent balance the ledger starts empty. That happens at the very
   # beginning and after a gap in the data - and after a gap an old balance
   # would be a guess, not a measurement.
-  def battery_energy_grid_for(day, carried = nil)
+  def battery_energy_grid_for(day)
     return 0 unless config.battery_tracking?
 
-    balance =
-      carried&.for(day) ||
-        influx_pull.battery_energy_grid_before(day.beginning_of_day)
+    balance = influx_pull.battery_energy_grid_before(day.beginning_of_day)
     return balance if balance
 
     config.logger.info '  No recent battery ledger balance, starting empty'

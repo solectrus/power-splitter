@@ -55,49 +55,6 @@ describe Processor do
     fields(point)[name]
   end
 
-  def time_of(point)
-    point.instance_variable_get(:@time)
-  end
-
-  # What the Loop hands the next day instead of reading it back out of
-  # InfluxDB, so it has to be what that read would answer: the ledger balance
-  # of the last record written, under the time that record carries.
-  describe '#closing_balance' do
-    subject(:processor) do
-      described_class.new(day:, day_records:, config:, battery_energy_grid:)
-    end
-
-    it 'is nothing when no ledger is tracked' do
-      expect(processor.closing_balance).to be_nil
-    end
-
-    context 'when the day holds no records at all' do
-      let(:day_records) { [] }
-
-      it 'is nothing' do
-        expect(processor.closing_balance).to be_nil
-      end
-    end
-
-    context 'with battery tracking' do
-      let(:config) do
-        Config.new(
-          ENV.to_h.merge(
-            'INFLUX_SENSOR_BATTERY_DISCHARGING_POWER' => 'SENEC:bat_power_minus',
-          ),
-        )
-      end
-
-      it 'is the balance of the last record written, under its time' do
-        points = processor.call
-        time, balance = processor.closing_balance
-
-        expect(balance).to eq(field(points.last, 'battery_energy_grid'))
-        expect(time.to_i).to eq(time_of(points.last))
-      end
-    end
-  end
-
   describe '#call' do
     it 'returns the correct result' do
       lines = call.map(&:to_line_protocol)
