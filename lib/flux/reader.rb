@@ -1,3 +1,4 @@
+require 'time'
 require_relative 'base'
 require_relative 'csv_parser'
 
@@ -29,16 +30,18 @@ module Flux
 
     # Parse InfluxDB timestamp and convert to configured timezone.
     #
-    # Memoized because a query covering several sensors returns one row per
-    # sensor and window, all stamped with the same instant: a day of minute
-    # records for eight sensors holds 11,520 rows but only 1,440 distinct
-    # timestamps. The cache lives as long as the reader, which is built per
-    # query, so it cannot grow past the result it was filled from.
+    # Read strictly as RFC3339, which is what the column is declared as and
+    # what arrives - several times quicker than the zone's own parser, which
+    # has to work out what it is looking at first. A timestamp that is not
+    # RFC3339 now says so instead of quietly becoming nil.
+    #
+    # Asked once per timestamp: a query covering several sensors returns one
+    # row per sensor and window, but the rows of a window are gathered under
+    # the string they arrived with, and only the first of them gets this far.
     def parse_influx_time(time_str)
       return unless time_str
 
-      @parsed_times ||= {}
-      @parsed_times[time_str] ||= config.time_zone.parse(time_str)
+      Time.iso8601(time_str).in_time_zone(config.time_zone)
     end
 
     private

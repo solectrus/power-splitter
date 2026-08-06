@@ -32,7 +32,12 @@ module Flux
     end
 
     def call
-      @body.each_line { |line| parse_line(line.chomp) }
+      # Chomped in place: each_line hands over a string of its own every time,
+      # and a copy of each of them is one per line thrown away again.
+      @body.each_line do |line|
+        line.chomp!
+        parse_line(line)
+      end
 
       @rows
     end

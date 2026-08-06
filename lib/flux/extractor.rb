@@ -166,13 +166,29 @@ module Flux
       time.utc.iso8601
     end
 
+    # Grouped by the timestamp as it arrived, not by the time it parses to: the
+    # rows of a window all carry the same string, and hashing a few characters
+    # is a fraction of hashing a zoned time. It is parsed where the record is
+    # first made, so once per window rather than once per sensor and window.
+    #
+    # The sensor a row belongs to changes once per table, since that is how
+    # they arrive - so the name it is stored under is kept rather than built
+    # again for every one of its minutes. Rows in any other order still land
+    # where they belong, they just cost what they used to.
     def extract_and_transform_data(rows)
+      measurement = field = key = nil
+
       results_by_time =
         rows.each_with_object({}) do |row, results|
-          time = parse_influx_time(row['_time'])
+          if row['_measurement'] != measurement || row['_field'] != field
+            measurement = row['_measurement']
+            field = row['_field']
+            key = "#{measurement}:#{field}"
+          end
 
-          result = (results[time] ||= { 'time' => time })
-          result["#{row['_measurement']}:#{row['_field']}"] = row['_value']
+          time = row['_time']
+          result = (results[time] ||= { 'time' => parse_influx_time(time) })
+          result[key] = row['_value']
         end
 
       # Gaps are dropped, so the tables span unequal ranges and the hash fills in
