@@ -32,7 +32,6 @@ GEM
     drb (2.2.3)
     ffi (1.17.4)
     ffi (1.17.4-aarch64-linux-musl)
-    ffi (1.17.4-arm-linux-musl)
     ffi (1.17.4-arm64-darwin)
     ffi (1.17.4-x86_64-linux-musl)
     formatador (1.2.3)
@@ -163,7 +162,6 @@ GEM
 
 PLATFORMS
   aarch64-linux-musl
-  arm-linux-musleabihf
   arm64-darwin-24
   ruby
   x86_64-linux-musl
