@@ -258,4 +258,27 @@ describe 'Invariants' do
       end
     end
   end
+
+  # InfluxDB settles the type of a field the first time it is written and
+  # refuses a later value of another type. What comes out of here is therefore
+  # not just a number but a number of a kind: the powers are whole watts, the
+  # ledger balance is not.
+  #
+  # Nothing above would notice the difference. They compare values, and 100
+  # equals 100.0 - only the database says otherwise, on an installation that
+  # has been writing the old type for years.
+  describe 'the fields keep their type' do
+    it 'writes whole watts, and the ledger balance as a float' do
+      cases do |random|
+        records = stretch(random, droppable: sensors)
+
+        process(records).each do |point|
+          powers = fields(point).except('battery_energy_grid')
+
+          expect(powers.values).to all(be_an(Integer))
+          expect(fields(point)['battery_energy_grid']).to be_a(Float)
+        end
+      end
+    end
+  end
 end
