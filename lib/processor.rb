@@ -119,7 +119,7 @@ class Processor
     splitted
       .group_by { |item| (item[:time].to_i - RECORD_DURATION) / PERIOD }
       .map do |interval, items|
-        keys = items.flat_map(&:keys).uniq - [:time]
+        keys = items.flat_map(&:keys).to_set - [:time]
         minutes = covered(items)
 
         keys
