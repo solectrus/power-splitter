@@ -5,7 +5,7 @@ require 'config'
 # What Loop waits on is Kernel#sleep and a thread of its own, neither of which
 # can be handed in - so covering the waiting and the restart means stubbing
 # them on the object under test.
-# rubocop:disable RSpec/SubjectStub
+# rubocop:disable-next RSpec/SubjectStub
 describe Loop do
   subject(:loop) { described_class.new(config:, max_count: 1) }
 
@@ -408,4 +408,3 @@ describe Loop do
     end
   end
 end
-# rubocop:enable RSpec/SubjectStub
