@@ -16,14 +16,14 @@ See [CALCULATION.md](CALCULATION.md) for how the split is calculated.
 - InfluxDB 2 database with a bucket filled with values for:
   - Grid import power
   - House power
-  - Heatpump/Wallbox/Custom power
+  - Heat pump/Wallbox/Custom power
 - Linux machine with Docker installed
 
 ## Getting started
 
-1. Make sure that your InfluxDB2 database is ready (not subject of this README)
+1. Make sure that your InfluxDB 2 database is ready (not subject of this README)
 
-2. Prepare an `.env` file (see `.env.example`)
+2. Prepare an `.env` file (see `.env.example` and [Configuration](#configuration))
 
 3. Run the Docker container on your Linux box:
 
@@ -38,6 +38,47 @@ To force a data rebuild, you can send USR1 signal to the container:
 ```bash
 docker compose kill --signal USR1 power-splitter
 ```
+
+## Configuration
+
+All sensor variables use the format `measurement:field`, the same as in
+SOLECTRUS.
+
+| Variable                          | Required | Description                          |
+| --------------------------------- | -------- | ------------------------------------ |
+| `INFLUX_HOST`                     | yes      | Host name of InfluxDB                |
+| `INFLUX_PORT`                     | no       | Default: `8086`                      |
+| `INFLUX_SCHEMA`                   | no       | `http` (default) or `https`          |
+| `INFLUX_TOKEN`                    | yes      | Token with read and write access     |
+| `INFLUX_ORG`                      | yes      | Organization in InfluxDB             |
+| `INFLUX_BUCKET`                   | yes      | Bucket for sensor data and results   |
+| `INFLUX_SENSOR_GRID_IMPORT_POWER` | yes      | Power imported from the grid         |
+| `INFLUX_SENSOR_HOUSE_POWER`       | yes      | House power                          |
+| `INFLUX_SENSOR_HEATPUMP_POWER`    | no       | Heat pump                            |
+| `INFLUX_SENSOR_WALLBOX_POWER`     | no       | Wallbox                              |
+| `INFLUX_SENSOR_CUSTOM_POWER_XX`   | no       | Other consumers, `01` to `20`        |
+| `INFLUX_EXCLUDE_FROM_HOUSE_POWER` | no       | Included in house power (see below)  |
+| `INSTALLATION_DATE`               | no       | First PV yield, as `YYYY-MM-DD`      |
+| `POWER_SPLITTER_INTERVAL`         | no       | Seconds between runs, default `3600` |
+| `TZ`                              | no       | Time zone, default `Europe/Berlin`   |
+| `DB_HOST`                         | no       | PostgreSQL of SOLECTRUS (see below)  |
+| `DB_USER`                         | no       | User for PostgreSQL                  |
+| `DB_PASSWORD`                     | no       | Password for PostgreSQL              |
+| `REDIS_URL`                       | no       | Redis of SOLECTRUS (see below)       |
+
+Notes:
+
+- `INFLUX_EXCLUDE_FROM_HOUSE_POWER` takes sensor names, separated by commas.
+  Example: `HEATPUMP_POWER,CUSTOM_POWER_02`. The Power Splitter subtracts these
+  sensors from house power. [CALCULATION.md](CALCULATION.md) explains the effect.
+- The Power Splitter ignores sensor data before `INSTALLATION_DATE`.
+- `POWER_SPLITTER_INTERVAL` has a minimum of `300`.
+- After it calculates past days again, the Power Splitter deletes the daily
+  summaries of these days in PostgreSQL. It also deletes all data on the Redis
+  server (`FLUSHALL`). Without the `DB_*` variables or `REDIS_URL`, it skips
+  the matching step.
+- The battery sensors are described in
+  [Batteries charged from the grid](#batteries-charged-from-the-grid).
 
 ## Batteries charged from the grid
 
@@ -63,8 +104,13 @@ the consumers taking it out again. There is no switch for it.
 > they do. That not only undoes the attribution, it also drags down
 > `battery_charging_power_grid` - a value that was correct before.
 
-This version calculates the grid shares differently than the one before it, with
-or without the battery sensors. Existing data is only overwritten where the new
+See [CALCULATION.md](CALCULATION.md) for what these variables do to the
+calculation, which fields are written, and where the limits are.
+
+### Update from a version before 1.1.0
+
+Version 1.1.0 calculates the grid shares differently than the versions before it,
+with or without the battery sensors. Existing data is only overwritten where the new
 calculation writes something, so old and new numbers would otherwise sit side by
 side.
 
@@ -78,20 +124,21 @@ Without them there is no such marker, so after updating:
 1. Force a rebuild (see above)
 2. Reset the daily summaries in SOLECTRUS
 
-See [CALCULATION.md](CALCULATION.md) for what these variables do to the
-calculation, which fields are written, and where the limits are.
-
 ## Development
 
-For development you need a recent Ruby setup. On a Mac, I recommend [rbenv](https://github.com/rbenv/rbenv).
+For development you need Ruby 4.0 (see `.ruby-version`). On a Mac, I recommend [rbenv](https://github.com/rbenv/rbenv).
 
 ### Run the app
+
+Copy `.env.example` to `.env` and change the values (see [Configuration](#configuration)). Then start the app:
 
 ```bash
 bundle exec app.rb
 ```
 
 ### Run tests
+
+The tests need a Redis server on `localhost:6379`. They do not need InfluxDB, because they replay recorded requests.
 
 ```bash
 bundle exec rspec
