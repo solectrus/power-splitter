@@ -11,31 +11,36 @@ describe InfluxPush do
     expect(influx_push.config).to eq(config)
   end
 
-  it 'can push records to InfluxDB', vcr: 'influx_success' do
-    time = Time.current.to_i
-    records = [
-      {
-        time:,
-        name: config.influx_measurement,
-        fields: {
-          'heatpump_power_grid' => 42,
-          'house_power_grid' => 42,
-          'wallbox_power_grid' => 42,
-        },
-      },
-      {
-        time:,
-        name: config.influx_measurement,
-        fields: {
-          'heatpump_power_grid' => 43,
-          'house_power_grid' => 43,
-          'wallbox_power_grid' => 43,
-        },
-      },
-    ]
+  context 'when pushing records', vcr: 'influx_success' do
+    # Pushed past flux_write, so flux_cleanup does not know about them
+    after { flux_deleter.delete_measurement(config.influx_measurement) }
 
-    result = influx_push.push(records)
-    expect(result).to be_truthy
+    it 'writes them to InfluxDB' do
+      time = Time.current.to_i
+      records = [
+        {
+          time:,
+          name: config.influx_measurement,
+          fields: {
+            'heatpump_power_grid' => 42,
+            'house_power_grid' => 42,
+            'wallbox_power_grid' => 42,
+          },
+        },
+        {
+          time:,
+          name: config.influx_measurement,
+          fields: {
+            'heatpump_power_grid' => 43,
+            'house_power_grid' => 43,
+            'wallbox_power_grid' => 43,
+          },
+        },
+      ]
+
+      result = influx_push.push(records)
+      expect(result).to be_truthy
+    end
   end
 
   it 'can handle error' do
