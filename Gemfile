@@ -27,11 +27,6 @@ gem 'redis-client'
 # Pg is the Ruby interface to the PostgreSQL RDBMS (https://github.com/ged/ruby-pg)
 gem 'pg'
 
-group :development do
-  # Pretty print Ruby objects with proper indentation and colors (https://github.com/amazing-print/amazing_print)
-  gem 'amazing_print'
-end
-
 group :development, :test do
   # rspec-3.13.2 (https://rspec.info)
   gem 'rspec'
