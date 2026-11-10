@@ -15,6 +15,18 @@ RUN bundle config --local frozen 1 && \
     bundle clean --force && \
     rm -rf /usr/local/bundle/cache
 
+# Nothing at runtime reads the sources and build logs of the native extensions,
+# nor the tests and docs some gems ship. The compiled extensions come with debug
+# info, and each exists twice: in the gem and in extensions/. gem.build_complete
+# must stay, or RubyGems ignores the gem as not built.
+RUN rm -rf /usr/local/bundle/gems/*/ext \
+           /usr/local/bundle/gems/*/test \
+           /usr/local/bundle/gems/*/spec \
+           /usr/local/bundle/gems/*/doc && \
+    find /usr/local/bundle/extensions \
+         \( -name gem_make.out -o -name mkmf.log \) -delete && \
+    find /usr/local/bundle -name '*.so' -exec strip --strip-unneeded {} +
+
 FROM ruby:4.0.9-alpine
 LABEL org.opencontainers.image.authors="georg@ledermann.dev"
 LABEL org.opencontainers.image.description="Distributes imported grid power among individual consumers"
