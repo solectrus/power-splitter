@@ -134,6 +134,10 @@ battery. Without the discharge sensor there is nothing to attribute.
 Nothing else is stored, because nothing else has to be. SOLECTRUS works out the
 solar share of a consumer as the difference between its power and its grid share.
 
+The powers are stored as whole watts, the balance as a decimal number. InfluxDB
+sets the type of a field when the field is first written, and it refuses later
+values of another type. So the type of a field must never change.
+
 ### Why the discharge share is stored separately
 
 Without the battery, the grid shares of all consumers add up to the power
@@ -166,7 +170,7 @@ balance went up by, so over a timeframe, as energies:
 Storing it anyway is a deliberate trade. The balance is a value at the end of a
 period, not something that can be summed or averaged, so reading it needs an
 aggregation of its own - and the difference reaches back to the last period
-*before* the timeframe, which makes a daily figure depend on the day before it.
+_before_ the timeframe, which makes a daily figure depend on the day before it.
 On top of that, the term would be built from a value that a corrector scales at
 the same time, which turns a straight sum into something that has to be solved
 for.
@@ -232,13 +236,14 @@ time, as tests over randomly generated days - `spec/invariants_spec.rb`:
 - the ledger holds what was put in, no more and never less than nothing
 - a gap empties the ledger
 - a day can be calculated on its own
+- the fields keep their type
 
 Their seam - a day read, split and seeded on its own, while a gap or the
 carry-forward reaches over midnight - is where the mistakes were, so it is
 tested end to end against a real query in `spec/day_boundary_spec.rb`.
 
 Read those two files to find out what the calculation promises. If a change
-breaks one of them, it breaks one of the four rules above.
+breaks one of them, it breaks one of the five rules above.
 
 ## Where it is not exact
 
