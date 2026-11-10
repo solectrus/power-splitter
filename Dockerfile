@@ -22,6 +22,10 @@ LABEL org.opencontainers.image.description="Distributes imported grid power amon
 # Add tzdata to get correct timezone
 RUN apk add --no-cache tzdata libpq
 
+# Create non-root user
+RUN addgroup -g 1000 -S app && \
+    adduser -u 1000 -S app -G app
+
 # The Alpine build ships YJIT but leaves it switched off, and splitting a day is
 # the kind of arithmetic in a tight loop it is good at: measured against this
 # image, a day of 1440 records went from 157 ms to 105 ms. A worker that runs
@@ -47,5 +51,7 @@ WORKDIR /power-splitter
 
 COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
 COPY . /power-splitter/
+
+USER app
 
 ENTRYPOINT ["bundle", "exec", "app.rb"]
