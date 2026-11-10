@@ -11,8 +11,8 @@ class InfluxPull
 
   attr_reader :flux_reader, :config
 
-  def first_sensor_date
-    Flux::FirstSensor.new(config:).time&.to_date
+  def first_sensor_date(**)
+    Flux::FirstSensor.new(config:).time(**)&.to_date
   end
 
   def last_splitter_date

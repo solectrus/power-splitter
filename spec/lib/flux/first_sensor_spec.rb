@@ -46,5 +46,34 @@ describe Flux::FirstSensor do
         expect(first_sensor.time).to eq(first_time)
       end
     end
+
+    context 'when searching from a given time',
+            vcr: {
+              cassette_name: 'first_sensor-since',
+              match_requests_on: %i[method uri flux_query],
+            } do
+      let(:stray_time) { Time.new('1970-01-01 01:00:01 +01:00') }
+      let(:real_time) { Time.new('2022-01-01 12:00:00 +01:00') }
+
+      before do
+        flux_write(
+          [stray_time, real_time].map do |time|
+            InfluxDB2::Point.new(
+              name: 'SENEC',
+              time: time.to_i,
+              fields: { 'house_power' => 42 },
+            )
+          end,
+        )
+      end
+
+      after { flux_cleanup }
+
+      it 'returns the first time at or after it' do
+        expect(first_sensor.time(since: Time.new('1970-01-02 00:00:00 +01:00'))).to eq(
+          real_time,
+        )
+      end
+    end
   end
 end

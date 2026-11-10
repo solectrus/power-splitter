@@ -188,6 +188,71 @@ describe Loop do
     end
   end
 
+  # A stray reading long before the rest of the data must not cost a query for
+  # every day in between.
+  describe '#process_days when days have no data' do
+    subject(:process) { loop.__send__(:process_days, first..last) }
+
+    let(:influx_pull) { instance_double(InfluxPull, fetch_day: nil, records_from: []) }
+    let(:next_day) { Date.new(2025, 10, 12) }
+
+    def first
+      Date.new(1970, 1, 1)
+    end
+
+    def last
+      Date.new(2025, 10, 14)
+    end
+
+    before do
+      allow(InfluxPull).to receive(:new).and_return(influx_pull)
+      allow(influx_pull).to receive(:first_sensor_date).and_return(next_day, nil)
+    end
+
+    it 'skips ahead to the next day with a reading' do
+      process
+
+      expect(influx_pull).to have_received(:fetch_day).with(
+        first.beginning_of_day,
+      ).ordered
+      expect(influx_pull).to have_received(:fetch_day).with(
+        next_day.beginning_of_day,
+      ).ordered
+      expect(influx_pull).to have_received(:fetch_day).twice
+      expect(logger.info_messages).to include(
+        '  No sensor data before 2025-10-12, skipping ahead',
+      )
+    end
+
+    it 'searches from the day after the empty one' do
+      process
+
+      expect(influx_pull).to have_received(:first_sensor_date).with(
+        since: first.next_day.beginning_of_day,
+      )
+    end
+
+    context 'when the empty day is the last one' do
+      subject(:process) { loop.__send__(:process_days, last..last) }
+
+      it 'does not search any further' do
+        process
+
+        expect(influx_pull).not_to have_received(:first_sensor_date)
+      end
+    end
+
+    context 'when the next reading lies beyond the range' do
+      let(:next_day) { last.next_day }
+
+      it 'stops' do
+        process
+
+        expect(influx_pull).to have_received(:fetch_day).once
+      end
+    end
+  end
+
   # The ensure has to survive a reader that was never built, or the failure
   # arrives as a NoMethodError from the cleanup instead of as itself.
   describe '#process_days when the read cannot be started' do
@@ -225,6 +290,7 @@ describe Loop do
       allow(InfluxPull).to receive(:new).and_return(influx_pull)
       allow(influx_pull).to receive_messages(
         last_splitter_date: Date.new(2025, 10, 10),
+        first_sensor_date: nil,
         fetch_day: nil,
         records_from: [],
       )
@@ -267,6 +333,9 @@ describe Loop do
     before do
       allow(Date).to receive(:current).and_return(Date.new(2025, 10, 14))
       allow(InfluxPull).to receive(:new).and_return(influx_pull)
+
+      # A reading on every day, so that none of them is skipped
+      allow(influx_pull).to receive(:first_sensor_date) { |since:| since.to_date }
     end
 
     context 'when never run before' do

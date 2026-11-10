@@ -93,11 +93,13 @@ module Flux
     # `within_reach` matches the two streams on time and sensor.
     #
     # The range starts MAX_AGE before the day so that silence and last value are
-    # counted within it; each query drops that lead-in again at the end.
+    # counted within it; each query drops that lead-in again at the end. Never
+    # before the epoch, though: windows reaching past it make
+    # `stateDuration` fail.
     def source(start, stop)
       <<~FLUX.chomp
         #{from_bucket}
-        |> #{range(start: start - MAX_AGE, stop:)}
+        |> #{range(start: [start - MAX_AGE, Time.at(0)].max, stop:)}
         |> #{filter}
       FLUX
     end

@@ -130,9 +130,25 @@ class Loop # rubocop:disable Metrics/ClassLength
     reader =
       ReadAhead.new(days) { |day| influx_pull.fetch_day(day.beginning_of_day) }
 
-    days.each { |day| process_day(day, reader) }
+    day = days.begin
+    while days.cover?(day)
+      had_records = process_day(day, reader)
+      day = had_records ? day.next_day : next_day_with_data(day, days)
+    end
   ensure
     reader&.cancel
+  end
+
+  # An empty day writes nothing, so the days up to the next reading can be
+  # skipped - a carried-forward value would have made the day non-empty.
+  def next_day_with_data(empty_day, days)
+    return if empty_day >= days.end
+
+    next_day = influx_pull.first_sensor_date(since: empty_day.next_day.beginning_of_day)
+    if next_day && next_day > empty_day.next_day
+      config.logger.info "  No sensor data before #{next_day}, skipping ahead"
+    end
+    next_day
   end
 
   # The phases are timed and reported because which of them a slow day is spent
@@ -143,17 +159,20 @@ class Loop # rubocop:disable Metrics/ClassLength
   # `read` is what is left of the wait for an answer that was asked for while
   # the day before was still being worked on: the part of the query that could
   # not be hidden behind it, and nothing else.
+  #
+  # Returns whether the day had any records.
   def process_day(day, reader)
     timings = Timings.new
     config.logger.info "\n#{Time.current} - Processing day #{day}"
 
     answer = timings.measure(:read) { reader.answer(day) }
     day_records = timings.measure(:parse) { influx_pull.records_from(answer) }
-    return if day_records.empty?
+    return false if day_records.empty?
 
     seed = timings.measure(:ledger) { battery_energy_grid_for(day) }
     powers = timings.measure(:calc) { split(day, day_records, seed) }
     timings.measure(:write) { influx_push.push(powers) }
+    true
   ensure
     config.logger.info "  #{timings}"
   end

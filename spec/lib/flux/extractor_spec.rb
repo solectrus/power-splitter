@@ -204,6 +204,36 @@ describe Flux::Extractor do
     end
   end
 
+  # Where a timestamp in seconds read as nanoseconds lands. The lead-in of that
+  # day reaches back before the epoch, where Flux windows fail.
+  describe '#records on the day of the epoch',
+           vcr: {
+             cassette_name: 'extractor-epoch',
+             match_requests_on: %i[method uri flux_query],
+           } do
+    subject(:day_records) { extractor.records(extractor.fetch(day)) }
+
+    let(:day) { Date.new(1970, 1, 1) }
+
+    before do
+      flux_write(
+        InfluxDB2::Point.new(
+          name: 'SENEC',
+          time: 1,
+          fields: {
+            'grid_power_plus' => 42,
+          },
+        ),
+      )
+    end
+
+    after { flux_cleanup }
+
+    it 'reads the day like any other' do
+      expect(day_records).not_to be_empty
+    end
+  end
+
   # Each sensor comes back as its own table, and since gaps are dropped the
   # tables no longer span the same minutes. Assembled in table order, the
   # records would come out interleaved.
