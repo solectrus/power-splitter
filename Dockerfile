@@ -1,4 +1,4 @@
-FROM ruby:4.0.9-alpine AS builder
+FROM ruby:4.0.10-alpine AS builder
 RUN apk add --no-cache build-base postgresql-dev
 
 WORKDIR /power-splitter
@@ -27,7 +27,7 @@ RUN rm -rf /usr/local/bundle/gems/*/ext \
          \( -name gem_make.out -o -name mkmf.log \) -delete && \
     find /usr/local/bundle -name '*.so' -exec strip --strip-unneeded {} +
 
-FROM ruby:4.0.9-alpine
+FROM ruby:4.0.10-alpine
 LABEL org.opencontainers.image.authors="georg@ledermann.dev"
 LABEL org.opencontainers.image.description="Distributes imported grid power among individual consumers"
 
